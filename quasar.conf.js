@@ -6,7 +6,7 @@ module.exports = configure(function (ctx) {
     supportTS: false,
     boot: ["i18n", "axios"],
     css: ["app.scss"],
-    extras: ["roboto-font", "material-icons"],
+    extras: ["roboto-font", "material-icons", "mdi-v6"],
     build: {
       vueRouterMode: "history",
       chainWebpack(chain) {
