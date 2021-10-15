@@ -43,6 +43,14 @@
                 </q-btn>
               </div>
             </div>
+            <div class="search-bar-container q-pa-md">
+              <q-input dark dense rounded standout placeholder="Search or start a new chat">
+                <template #prepend>
+                  <q-icon name="mdi-magnify" />
+                </template>
+              </q-input>
+            </div>
+            <q-separator />
             <q-list dark class="rounded-borders user-list-container">
               <div v-for="n in 20" :key="n">
                 <q-item clickable v-ripple>
@@ -60,8 +68,46 @@
                     </q-item-label>
                   </q-item-section>
                   <q-item-section side top> 1 min ago </q-item-section>
+                  <q-menu dark touch-position context-menu>
+                    <q-list dense style="min-width: 100px">
+                      <q-item clickable v-close-popup>
+                        <q-item-section>Open...</q-item-section>
+                      </q-item>
+                      <q-item clickable v-close-popup>
+                        <q-item-section>New</q-item-section>
+                      </q-item>
+                      <q-separator />
+                      <q-item clickable>
+                        <q-item-section>Preferences</q-item-section>
+                        <q-item-section side>
+                          <q-icon name="keyboard_arrow_right" />
+                        </q-item-section>
+                        <q-menu dark anchor="top end" self="top start">
+                          <q-list>
+                            <q-item v-for="n in 3" :key="n" dense clickable>
+                              <q-item-section>Submenu Label</q-item-section>
+                              <q-item-section side>
+                                <q-icon name="keyboard_arrow_right" />
+                              </q-item-section>
+                              <q-menu dark auto-close anchor="top end" self="top start">
+                                <q-list>
+                                  <q-item v-for="n in 3" :key="n" dense clickable>
+                                    <q-item-section>3rd level Label</q-item-section>
+                                  </q-item>
+                                </q-list>
+                              </q-menu>
+                            </q-item>
+                          </q-list>
+                        </q-menu>
+                      </q-item>
+                      <q-separator />
+                      <q-item clickable v-close-popup>
+                        <q-item-section>Quit</q-item-section>
+                      </q-item>
+                    </q-list>
+                  </q-menu>
                 </q-item>
-                <q-separator dark inset="item" v-if="n != 19" />
+                <q-separator dark inset="item" v-if="n != 20" />
               </div>
             </q-list>
           </div>
@@ -107,11 +153,15 @@ export default defineComponent({
   background-color: #262d31;
 }
 
+.search-bar-container {
+  background-color: #131c21;
+}
+
 .user-list-container {
   background-color: #131c21;
   overflow-y: auto;
-  height: calc(100% - 58px);
-  max-height: calc(100% - 58px);
+  height: calc(100% - 130px);
+  max-height: calc(100% - 130px);
 }
 
 .chat-top {
@@ -120,5 +170,6 @@ export default defineComponent({
 
 .chat-panel {
   border-left: 1px solid rgba(241, 241, 242, 0.11);
+  background-color: rgb(15, 14, 14);
 }
 </style>
