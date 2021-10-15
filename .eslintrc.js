@@ -39,6 +39,14 @@ module.exports = {
     "prefer-promise-reject-errors": "off",
     "no-debugger": process.env.NODE_ENV === "production" ? "error" : "off",
     quotes: ["error", "double"],
-    semi: "always"
+    semi: ["error", "always"],
+    "space-before-function-paren": [
+      "error",
+      {
+        anonymous: "always",
+        named: "never",
+        asyncArrow: "always"
+      }
+    ]
   }
 };
