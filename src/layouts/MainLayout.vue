@@ -43,6 +43,21 @@
                 </q-btn>
               </div>
             </div>
+            <div class="row q-pa-md bg-light-blue-9" v-if="state.notificationsEnablePanelActive">
+              <q-btn color="light-blue-9" flat round icon="mdi-bell" class="bg-grey-5 q-mr-md" />
+              <div class="column text-white">
+                <span> Get notified of new messages </span>
+                <div>
+                  <span
+                    @click="askNotificationPermission"
+                    class="enable-desktop-notifications-link"
+                  >
+                    Turn on desktop notifications
+                  </span>
+                  <q-icon name="mdi-chevron-right" />
+                </div>
+              </div>
+            </div>
             <div class="search-bar-container q-pa-md">
               <q-input dark dense rounded standout placeholder="Search or start a new chat">
                 <template #prepend>
@@ -51,7 +66,11 @@
               </q-input>
             </div>
             <q-separator />
-            <q-list dark class="rounded-borders user-list-container">
+            <q-list
+              dark
+              class="rounded-borders user-list-container"
+              :style="state.userListContainerStyle"
+            >
               <div v-for="n in 20" :key="n">
                 <q-item clickable v-ripple>
                   <q-item-section avatar>
@@ -122,14 +141,64 @@
 </template>
 
 <script>
-import { defineComponent, reactive } from "vue";
+import { defineComponent, reactive, computed } from "vue";
 
 export default defineComponent({
   name: "MainLayout",
   setup() {
     const state = reactive({
-      width: 0
+      width: 0,
+      userListContainerStyle: computed(() => {
+        if (!state.notificationsEnablePanelActive) {
+          return {
+            height: "calc(100% - 130px)",
+            "max-height": "calc(100% - 130px)"
+          };
+        } else {
+          return {
+            height: "calc(100% - 204px)",
+            "max-height": "calc(100% - 204px)"
+          };
+        }
+      }),
+      notificationsEnabled: false,
+      notificationsEnablePanelActive: true
     });
+
+    const checkNotificationPromise = () => {
+      try {
+        Notification.requestPermission().then();
+      } catch (e) {
+        return false;
+      }
+      return true;
+    };
+
+    const askNotificationPermission = () => {
+      if (!("Notification" in window)) {
+        console.log("This browser does not support notifications.");
+      } else {
+        if (checkNotificationPromise()) {
+          Notification.requestPermission().then((permission) => {
+            handlePermission(permission);
+          });
+        } else {
+          Notification.requestPermission((permission) => {
+            handlePermission(permission);
+          });
+        }
+      }
+    };
+
+    const handlePermission = () => {
+      if (Notification.permission === "denied" || Notification.permission === "default") {
+        console.log("Nope!");
+      } else {
+        state.notificationsEnabled = true;
+        state.notificationsEnablePanelActive = false;
+        // Handle sending notifications here
+      }
+    };
 
     const changeMainContainerWidth = () => {
       state.width = window.innerWidth - 100;
@@ -137,7 +206,8 @@ export default defineComponent({
 
     return {
       changeMainContainerWidth,
-      state
+      state,
+      askNotificationPermission
     };
   }
 });
@@ -160,8 +230,6 @@ export default defineComponent({
 .user-list-container {
   background-color: #131c21;
   overflow-y: auto;
-  height: calc(100% - 130px);
-  max-height: calc(100% - 130px);
 }
 
 .chat-top {
@@ -171,5 +239,12 @@ export default defineComponent({
 .chat-panel {
   border-left: 1px solid rgba(241, 241, 242, 0.11);
   background-color: rgb(15, 14, 14);
+}
+
+.enable-desktop-notifications-link {
+  &:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
 }
 </style>
