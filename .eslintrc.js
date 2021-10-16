@@ -47,6 +47,7 @@ module.exports = {
         named: "never",
         asyncArrow: "always"
       }
-    ]
+    ],
+    "no-unused-vars": "off"
   }
 };

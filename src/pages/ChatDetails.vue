@@ -69,7 +69,17 @@
           :bg-color="message.sent ? 'teal-9' : 'blue-grey-9'"
           text-color="white"
           class="chat-msg full-width"
-        />
+        >
+          <span v-if="message.type === MSG_TYPE.TXT">
+            {{ message.txt }}
+          </span>
+          <div v-else-if="message.type === MSG_TYPE.AUDIO">
+            <audio controls>
+              <source :src="message.audioContent" type="audio/webm" />
+              Your browser does not support the audio element.
+            </audio>
+          </div>
+        </q-chat-message>
       </div>
     </q-scroll-area>
     <div class="chat-bottom">
@@ -109,17 +119,8 @@
 <script>
 import { defineComponent, reactive, onMounted, ref, nextTick } from "vue";
 import { range, randInt, downloadURI } from "src/utils/helpers";
-import { loremIpsum } from "src/utils/constants";
+import { loremIpsum, MSG_TYPE } from "src/utils/constants";
 import { format } from "date-fns";
-
-const MSG_TYPE = {
-  TXT: 1,
-  AUDIO: 2,
-  REPLY: 3,
-  IMG: 4,
-  VID: 5,
-  GIF: 6
-};
 
 export default defineComponent({
   name: "ChatDetails",
@@ -129,6 +130,7 @@ export default defineComponent({
     const state = reactive({
       messages: [],
       recording: false,
+      recordingCancelled: false,
       mediaRecorder: null,
       recordedChunks: []
     });
@@ -136,15 +138,16 @@ export default defineComponent({
     const stopRecording = (cancel) => {
       state.recording = false;
       if (cancel === true) {
+        state.recordingCancelled = cancel;
         state.mediaRecorder = null;
       } else {
+        state.recordingCancelled = cancel;
         state.mediaRecorder.stop();
         state.recordedChunks = [];
       }
     };
 
     const download = () => {
-      console.log(state.recordedChunks);
       downloadURI(
         URL.createObjectURL(new Blob(state.recordedChunks)),
         `${format(new Date(), "ddMMyyyyHHmm")}.wav`
@@ -158,8 +161,23 @@ export default defineComponent({
           state.recordedChunks.push(e.data);
         }
       });
-      state.mediaRecorder.addEventListener("stop", download);
+      state.mediaRecorder.addEventListener("stop", () => {
+        if (!state.recordingCancelled) {
+          state.messages.push({
+            userId: 1,
+            sent: true,
+            type: MSG_TYPE.AUDIO,
+            audioContent: URL.createObjectURL(new Blob(state.recordedChunks))
+          });
+        }
+      });
       state.mediaRecorder.start();
+    };
+
+    const scrollToEndOfMsgContainer = () => {
+      nextTick(() => {
+        msgContainer.value.setScrollPosition("vertical", 9999);
+      });
     };
 
     const record = () => {
@@ -177,16 +195,15 @@ export default defineComponent({
           type: MSG_TYPE.TXT
         };
       });
-      nextTick(() => {
-        msgContainer.value.setScrollPosition("vertical", 9999);
-      });
+      scrollToEndOfMsgContainer();
     });
 
     return {
       state,
       msgContainer,
       record,
-      stopRecording
+      stopRecording,
+      MSG_TYPE
     };
   }
 });
