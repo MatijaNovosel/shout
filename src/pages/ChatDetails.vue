@@ -53,6 +53,7 @@
       }"
       class="msg-container row q-px-xl q-py-md"
       ref="msgContainer"
+      @scroll="msgContainerScrollChanged"
     >
       <q-menu dark touch-position context-menu>
         <q-list dense style="min-width: 100px">
@@ -143,6 +144,14 @@
           </template>
         </div>
       </div>
+      <q-btn
+        v-show="state.shouldShowScrollToBottom"
+        @click="scrollToEndOfMsgContainer"
+        fab
+        icon="mdi-chevron-down"
+        color="grey-9"
+        class="scroll-to-bottom-fab"
+      />
     </div>
   </div>
 </template>
@@ -164,7 +173,8 @@ export default defineComponent({
       recordingCancelled: false,
       mediaRecorder: null,
       recordedChunks: [],
-      msgText: null
+      msgText: null,
+      shouldShowScrollToBottom: false
     });
 
     const stopRecording = (cancel) => {
@@ -231,6 +241,10 @@ export default defineComponent({
       }
     };
 
+    const msgContainerScrollChanged = (e) => {
+      state.shouldShowScrollToBottom = e.verticalPercentage < 0.3;
+    };
+
     onMounted(() => {
       state.messages = range(15).map((n) => {
         const userId = randInt(1, 2);
@@ -250,7 +264,9 @@ export default defineComponent({
       record,
       stopRecording,
       MSG_TYPE,
-      sendTxtMsg
+      sendTxtMsg,
+      msgContainerScrollChanged,
+      scrollToEndOfMsgContainer
     };
   }
 });
@@ -273,11 +289,18 @@ export default defineComponent({
 }
 
 .msg-container {
+  position: relative;
   max-height: calc(100% - 116px);
   height: calc(100% - 116px);
 }
 
 .chat-msg {
   max-width: 85%;
+}
+
+.scroll-to-bottom-fab {
+  position: absolute;
+  bottom: 85px;
+  right: 35px;
 }
 </style>
