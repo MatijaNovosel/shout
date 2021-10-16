@@ -82,7 +82,17 @@
           <q-input dark dense rounded standout placeholder="Type a message" />
         </div>
         <div class="col-1 text-center">
-          <q-btn flat round color="white" icon="mdi-microphone" />
+          <q-btn
+            flat
+            round
+            color="white"
+            icon="mdi-microphone"
+            @click="record"
+            v-if="!state.recording"
+          />
+          <template v-else>
+            <q-btn flat round color="white" icon="mdi-close-circle" @click="stopRecording" />
+          </template>
         </div>
       </div>
     </div>
@@ -91,7 +101,7 @@
 
 <script>
 import { defineComponent, reactive, onMounted, ref, nextTick } from "vue";
-import { range, randInt } from "src/utils/helpers";
+import { range, randInt, downloadURI } from "src/utils/helpers";
 import { loremIpsum } from "src/utils/constants";
 
 const MSG_TYPE = {
@@ -104,13 +114,42 @@ const MSG_TYPE = {
 };
 
 export default defineComponent({
-  name: "PageIndex",
+  name: "ChatDetails",
   setup() {
     const msgContainer = ref(null);
 
     const state = reactive({
-      messages: []
+      messages: [],
+      recording: false,
+      mediaRecorder: null,
+      recordedChunks: []
     });
+
+    const stopRecording = () => {
+      state.recording = false;
+      state.mediaRecorder.stop();
+    };
+
+    const download = () => {
+      downloadURI(URL.createObjectURL(new Blob(state.recordedChunks)), "test.wav");
+    };
+
+    const handleSuccess = (stream) => {
+      state.mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
+      state.mediaRecorder.addEventListener("dataavailable", (e) => {
+        if (e.data.size > 0) {
+          state.recordedChunks.push(e.data);
+        }
+      });
+
+      state.mediaRecorder.addEventListener("stop", download);
+      state.mediaRecorder.start();
+    };
+
+    const record = () => {
+      state.recording = true;
+      navigator.mediaDevices.getUserMedia({ audio: true, video: false }).then(handleSuccess);
+    };
 
     onMounted(() => {
       state.messages = range(15).map((n) => {
@@ -129,7 +168,9 @@ export default defineComponent({
 
     return {
       state,
-      msgContainer
+      msgContainer,
+      record,
+      stopRecording
     };
   }
 });
