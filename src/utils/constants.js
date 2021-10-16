@@ -9,3 +9,9 @@ export const MSG_TYPE = {
   VID: 5,
   GIF: 6
 };
+
+export const CONVERSTATION_TYPE = {
+  PRIVATE: 1,
+  GROUP: 2,
+  SELF: 3
+};

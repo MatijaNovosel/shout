@@ -54,6 +54,25 @@
       class="msg-container row q-px-xl q-py-md"
       ref="msgContainer"
     >
+      <q-menu dark touch-position context-menu>
+        <q-list dense style="min-width: 100px">
+          <q-item clickable v-close-popup>
+            <q-item-section>Contact info</q-item-section>
+          </q-item>
+          <q-item clickable v-close-popup>
+            <q-item-section>Select messages</q-item-section>
+          </q-item>
+          <q-item clickable v-close-popup>
+            <q-item-section>Mute notifications</q-item-section>
+          </q-item>
+          <q-item clickable v-close-popup>
+            <q-item-section>Clear messages</q-item-section>
+          </q-item>
+          <q-item clickable v-close-popup>
+            <q-item-section>Delete chat</q-item-section>
+          </q-item>
+        </q-list>
+      </q-menu>
       <div
         v-for="message in state.messages"
         :key="message.id"
