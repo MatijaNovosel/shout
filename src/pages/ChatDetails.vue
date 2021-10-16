@@ -89,26 +89,38 @@
           <q-btn flat round color="white" icon="mdi-paperclip" />
         </div>
         <div class="col-10">
-          <q-input dark dense rounded standout placeholder="Type a message" />
+          <q-input
+            dark
+            dense
+            rounded
+            standout
+            placeholder="Type a message"
+            v-model="state.msgText"
+          />
         </div>
         <div class="col-1 text-center">
-          <q-btn
-            flat
-            round
-            color="white"
-            icon="mdi-microphone"
-            @click="record"
-            v-if="!state.recording"
-          />
+          <template v-if="state.msgText !== null && state.msgText !== ''">
+            <q-btn flat round color="white" icon="mdi-arrow-right" @click="sendTxtMsg" />
+          </template>
           <template v-else>
-            <q-btn flat round color="red" icon="mdi-close-circle" @click="stopRecording(true)" />
             <q-btn
               flat
               round
-              color="green"
-              icon="mdi-check-circle-outline"
-              @click="stopRecording(false)"
+              color="white"
+              icon="mdi-microphone"
+              @click="record"
+              v-if="!state.recording"
             />
+            <template v-else>
+              <q-btn flat round color="red" icon="mdi-close-circle" @click="stopRecording(true)" />
+              <q-btn
+                flat
+                round
+                color="green"
+                icon="mdi-check-circle-outline"
+                @click="stopRecording(false)"
+              />
+            </template>
           </template>
         </div>
       </div>
@@ -132,7 +144,8 @@ export default defineComponent({
       recording: false,
       recordingCancelled: false,
       mediaRecorder: null,
-      recordedChunks: []
+      recordedChunks: [],
+      msgText: null
     });
 
     const stopRecording = (cancel) => {
@@ -169,6 +182,7 @@ export default defineComponent({
             type: MSG_TYPE.AUDIO,
             audioContent: URL.createObjectURL(new Blob(state.recordedChunks))
           });
+          scrollToEndOfMsgContainer();
         }
       });
       state.mediaRecorder.start();
@@ -183,6 +197,19 @@ export default defineComponent({
     const record = () => {
       state.recording = true;
       navigator.mediaDevices.getUserMedia({ audio: true, video: false }).then(handleSuccess);
+    };
+
+    const sendTxtMsg = () => {
+      if (state.msgText !== null && state.msgText !== "" && state.msgText.length > 4) {
+        state.messages.push({
+          userId: 1,
+          sent: true,
+          type: MSG_TYPE.TXT,
+          txt: state.msgText
+        });
+        state.msgText = null;
+        scrollToEndOfMsgContainer();
+      }
     };
 
     onMounted(() => {
@@ -203,7 +230,8 @@ export default defineComponent({
       msgContainer,
       record,
       stopRecording,
-      MSG_TYPE
+      MSG_TYPE,
+      sendTxtMsg
     };
   }
 });
