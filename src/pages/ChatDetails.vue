@@ -91,7 +91,14 @@
             v-if="!state.recording"
           />
           <template v-else>
-            <q-btn flat round color="white" icon="mdi-close-circle" @click="stopRecording" />
+            <q-btn flat round color="red" icon="mdi-close-circle" @click="stopRecording(true)" />
+            <q-btn
+              flat
+              round
+              color="green"
+              icon="mdi-check-circle-outline"
+              @click="stopRecording(false)"
+            />
           </template>
         </div>
       </div>
@@ -103,6 +110,7 @@
 import { defineComponent, reactive, onMounted, ref, nextTick } from "vue";
 import { range, randInt, downloadURI } from "src/utils/helpers";
 import { loremIpsum } from "src/utils/constants";
+import { format } from "date-fns";
 
 const MSG_TYPE = {
   TXT: 1,
@@ -125,13 +133,22 @@ export default defineComponent({
       recordedChunks: []
     });
 
-    const stopRecording = () => {
+    const stopRecording = (cancel) => {
       state.recording = false;
-      state.mediaRecorder.stop();
+      if (cancel === true) {
+        state.mediaRecorder = null;
+      } else {
+        state.mediaRecorder.stop();
+        state.recordedChunks = [];
+      }
     };
 
     const download = () => {
-      downloadURI(URL.createObjectURL(new Blob(state.recordedChunks)), "test.wav");
+      console.log(state.recordedChunks);
+      downloadURI(
+        URL.createObjectURL(new Blob(state.recordedChunks)),
+        `${format(new Date(), "ddMMyyyyHHmm")}.wav`
+      );
     };
 
     const handleSuccess = (stream) => {
@@ -141,7 +158,6 @@ export default defineComponent({
           state.recordedChunks.push(e.data);
         }
       });
-
       state.mediaRecorder.addEventListener("stop", download);
       state.mediaRecorder.start();
     };
