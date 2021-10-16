@@ -44,7 +44,25 @@
         </q-btn>
       </div>
     </div>
-    <div>Hello</div>
+    <div class="messages-container row q-px-xl q-py-md">
+      <div
+        v-for="message in state.messages"
+        :key="message.id"
+        class="col-12 row"
+        :class="{
+          'justify-end': message.sent
+        }"
+      >
+        <q-chat-message
+          :text="[message.txt]"
+          stamp="7 minutes ago"
+          :sent="message.sent"
+          :bg-color="message.sent ? 'teal-9' : 'blue-grey-9'"
+          text-color="white"
+          class="chat-msg full-width"
+        />
+      </div>
+    </div>
     <div class="chat-bottom">
       <div class="row justify-between q-py-sm q-px-md">
         <div class="col-1">
@@ -63,12 +81,32 @@
 </template>
 
 <script>
-import { defineComponent } from "vue";
+import { defineComponent, reactive, onMounted } from "vue";
+import { range, randInt } from "src/utils/helpers";
+import { loremIpsum } from "src/utils/constants";
 
 export default defineComponent({
   name: "PageIndex",
   setup() {
-    return {};
+    const state = reactive({
+      messages: []
+    });
+
+    onMounted(() => {
+      state.messages = range(15).map((n) => {
+        const userId = randInt(1, 2);
+
+        return {
+          userId,
+          txt: loremIpsum.substr(0, randInt(10, loremIpsum.length)),
+          sent: userId === 1
+        };
+      });
+    });
+
+    return {
+      state
+    };
   }
 });
 </script>
@@ -76,7 +114,7 @@ export default defineComponent({
 <style scoped lang="scss">
 .chat-panel-bg {
   position: relative;
-  background-image: url("../assets/bg.png");
+  background-image: url("../assets/bgTransparent.png");
   background-repeat: repeat;
 }
 
@@ -87,5 +125,14 @@ export default defineComponent({
 .chat-bottom {
   background-color: #2a2f32;
   height: 58px;
+}
+
+.messages-container {
+  max-height: calc(100% - 116px);
+  overflow-y: scroll;
+}
+
+.chat-msg {
+  max-width: 85%;
 }
 </style>
