@@ -44,7 +44,16 @@
         </q-btn>
       </div>
     </div>
-    <div class="messages-container row q-px-xl q-py-md">
+    <q-scroll-area
+      :thumb-style="{
+        right: '2px',
+        backgroundColor: '#97999c',
+        width: '5px',
+        opacity: 0.75
+      }"
+      class="msg-container row q-px-xl q-py-md"
+      ref="msgContainer"
+    >
       <div
         v-for="message in state.messages"
         :key="message.id"
@@ -62,7 +71,7 @@
           class="chat-msg full-width"
         />
       </div>
-    </div>
+    </q-scroll-area>
     <div class="chat-bottom">
       <div class="row justify-between q-py-sm q-px-md">
         <div class="col-1">
@@ -81,13 +90,24 @@
 </template>
 
 <script>
-import { defineComponent, reactive, onMounted } from "vue";
+import { defineComponent, reactive, onMounted, ref, nextTick } from "vue";
 import { range, randInt } from "src/utils/helpers";
 import { loremIpsum } from "src/utils/constants";
+
+const MSG_TYPE = {
+  TXT: 1,
+  AUDIO: 2,
+  REPLY: 3,
+  IMG: 4,
+  VID: 5,
+  GIF: 6
+};
 
 export default defineComponent({
   name: "PageIndex",
   setup() {
+    const msgContainer = ref(null);
+
     const state = reactive({
       messages: []
     });
@@ -95,17 +115,21 @@ export default defineComponent({
     onMounted(() => {
       state.messages = range(15).map((n) => {
         const userId = randInt(1, 2);
-
         return {
           userId,
           txt: loremIpsum.substr(0, randInt(10, loremIpsum.length)),
-          sent: userId === 1
+          sent: userId === 1,
+          type: MSG_TYPE.TXT
         };
+      });
+      nextTick(() => {
+        msgContainer.value.setScrollPosition("vertical", 9999);
       });
     });
 
     return {
-      state
+      state,
+      msgContainer
     };
   }
 });
@@ -127,9 +151,9 @@ export default defineComponent({
   height: 58px;
 }
 
-.messages-container {
+.msg-container {
   max-height: calc(100% - 116px);
-  overflow-y: scroll;
+  height: calc(100% - 116px);
 }
 
 .chat-msg {
