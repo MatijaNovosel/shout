@@ -5,7 +5,7 @@ const routes = [
     path: "/",
     component: () => import("layouts/MainLayout.vue"),
     children: [
-      { path: "", component: () => import("src/pages/Index.vue") },
+      { path: "", name: ROUTE_NAMES.INDEX, component: () => import("src/pages/Index.vue") },
       {
         path: "private-chat/:id",
         name: ROUTE_NAMES.PRIVATE_CHAT,

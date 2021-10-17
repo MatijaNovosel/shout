@@ -7,7 +7,7 @@ import {
 } from "vue-router";
 import routes from "./routes";
 
-export default route(function () {
+export default route(() => {
   let createHistory = null;
 
   if (process.env.SERVER) {
@@ -23,7 +23,8 @@ export default route(function () {
   const Router = createRouter({
     scrollBehavior: () => ({ left: 0, top: 0 }),
     routes,
-    history: createHistory(process.env.MODE === "ssr" ? void 0 : process.env.VUE_ROUTER_BASE)
+    sensitive: true,
+    history: createWebHistory()
   });
 
   return Router;

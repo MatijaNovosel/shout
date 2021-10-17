@@ -15,7 +15,7 @@ module.exports = configure(function (ctx) {
     },
     devServer: {
       https: false,
-      port: 8081,
+      port: 8080,
       open: true
     },
     framework: {
