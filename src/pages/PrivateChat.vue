@@ -51,64 +51,11 @@
         />
       </div>
     </div>
-    <q-scroll-area
-      :thumb-style="{
-        right: '2px',
-        backgroundColor: '#97999c',
-        width: '5px',
-        opacity: 0.75
-      }"
-      class="msg-container row q-px-xl q-py-md"
-      ref="msgContainer"
-      @scroll="msgContainerScrollChanged"
-    >
-      <q-menu dark touch-position context-menu>
-        <q-list dense style="min-width: 100px">
-          <q-item clickable v-close-popup>
-            <q-item-section>Contact info</q-item-section>
-          </q-item>
-          <q-item clickable v-close-popup>
-            <q-item-section>Select messages</q-item-section>
-          </q-item>
-          <q-item clickable v-close-popup>
-            <q-item-section>Mute notifications</q-item-section>
-          </q-item>
-          <q-item clickable v-close-popup>
-            <q-item-section>Clear messages</q-item-section>
-          </q-item>
-          <q-item clickable v-close-popup>
-            <q-item-section>Delete chat</q-item-section>
-          </q-item>
-        </q-list>
-      </q-menu>
-      <div
-        v-for="message in state.messages"
-        :key="message.id"
-        class="col-12 row"
-        :class="{
-          'justify-end': message.sent
-        }"
-      >
-        <q-chat-message
-          :text="[message.txt]"
-          stamp="7 minutes ago"
-          :sent="message.sent"
-          :bg-color="message.sent ? 'teal-9' : 'blue-grey-9'"
-          text-color="white"
-          class="chat-msg full-width"
-        >
-          <span v-if="message.type === MSG_TYPE.TXT">
-            {{ message.txt }}
-          </span>
-          <div v-else-if="message.type === MSG_TYPE.AUDIO">
-            <audio controls>
-              <source :src="message.audioContent" type="audio/webm" />
-              Your browser does not support the audio element.
-            </audio>
-          </div>
-        </q-chat-message>
-      </div>
-    </q-scroll-area>
+    <message-panel
+      @should-show-scroll-to-bottom="shouldShowScrollToBottom"
+      :messages="state.messages"
+      :scroll-to-bottom-trigger="state.scrollToBottomTrigger"
+    />
     <div class="chat-bottom">
       <div class="row justify-between q-py-sm q-px-md">
         <div class="col-1">
@@ -164,17 +111,19 @@
 </template>
 
 <script>
-import { defineComponent, reactive, onMounted, ref, nextTick } from "vue";
+import { defineComponent, reactive, onMounted } from "vue";
 import { range, randInt, downloadURI } from "src/utils/helpers";
 import { loremIpsum, MSG_TYPE } from "src/utils/constants";
 import { format } from "date-fns";
 import { ROUTE_NAMES } from "src/router/routeNames";
+import MessagePanel from "src/components/chat/MessagePanel.vue";
 
 export default defineComponent({
   name: "ChatDetails",
+  components: {
+    MessagePanel
+  },
   setup() {
-    const msgContainer = ref(null);
-
     const state = reactive({
       messages: [],
       recording: false,
@@ -182,7 +131,8 @@ export default defineComponent({
       mediaRecorder: null,
       recordedChunks: [],
       msgText: null,
-      shouldShowScrollToBottom: false
+      shouldShowScrollToBottom: false,
+      scrollToBottomTrigger: false
     });
 
     const stopRecording = (cancel) => {
@@ -226,9 +176,7 @@ export default defineComponent({
     };
 
     const scrollToEndOfMsgContainer = () => {
-      nextTick(() => {
-        msgContainer.value.setScrollPosition("vertical", 9999);
-      });
+      state.scrollToBottomTrigger = !state.scrollToBottomTrigger;
     };
 
     const record = () => {
@@ -249,8 +197,8 @@ export default defineComponent({
       }
     };
 
-    const msgContainerScrollChanged = (e) => {
-      state.shouldShowScrollToBottom = e.verticalPercentage < 0.3;
+    const shouldShowScrollToBottom = (val) => {
+      state.shouldShowScrollToBottom = val;
     };
 
     onMounted(() => {
@@ -268,13 +216,11 @@ export default defineComponent({
 
     return {
       state,
-      msgContainer,
       record,
       stopRecording,
-      MSG_TYPE,
       sendTxtMsg,
-      msgContainerScrollChanged,
       scrollToEndOfMsgContainer,
+      shouldShowScrollToBottom,
       indexRoute: ROUTE_NAMES.INDEX
     };
   }
@@ -295,16 +241,6 @@ export default defineComponent({
 .chat-bottom {
   background-color: #2a2f32;
   height: 58px;
-}
-
-.msg-container {
-  position: relative;
-  max-height: calc(100% - 116px);
-  height: calc(100% - 116px);
-}
-
-.chat-msg {
-  max-width: 85%;
 }
 
 .scroll-to-bottom-fab {
