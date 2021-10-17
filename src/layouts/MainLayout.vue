@@ -5,11 +5,11 @@
         <div class="row main-container" :style="{ width: `${state.width - 300}px` }">
           <div class="col-3 full-height">
             <keep-alive>
-              <component v-bind:is="state.leftPaneComponent" />
+              <component @set-left-panel="setLeftPanel" :is="state.leftPaneComponent" />
             </keep-alive>
           </div>
           <div class="col-9 full-height right-panel">
-            <router-view :key="$route.path" />
+            <router-view :key="$route.name" />
           </div>
         </div>
         <q-resize-observer @resize="changeMainContainerWidth" />
@@ -39,9 +39,14 @@ export default defineComponent({
       state.width = window.innerWidth - 100;
     };
 
+    const setLeftPanel = (name) => {
+      state.leftPaneComponent = name;
+    };
+
     return {
       changeMainContainerWidth,
-      state
+      state,
+      setLeftPanel
     };
   }
 });

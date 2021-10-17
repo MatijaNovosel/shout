@@ -1,6 +1,6 @@
 <template>
   <div class="chat-top row justify-between q-py-sm q-px-md">
-    <q-avatar size="40px">
+    <q-avatar class="cursor-pointer" @click="$emit('set-left-panel', 'profile')" size="40px">
       <img src="../../assets/me.jpg" />
     </q-avatar>
     <div class="row">
@@ -75,12 +75,12 @@ import { CONVERSTATION_TYPE, MSG_TYPE } from "src/utils/constants";
 
 export default defineComponent({
   name: "conversations",
+  emits: ["set-left-panel"],
   components: {
     ConversationListItem
   },
   setup() {
     const state = reactive({
-      width: 0,
       conversations: [],
       userListContainerStyle: computed(() => {
         if (!state.notificationsEnablePanelActive) {
