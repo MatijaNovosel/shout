@@ -13,22 +13,17 @@
                 <q-btn flat round color="white" icon="mdi-message-text" />
                 <q-btn flat round color="white" icon="mdi-dots-vertical">
                   <q-menu dark right :offset="[-15, -5]">
-                    <q-list style="min-width: 100px">
+                    <q-list dense style="min-width: 100px">
                       <q-item clickable v-close-popup>
-                        <q-item-section>New tab</q-item-section>
-                      </q-item>
-                      <q-item clickable v-close-popup>
-                        <q-item-section>New incognito tab</q-item-section>
+                        <q-item-section>New group</q-item-section>
                       </q-item>
                       <q-separator dark />
                       <q-item clickable v-close-popup>
-                        <q-item-section>Recent tabs</q-item-section>
+                        <q-item-section>Archived</q-item-section>
                       </q-item>
+                      <q-separator dark />
                       <q-item clickable v-close-popup>
-                        <q-item-section>History</q-item-section>
-                      </q-item>
-                      <q-item clickable v-close-popup>
-                        <q-item-section>Downloads</q-item-section>
+                        <q-item-section>Pinned</q-item-section>
                       </q-item>
                       <q-separator dark />
                       <q-item clickable v-close-popup>
@@ -36,7 +31,7 @@
                       </q-item>
                       <q-separator dark />
                       <q-item clickable v-close-popup>
-                        <q-item-section>Help &amp; Feedback</q-item-section>
+                        <q-item-section>Log out</q-item-section>
                       </q-item>
                     </q-list>
                   </q-menu>
@@ -59,7 +54,14 @@
               </div>
             </div>
             <div class="search-bar-container q-pa-md">
-              <q-input dark dense rounded standout placeholder="Search or start a new chat">
+              <q-input
+                bg-color="blue-grey-10"
+                dark
+                dense
+                rounded
+                standout
+                placeholder="Search or start a new chat"
+              >
                 <template #prepend>
                   <q-icon name="mdi-magnify" />
                 </template>
@@ -72,112 +74,7 @@
               :style="state.userListContainerStyle"
             >
               <div v-for="(conversation, i) in state.conversations" :key="conversation.id">
-                <q-item clickable v-ripple v-if="conversation.type === CONVERSTATION_TYPE.PRIVATE">
-                  <q-item-section avatar>
-                    <q-avatar>
-                      <img src="https://cdn.quasar.dev/img/avatar2.jpg" />
-                    </q-avatar>
-                  </q-item-section>
-                  <q-item-section>
-                    <q-item-label lines="1">
-                      <q-icon name="mdi-account-supervisor" class="q-mb-xs" color="grey-6" />
-                      {{ conversation.otherUser.name }}
-                    </q-item-label>
-                    <q-item-label caption lines="2">
-                      {{ `${conversation.lastMsg.you && "You: "}${conversation.lastMsg.txt}` }}
-                    </q-item-label>
-                  </q-item-section>
-                  <q-item-section side top>
-                    {{ formatDistanceToNow(conversation.lastMsg.sentAt) }} ago
-                  </q-item-section>
-                  <q-menu dark touch-position context-menu>
-                    <q-list dense style="min-width: 100px">
-                      <q-item clickable v-close-popup>
-                        <q-item-section>Archive chat</q-item-section>
-                      </q-item>
-                      <q-item clickable v-close-popup>
-                        <q-item-section>Mute notifications</q-item-section>
-                      </q-item>
-                      <q-item clickable v-close-popup>
-                        <q-item-section>Delete chat</q-item-section>
-                      </q-item>
-                      <q-item clickable v-close-popup>
-                        <q-item-section>Pin chat</q-item-section>
-                      </q-item>
-                      <q-item clickable v-close-popup>
-                        <q-item-section>Mark as unread</q-item-section>
-                      </q-item>
-                    </q-list>
-                  </q-menu>
-                </q-item>
-                <q-item
-                  clickable
-                  v-ripple
-                  v-else-if="conversation.type === CONVERSTATION_TYPE.GROUP"
-                >
-                  <q-item-section avatar>
-                    <q-avatar>
-                      <img src="https://cdn.quasar.dev/img/avatar2.jpg" />
-                    </q-avatar>
-                  </q-item-section>
-                  <q-item-section>
-                    <q-item-label lines="1">
-                      <q-icon name="mdi-account-group" class="q-mb-xs" color="grey-6" />
-                      {{ conversation.name }}
-                    </q-item-label>
-                    <q-item-label caption lines="2">
-                      <span class="text-weight-bold" v-if="!conversation.lastMsg.you">
-                        {{ conversation.lastMsg.userName }}:
-                      </span>
-                      {{ conversation.lastMsg.txt }}
-                    </q-item-label>
-                  </q-item-section>
-                  <q-item-section side top>
-                    {{ formatDistanceToNow(conversation.lastMsg.sentAt) }} ago
-                  </q-item-section>
-                  <q-menu dark touch-position context-menu>
-                    <q-list dense style="min-width: 100px">
-                      <q-item clickable v-close-popup>
-                        <q-item-section>Archive chat</q-item-section>
-                      </q-item>
-                      <q-item clickable v-close-popup>
-                        <q-item-section>Mute notifications</q-item-section>
-                      </q-item>
-                      <q-item clickable v-close-popup>
-                        <q-item-section>Exit group</q-item-section>
-                      </q-item>
-                      <q-item clickable v-close-popup>
-                        <q-item-section>Pin chat</q-item-section>
-                      </q-item>
-                      <q-item clickable v-close-popup>
-                        <q-item-section>Mark as unread</q-item-section>
-                      </q-item>
-                    </q-list>
-                  </q-menu>
-                </q-item>
-                <q-item
-                  clickable
-                  v-ripple
-                  v-else-if="conversation.type === CONVERSTATION_TYPE.SELF"
-                >
-                  <q-item-section avatar>
-                    <q-avatar>
-                      <img src="https://cdn.quasar.dev/img/avatar2.jpg" />
-                    </q-avatar>
-                  </q-item-section>
-                  <q-item-section>
-                    <q-item-label lines="1">
-                      <q-icon name="mdi-account" class="q-mb-xs" color="grey-6" />
-                      Self conversation
-                    </q-item-label>
-                    <q-item-label caption lines="2">
-                      {{ conversation.lastMsg.txt }}
-                    </q-item-label>
-                  </q-item-section>
-                  <q-item-section side top>
-                    {{ formatDistanceToNow(conversation.lastMsg.sentAt) }} ago
-                  </q-item-section>
-                </q-item>
+                <conversation-list-item :conversation="conversation" />
                 <q-separator dark inset="item" v-if="i !== state.conversations.length - 1" />
               </div>
             </q-list>
@@ -195,10 +92,13 @@
 <script>
 import { defineComponent, reactive, computed, onMounted } from "vue";
 import { CONVERSTATION_TYPE, MSG_TYPE } from "../utils/constants";
-import { formatDistanceToNow } from "date-fns";
+import ConversationListItem from "src/components/ConversationListItem.vue";
 
 export default defineComponent({
   name: "MainLayout",
+  components: {
+    ConversationListItem
+  },
   setup() {
     const state = reactive({
       width: 0,
@@ -263,10 +163,12 @@ export default defineComponent({
       const selfConversation = {
         id: 1,
         type: CONVERSTATION_TYPE.SELF,
+        name: "Self conversation",
         lastMsg: {
           txt: "Hello!",
           sentAt: new Date(),
-          type: MSG_TYPE.TXT
+          type: MSG_TYPE.TXT,
+          you: true
         }
       };
 
@@ -277,6 +179,7 @@ export default defineComponent({
           name: "Name Surname",
           avatar: "url/image.jpg"
         },
+        name: "Name surname",
         type: CONVERSTATION_TYPE.PRIVATE,
         lastMsg: {
           txt: "Hello!",
@@ -308,9 +211,7 @@ export default defineComponent({
     return {
       changeMainContainerWidth,
       state,
-      askNotificationPermission,
-      CONVERSTATION_TYPE,
-      formatDistanceToNow
+      askNotificationPermission
     };
   }
 });
@@ -340,7 +241,7 @@ export default defineComponent({
 }
 
 .chat-panel {
-  border-left: 1px solid rgba(241, 241, 242, 0.11);
+  border-left: 1px solid rgba(255, 255, 255, 0.24);
   background-color: rgb(15, 14, 14);
 }
 
