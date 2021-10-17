@@ -1,22 +1,35 @@
 <template>
-  <div class="column justify-center items-center">
-    <div class="col self-start q-pa-md">
+  <div class="column items-center full-height bg">
+    <div class="self-start row items-center q-pa-md back-button-container full-width">
       <q-btn
         @click="$emit('set-left-panel', 'conversations')"
         color="grey"
-        icon="mdi-chevron-left"
+        icon="mdi-arrow-left"
         round
         flat
       />
+      <span class="text-white text-h6 q-ml-sm"> Profile </span>
     </div>
-    <div class="col">
-      <q-avatar size="200px">
-        <img src="../../assets/me.jpg" />
-      </q-avatar>
-    </div>
-    <div class="col q-pt-md">
-      <span class="text-h6 text-grey"> Matija Novosel </span>
-    </div>
+    <q-avatar size="200px" class="q-my-lg">
+      <img src="../../assets/me.jpg" />
+    </q-avatar>
+    <q-input
+      dark
+      label="Your name"
+      model-value="Matija"
+      label-color="teal"
+      class="full-width q-px-lg"
+      readonly
+    />
+    <q-input
+      dark
+      label="About"
+      autogrow
+      model-value="I will not go, prefer a feast of friends to the giant family"
+      label-color="teal"
+      class="full-width q-px-lg q-mt-md"
+      readonly
+    />
   </div>
 </template>
 
@@ -36,4 +49,12 @@ export default defineComponent({
 });
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.bg {
+  background-color: #131c21 !important;
+}
+
+.back-button-container {
+  background-color: #323739;
+}
+</style>
