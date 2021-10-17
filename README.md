@@ -1,6 +1,8 @@
 # Chat app web (chat-app-web)
 
-A chat app for the web
+A chat app for the web, based on WhatsApp.
+
+![image](https://user-images.githubusercontent.com/36193643/137642357-fb533285-a5ce-434f-8053-f72ada621808.png)
 
 ## Install the dependencies
 ```bash
