@@ -1,5 +1,5 @@
 <template>
-  <q-item clickable v-ripple @click="goToChat">
+  <q-item clickable v-ripple @click="$router.push(getRoute())">
     <q-item-section avatar>
       <q-avatar>
         <img src="https://cdn.quasar.dev/img/avatar2.jpg" />
@@ -59,7 +59,6 @@ import { defineComponent } from "vue";
 import { CONVERSTATION_TYPE } from "../utils/constants";
 import { formatDistanceToNow } from "date-fns";
 import { ROUTE_NAMES } from "src/router/routeNames";
-import router from "../router/index";
 
 export default defineComponent({
   name: "conversation-list-item",
@@ -108,16 +107,11 @@ export default defineComponent({
       return route;
     };
 
-    const goToChat = () => {
-      router().push(getRoute());
-    };
-
     return {
       formatDistanceToNow,
       CONVERSTATION_TYPE,
       getConversationIcon,
-      getRoute,
-      goToChat
+      getRoute
     };
   }
 });

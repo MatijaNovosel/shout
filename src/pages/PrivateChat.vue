@@ -42,6 +42,13 @@
             </q-list>
           </q-menu>
         </q-btn>
+        <q-btn
+          @click="$router.push({ name: indexRoute })"
+          flat
+          round
+          color="white"
+          icon="mdi-close"
+        />
       </div>
     </div>
     <q-scroll-area
@@ -161,6 +168,7 @@ import { defineComponent, reactive, onMounted, ref, nextTick } from "vue";
 import { range, randInt, downloadURI } from "src/utils/helpers";
 import { loremIpsum, MSG_TYPE } from "src/utils/constants";
 import { format } from "date-fns";
+import { ROUTE_NAMES } from "src/router/routeNames";
 
 export default defineComponent({
   name: "ChatDetails",
@@ -266,7 +274,8 @@ export default defineComponent({
       MSG_TYPE,
       sendTxtMsg,
       msgContainerScrollChanged,
-      scrollToEndOfMsgContainer
+      scrollToEndOfMsgContainer,
+      indexRoute: ROUTE_NAMES.INDEX
     };
   }
 });
