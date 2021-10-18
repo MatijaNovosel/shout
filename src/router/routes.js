@@ -1,6 +1,7 @@
 import { ROUTE_NAMES } from "./routeNames";
 import Index from "src/pages/Index.vue";
 import PrivateChat from "src/pages/PrivateChat.vue";
+import GroupChat from "src/pages/GroupChat.vue";
 import Error404 from "src/pages/Error404.vue";
 
 const routes = [
@@ -13,7 +14,7 @@ const routes = [
   {
     path: "/group-chat/:id",
     name: ROUTE_NAMES.GROUP_CHAT,
-    component: PrivateChat
+    component: GroupChat
   },
   {
     path: "/self-chat/:id",

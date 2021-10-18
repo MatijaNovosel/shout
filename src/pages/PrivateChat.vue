@@ -14,7 +14,7 @@
         <q-btn flat round color="white" icon="mdi-magnify" />
         <q-btn flat round color="white" icon="mdi-dots-vertical">
           <q-menu dark right :offset="[-15, -5]">
-            <q-list style="min-width: 100px">
+            <q-list dense style="min-width: 100px">
               <q-item clickable v-close-popup>
                 <q-item-section>New tab</q-item-section>
               </q-item>
@@ -47,7 +47,7 @@
           flat
           round
           color="white"
-          icon="mdi-close"
+          icon="mdi-arrow-left"
         />
       </div>
     </div>
@@ -86,7 +86,13 @@
               v-if="!state.recording"
             />
             <template v-else>
-              <q-btn flat round color="red" icon="mdi-close-circle" @click="stopRecording(true)" />
+              <q-btn
+                flat
+                round
+                color="red"
+                icon="mdi-arrow-left-circle"
+                @click="stopRecording(true)"
+              />
               <q-btn
                 flat
                 round
