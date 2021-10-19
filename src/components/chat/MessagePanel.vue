@@ -32,29 +32,21 @@
     <div
       v-for="message in messages"
       :key="message.id"
-      class="col-12 row"
+      class="col-12 row pos-rel"
       :class="{
         'justify-end': message.sent
       }"
     >
-      <q-chat-message
-        :text="[message.txt]"
-        stamp="7 minutes ago"
-        :sent="message.sent"
+      <chat-message
+        :audio-content="message.audioContent"
+        :txt="message.txt"
+        sent-at="7 minutes ago"
         :bg-color="message.sent ? 'teal-9' : 'blue-grey-9'"
         text-color="white"
-        class="chat-msg full-width"
-      >
-        <span v-if="message.type === MSG_TYPE.TXT">
-          {{ message.txt }}
-        </span>
-        <div v-else-if="message.type === MSG_TYPE.AUDIO">
-          <audio controls>
-            <source :src="message.audioContent" type="audio/webm" />
-            Your browser does not support the audio element.
-          </audio>
-        </div>
-      </q-chat-message>
+        class="chat-msg pos-rel"
+        :type="message.type"
+        :sent="message.sent"
+      />
     </div>
   </q-scroll-area>
 </template>
@@ -62,6 +54,7 @@
 <script>
 import { defineComponent, ref, reactive, nextTick, watch } from "vue";
 import { MSG_TYPE } from "src/utils/constants";
+import ChatMessage from "./ChatMessage.vue";
 
 export default defineComponent({
   name: "message-panel",
@@ -75,6 +68,9 @@ export default defineComponent({
       type: Boolean,
       required: true
     }
+  },
+  components: {
+    ChatMessage
   },
   setup(props, { emit }) {
     const msgContainer = ref(null);

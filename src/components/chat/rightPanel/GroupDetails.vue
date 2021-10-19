@@ -17,7 +17,7 @@
     <q-input
       dark
       label="Group name"
-      model-value="Group chat"
+      :model-value="groupDetails.name"
       label-color="teal"
       class="full-width q-px-lg"
       readonly
@@ -26,13 +26,11 @@
         <q-icon size="xs" name="mdi-pencil" />
       </template>
     </q-input>
-    <span class="text-grey self-start q-mt-sm q-ml-lg">
-      {{ `Created ${format(new Date(), "dd/MM/yyyy' at 'HH:mm")}` }}
-    </span>
+    <span class="text-grey self-start q-mt-sm q-ml-lg"> Created {{ groupDetails.createdAt }} </span>
     <q-input
       dark
       label="Description"
-      model-value="Add group description"
+      :model-value="groupDetails.description"
       label-color="teal"
       class="full-width q-px-lg q-mt-md"
       readonly
@@ -79,7 +77,6 @@
 
 <script>
 import { defineComponent, reactive } from "vue";
-import { format } from "date-fns";
 
 export default defineComponent({
   name: "group-details",
@@ -96,8 +93,7 @@ export default defineComponent({
     });
 
     return {
-      state,
-      format
+      state
     };
   }
 });

@@ -14,8 +14,8 @@
               <img src="../assets/gopniks.jpg" />
             </q-avatar>
             <div class="column q-ml-md">
-              <span> Group chat </span>
-              <span> User 1, User 2, User 3, You </span>
+              <span> {{ groupDetails.name }} </span>
+              <span> {{ groupDetails.users.map((u) => u.username).join(", ") }} </span>
             </div>
           </div>
           <div class="row">
@@ -157,6 +157,9 @@ export default defineComponent({
   },
   setup() {
     const groupDetails = {
+      name: "Group chat",
+      createdAt: "19/10/2021 at 19:00",
+      description: "Add group description",
       users: [
         {
           username: "You",
