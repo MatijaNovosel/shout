@@ -1,35 +1,5 @@
 <template>
-  <div
-    @mouseover="state.showActions = true"
-    @mouseleave="mouseLeaveMsg"
-    class="row q-py-sm q-px-md msg q-my-xs"
-    :class="`bg-${bgColor} text-${textColor}`"
-  >
-    <q-btn
-      v-show="state.showActions"
-      class="message-action-btn"
-      size="sm"
-      flat
-      round
-      icon="mdi-chevron-down"
-    >
-      <q-menu v-model="state.actionMenu" dark left>
-        <q-list dense style="min-width: 100px">
-          <q-item clickable v-close-popup @click="openRightPanel">
-            <q-item-section>Reply</q-item-section>
-          </q-item>
-          <q-item clickable v-close-popup>
-            <q-item-section>Forward message</q-item-section>
-          </q-item>
-          <q-item clickable v-close-popup>
-            <q-item-section>Star message</q-item-section>
-          </q-item>
-          <q-item clickable v-close-popup>
-            <q-item-section>Delete message</q-item-section>
-          </q-item>
-        </q-list>
-      </q-menu>
-    </q-btn>
+  <div class="row q-py-sm q-px-md msg q-my-xs" :class="`bg-${bgColor} text-${textColor}`">
     <div class="col-12 text-white">
       <span v-if="type === MSG_TYPE.TXT">
         {{ txt }}
@@ -41,8 +11,28 @@
         </audio>
       </div>
     </div>
-    <div class="col-12 text-grey q-mt-xs">
-      {{ sentAt }}
+    <div class="col-12 text-grey q-mt-xs justify-between">
+      <span>
+        {{ sentAt }}
+      </span>
+      <q-btn size="xs" flat round icon="mdi-chevron-down">
+        <q-menu dark left>
+          <q-list dense style="min-width: 100px">
+            <q-item clickable v-close-popup @click="openRightPanel">
+              <q-item-section>Reply</q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup>
+              <q-item-section>Forward message</q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup>
+              <q-item-section>Star message</q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup>
+              <q-item-section>Delete message</q-item-section>
+            </q-item>
+          </q-list>
+        </q-menu>
+      </q-btn>
     </div>
   </div>
 </template>
@@ -84,32 +74,17 @@ export default defineComponent({
     }
   },
   setup() {
-    const state = reactive({
-      showActions: false,
-      actionMenu: false
-    });
-
-    const mouseLeaveMsg = () => {
-      state.showActions = false;
-      state.actionMenu = false;
-    };
+    const state = reactive({});
 
     return {
       MSG_TYPE,
-      state,
-      mouseLeaveMsg
+      state
     };
   }
 });
 </script>
 
 <style lang="scss" scoped>
-.message-action-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-}
-
 .msg {
   border-radius: 6px;
   font-size: 12px;
