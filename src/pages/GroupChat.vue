@@ -11,7 +11,7 @@
         <div class="chat-top row justify-between q-py-sm q-px-md">
           <div class="row text-white">
             <q-avatar size="40px">
-              <img src="../assets/plenkovic.jpg" />
+              <img src="../assets/gopniks.jpg" />
             </q-avatar>
             <div class="column q-ml-md">
               <span> Group chat </span>
@@ -43,7 +43,7 @@
             <q-btn flat round color="white" icon="mdi-dots-vertical">
               <q-menu dark left>
                 <q-list dense style="min-width: 100px">
-                  <q-item clickable v-close-popup @click="state.rightPanelOpen = true">
+                  <q-item clickable v-close-popup @click="openRightPanel">
                     <q-item-section>Group info</q-item-section>
                   </q-item>
                   <q-item clickable v-close-popup>
@@ -73,11 +73,11 @@
         />
         <div class="chat-bottom">
           <div class="row justify-between q-py-sm q-px-md">
-            <div class="col-2">
+            <div class="col-2 row justify-center">
               <q-btn flat round color="white" icon="mdi-emoticon" />
               <q-btn flat round color="white" icon="mdi-paperclip" />
             </div>
-            <div class="col-9">
+            <div class="col-8 row justify-center">
               <q-input
                 dark
                 dense
@@ -85,9 +85,10 @@
                 standout
                 placeholder="Type a message"
                 v-model="state.msgText"
+                class="full-width"
               />
             </div>
-            <div class="col-1 text-center">
+            <div class="col-2 row justify-center">
               <template v-if="state.msgText !== null && state.msgText !== ''">
                 <q-btn flat round color="white" icon="mdi-arrow-right" @click="sendTxtMsg" />
               </template>
@@ -230,6 +231,10 @@ export default defineComponent({
       state.shouldShowScrollToBottom = val;
     };
 
+    const openRightPanel = () => {
+      state.rightPanelOpen = true;
+    };
+
     onMounted(() => {
       state.messages = range(15).map((n) => {
         const userId = randInt(1, 2);
@@ -250,7 +255,8 @@ export default defineComponent({
       sendTxtMsg,
       scrollToEndOfMsgContainer,
       shouldShowScrollToBottom,
-      indexRoute: ROUTE_NAMES.INDEX
+      indexRoute: ROUTE_NAMES.INDEX,
+      openRightPanel
     };
   }
 });
