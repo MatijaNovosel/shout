@@ -9,7 +9,7 @@
     >
       <div class="column full-height chat-panel-bg justify-between">
         <div class="chat-top row justify-between q-py-sm q-px-md">
-          <div class="row text-white">
+          <div class="row text-white cursor-pointer" @click="openRightPanel">
             <q-avatar size="40px">
               <img src="../assets/gopniks.jpg" />
             </q-avatar>
@@ -27,6 +27,7 @@
               icon="mdi-arrow-left"
             />
             <q-btn flat round color="white" icon="mdi-magnify" />
+            <q-btn flat round color="white" icon="mdi-pin" />
             <q-btn flat round color="white" icon="mdi-comment-text-multiple">
               <q-menu dark left>
                 <q-list dense style="min-width: 100px">
@@ -132,7 +133,9 @@
       </div>
     </div>
     <div class="col-4" v-show="state.rightPanelOpen">
-      <group-details @close="state.rightPanelOpen = false" />
+      <keep-alive>
+        <group-details :group-details="groupDetails" @close="state.rightPanelOpen = false" />
+      </keep-alive>
     </div>
   </div>
 </template>
@@ -153,6 +156,27 @@ export default defineComponent({
     GroupDetails
   },
   setup() {
+    const groupDetails = {
+      users: [
+        {
+          username: "You",
+          status: "I will not go, prefer a feast of friends to the giant family"
+        },
+        {
+          username: "User 1",
+          status: "Status for user 1"
+        },
+        {
+          username: "User 2",
+          status: "Status for user 2"
+        },
+        {
+          username: "User 3",
+          status: "Status for user 3"
+        }
+      ]
+    };
+
     const state = reactive({
       messages: [],
       recording: false,
@@ -256,7 +280,8 @@ export default defineComponent({
       scrollToEndOfMsgContainer,
       shouldShowScrollToBottom,
       indexRoute: ROUTE_NAMES.INDEX,
-      openRightPanel
+      openRightPanel,
+      groupDetails
     };
   }
 });
