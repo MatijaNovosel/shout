@@ -15,3 +15,13 @@ export const CONVERSTATION_TYPE = {
   GROUP: 2,
   SELF: 3
 };
+
+export const GROUP_CHAT_RIGHT_PANEL = {
+  SEARCH: 1,
+  DETAILS: 2
+};
+
+export const PRIVATE_CHAT_RIGHT_PANEL = {
+  SEARCH: 1,
+  DETAILS: 2
+};

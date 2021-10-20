@@ -9,7 +9,10 @@
     >
       <div class="column full-height chat-panel-bg justify-between">
         <div class="chat-top row justify-between q-py-sm q-px-md">
-          <div class="row text-white cursor-pointer" @click="openRightPanel">
+          <div
+            class="row text-white cursor-pointer"
+            @click="openRightPanel(PRIVATE_CHAT_RIGHT_PANEL.DETAILS)"
+          >
             <q-avatar size="40px">
               <img src="../assets/plenkovic.jpg" />
             </q-avatar>
@@ -26,11 +29,21 @@
               color="white"
               icon="mdi-arrow-left"
             />
-            <q-btn flat round color="white" icon="mdi-magnify" />
+            <q-btn
+              @click="openRightPanel(PRIVATE_CHAT_RIGHT_PANEL.SEARCH)"
+              flat
+              round
+              color="white"
+              icon="mdi-magnify"
+            />
             <q-btn flat round color="white" icon="mdi-dots-vertical">
               <q-menu dark right :offset="[-15, -5]">
                 <q-list dense style="min-width: 100px">
-                  <q-item @click="openRightPanel" clickable v-close-popup>
+                  <q-item
+                    @click="openRightPanel(PRIVATE_CHAT_RIGHT_PANEL.DETAILS)"
+                    clickable
+                    v-close-popup
+                  >
                     <q-item-section>Contact info</q-item-section>
                   </q-item>
                   <q-item clickable v-close-popup>
@@ -55,53 +68,51 @@
           :messages="state.messages"
           :scroll-to-bottom-trigger="state.scrollToBottomTrigger"
         />
-        <div class="chat-bottom">
-          <div class="row justify-between q-py-sm q-px-md">
-            <div class="col-1">
-              <q-btn flat round color="white" icon="mdi-emoticon" />
-              <q-btn flat round color="white" icon="mdi-paperclip" />
-            </div>
-            <div class="col-10">
-              <q-input
-                dark
-                dense
-                rounded
-                standout
-                placeholder="Type a message"
-                v-model="state.msgText"
+        <div class="bottom-bar q-py-sm q-px-md">
+          <div class="bottom-bar-left">
+            <q-btn flat round color="white" icon="mdi-emoticon" />
+            <q-btn flat round color="white" icon="mdi-paperclip" />
+          </div>
+          <div class="bottom-bar-center">
+            <q-input
+              dark
+              dense
+              rounded
+              standout
+              placeholder="Type a message"
+              v-model="state.msgText"
+            />
+          </div>
+          <div class="bottom-bar-right">
+            <template v-if="state.msgText !== null && state.msgText !== ''">
+              <q-btn flat round color="white" icon="mdi-arrow-right" @click="sendTxtMsg" />
+            </template>
+            <template v-else>
+              <q-btn
+                flat
+                round
+                color="white"
+                icon="mdi-microphone"
+                @click="record"
+                v-if="!state.recording"
               />
-            </div>
-            <div class="col-1 text-center">
-              <template v-if="state.msgText !== null && state.msgText !== ''">
-                <q-btn flat round color="white" icon="mdi-arrow-right" @click="sendTxtMsg" />
-              </template>
               <template v-else>
                 <q-btn
                   flat
                   round
-                  color="white"
-                  icon="mdi-microphone"
-                  @click="record"
-                  v-if="!state.recording"
+                  color="red"
+                  icon="mdi-arrow-left-circle"
+                  @click="stopRecording(true)"
                 />
-                <template v-else>
-                  <q-btn
-                    flat
-                    round
-                    color="red"
-                    icon="mdi-arrow-left-circle"
-                    @click="stopRecording(true)"
-                  />
-                  <q-btn
-                    flat
-                    round
-                    color="green"
-                    icon="mdi-check-circle-outline"
-                    @click="stopRecording(false)"
-                  />
-                </template>
+                <q-btn
+                  flat
+                  round
+                  color="green"
+                  icon="mdi-check-circle-outline"
+                  @click="stopRecording(false)"
+                />
               </template>
-            </div>
+            </template>
           </div>
           <q-btn
             v-show="state.shouldShowScrollToBottom"
@@ -116,7 +127,17 @@
     </div>
     <div class="col-4" v-show="state.rightPanelOpen">
       <keep-alive>
-        <contact-details :contact-details="contactDetails" @close="state.rightPanelOpen = false" />
+        <contact-details
+          v-if="state.activeRightPanel === PRIVATE_CHAT_RIGHT_PANEL.DETAILS"
+          :contact-details="contactDetails"
+          @close="state.rightPanelOpen = false"
+        />
+      </keep-alive>
+      <keep-alive>
+        <private-chat-search
+          v-if="state.activeRightPanel === PRIVATE_CHAT_RIGHT_PANEL.SEARCH"
+          @close="state.rightPanelOpen = false"
+        />
       </keep-alive>
     </div>
   </div>
@@ -125,17 +146,19 @@
 <script>
 import { defineComponent, reactive, onMounted } from "vue";
 import { range, randInt, downloadURI } from "src/utils/helpers";
-import { loremIpsum, MSG_TYPE } from "src/utils/constants";
+import { loremIpsum, MSG_TYPE, PRIVATE_CHAT_RIGHT_PANEL } from "src/utils/constants";
 import { format } from "date-fns";
 import { ROUTE_NAMES } from "src/router/routeNames";
 import MessagePanel from "src/components/chat/MessagePanel.vue";
 import ContactDetails from "src/components/chat/rightPanel/ContactDetails.vue";
+import PrivateChatSearch from "src/components/chat/rightPanel/PrivateChatSearch.vue";
 
 export default defineComponent({
   name: "ChatDetails",
   components: {
     MessagePanel,
-    ContactDetails
+    ContactDetails,
+    PrivateChatSearch
   },
   setup() {
     const contactDetails = {
@@ -152,7 +175,8 @@ export default defineComponent({
       recordedChunks: [],
       msgText: null,
       shouldShowScrollToBottom: false,
-      scrollToBottomTrigger: false
+      scrollToBottomTrigger: false,
+      activeRightPanel: PRIVATE_CHAT_RIGHT_PANEL.DETAILS
     });
 
     const stopRecording = (cancel) => {
@@ -221,7 +245,8 @@ export default defineComponent({
       state.shouldShowScrollToBottom = val;
     };
 
-    const openRightPanel = () => {
+    const openRightPanel = (rightPanel) => {
+      state.activeRightPanel = rightPanel;
       state.rightPanelOpen = true;
     };
 
@@ -247,7 +272,8 @@ export default defineComponent({
       shouldShowScrollToBottom,
       indexRoute: ROUTE_NAMES.INDEX,
       contactDetails,
-      openRightPanel
+      openRightPanel,
+      PRIVATE_CHAT_RIGHT_PANEL
     };
   }
 });
@@ -273,5 +299,26 @@ export default defineComponent({
   position: absolute;
   bottom: 85px;
   right: 35px;
+}
+
+.bottom-bar {
+  background-color: #2a2f32;
+  height: 58px;
+  display: flex;
+  width: 100%;
+}
+
+.bottom-bar-left {
+  flex-grow: 1;
+  text-align: center;
+}
+
+.bottom-bar-center {
+  flex-grow: 10;
+}
+
+.bottom-bar-right {
+  flex-grow: 1;
+  text-align: center;
 }
 </style>

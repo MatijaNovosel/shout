@@ -9,7 +9,10 @@
     >
       <div class="column full-height chat-panel-bg justify-between">
         <div class="chat-top row justify-between q-py-sm q-px-md">
-          <div class="row text-white cursor-pointer" @click="openRightPanel">
+          <div
+            class="row text-white cursor-pointer"
+            @click="openRightPanel(GROUP_CHAT_RIGHT_PANEL.DETAILS)"
+          >
             <q-avatar size="40px">
               <img src="../assets/gopniks.jpg" />
             </q-avatar>
@@ -26,8 +29,46 @@
               color="white"
               icon="mdi-arrow-left"
             />
-            <q-btn flat round color="white" icon="mdi-magnify" />
-            <q-btn flat round color="white" icon="mdi-pin" />
+            <q-btn
+              @click="openRightPanel(GROUP_CHAT_RIGHT_PANEL.SEARCH)"
+              flat
+              round
+              color="white"
+              icon="mdi-magnify"
+            />
+            <q-btn flat round color="white" icon="mdi-pin">
+              <q-menu dark anchor="bottom left" self="top left">
+                <q-list style="min-width: 200px">
+                  <q-item clickable>
+                    <q-item-section top avatar>
+                      <q-avatar>
+                        <img src="../assets/me.jpg" />
+                      </q-avatar>
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label> You </q-item-label>
+                      <q-item-label caption class="text-grey">
+                        Some long message bla bla bla
+                      </q-item-label>
+                    </q-item-section>
+                  </q-item>
+                  <q-separator />
+                  <q-item clickable>
+                    <q-item-section top avatar>
+                      <q-avatar>
+                        <img src="../assets/me.jpg" />
+                      </q-avatar>
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label> You </q-item-label>
+                      <q-item-label caption class="text-grey">
+                        Other message bla bla bla message bla bla
+                      </q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </q-menu>
+            </q-btn>
             <q-btn flat round color="white" icon="mdi-comment-text-multiple">
               <q-menu dark left>
                 <q-list dense style="min-width: 100px">
@@ -44,7 +85,11 @@
             <q-btn flat round color="white" icon="mdi-dots-vertical">
               <q-menu dark left>
                 <q-list dense style="min-width: 100px">
-                  <q-item clickable v-close-popup @click="openRightPanel">
+                  <q-item
+                    clickable
+                    v-close-popup
+                    @click="openRightPanel(GROUP_CHAT_RIGHT_PANEL.DETAILS)"
+                  >
                     <q-item-section>Group info</q-item-section>
                   </q-item>
                   <q-item clickable v-close-popup>
@@ -72,54 +117,51 @@
           :messages="state.messages"
           :scroll-to-bottom-trigger="state.scrollToBottomTrigger"
         />
-        <div class="chat-bottom">
-          <div class="row justify-between q-py-sm q-px-md">
-            <div class="col-2 row justify-center">
-              <q-btn flat round color="white" icon="mdi-emoticon" />
-              <q-btn flat round color="white" icon="mdi-paperclip" />
-            </div>
-            <div class="col-8 row justify-center">
-              <q-input
-                dark
-                dense
-                rounded
-                standout
-                placeholder="Type a message"
-                v-model="state.msgText"
-                class="full-width"
+        <div class="bottom-bar q-py-sm q-px-md">
+          <div class="bottom-bar-left">
+            <q-btn flat round color="white" icon="mdi-emoticon" />
+            <q-btn flat round color="white" icon="mdi-paperclip" />
+          </div>
+          <div class="bottom-bar-center">
+            <q-input
+              dark
+              dense
+              rounded
+              standout
+              placeholder="Type a message"
+              v-model="state.msgText"
+            />
+          </div>
+          <div class="bottom-bar-right">
+            <template v-if="state.msgText !== null && state.msgText !== ''">
+              <q-btn flat round color="white" icon="mdi-arrow-right" @click="sendTxtMsg" />
+            </template>
+            <template v-else>
+              <q-btn
+                flat
+                round
+                color="white"
+                icon="mdi-microphone"
+                @click="record"
+                v-if="!state.recording"
               />
-            </div>
-            <div class="col-2 row justify-center">
-              <template v-if="state.msgText !== null && state.msgText !== ''">
-                <q-btn flat round color="white" icon="mdi-arrow-right" @click="sendTxtMsg" />
-              </template>
               <template v-else>
                 <q-btn
                   flat
                   round
-                  color="white"
-                  icon="mdi-microphone"
-                  @click="record"
-                  v-if="!state.recording"
+                  color="red"
+                  icon="mdi-arrow-left-circle"
+                  @click="stopRecording(true)"
                 />
-                <template v-else>
-                  <q-btn
-                    flat
-                    round
-                    color="red"
-                    icon="mdi-arrow-left-circle"
-                    @click="stopRecording(true)"
-                  />
-                  <q-btn
-                    flat
-                    round
-                    color="green"
-                    icon="mdi-check-circle-outline"
-                    @click="stopRecording(false)"
-                  />
-                </template>
+                <q-btn
+                  flat
+                  round
+                  color="green"
+                  icon="mdi-check-circle-outline"
+                  @click="stopRecording(false)"
+                />
               </template>
-            </div>
+            </template>
           </div>
           <q-btn
             v-show="state.shouldShowScrollToBottom"
@@ -134,7 +176,17 @@
     </div>
     <div class="col-4" v-show="state.rightPanelOpen">
       <keep-alive>
-        <group-details :group-details="groupDetails" @close="state.rightPanelOpen = false" />
+        <group-details
+          v-if="state.activeRightPanel === GROUP_CHAT_RIGHT_PANEL.DETAILS"
+          :group-details="groupDetails"
+          @close="state.rightPanelOpen = false"
+        />
+      </keep-alive>
+      <keep-alive>
+        <group-chat-search
+          v-if="state.activeRightPanel === GROUP_CHAT_RIGHT_PANEL.SEARCH"
+          @close="state.rightPanelOpen = false"
+        />
       </keep-alive>
     </div>
   </div>
@@ -143,17 +195,19 @@
 <script>
 import { defineComponent, reactive, onMounted } from "vue";
 import { range, randInt, downloadURI } from "src/utils/helpers";
-import { loremIpsum, MSG_TYPE } from "src/utils/constants";
+import { loremIpsum, MSG_TYPE, GROUP_CHAT_RIGHT_PANEL } from "src/utils/constants";
 import { format } from "date-fns";
 import { ROUTE_NAMES } from "src/router/routeNames";
 import MessagePanel from "src/components/chat/MessagePanel.vue";
 import GroupDetails from "src/components/chat/rightPanel/GroupDetails.vue";
+import GroupChatSearch from "src/components/chat/rightPanel/GroupChatSearch.vue";
 
 export default defineComponent({
   name: "ChatDetails",
   components: {
     MessagePanel,
-    GroupDetails
+    GroupDetails,
+    GroupChatSearch
   },
   setup() {
     const groupDetails = {
@@ -189,7 +243,8 @@ export default defineComponent({
       msgText: null,
       shouldShowScrollToBottom: false,
       scrollToBottomTrigger: false,
-      rightPanelOpen: false
+      rightPanelOpen: false,
+      activeRightPanel: GROUP_CHAT_RIGHT_PANEL.DETAILS
     });
 
     const stopRecording = (cancel) => {
@@ -258,7 +313,8 @@ export default defineComponent({
       state.shouldShowScrollToBottom = val;
     };
 
-    const openRightPanel = () => {
+    const openRightPanel = (rightPanel) => {
+      state.activeRightPanel = rightPanel;
       state.rightPanelOpen = true;
     };
 
@@ -284,7 +340,8 @@ export default defineComponent({
       shouldShowScrollToBottom,
       indexRoute: ROUTE_NAMES.INDEX,
       openRightPanel,
-      groupDetails
+      groupDetails,
+      GROUP_CHAT_RIGHT_PANEL
     };
   }
 });
@@ -301,9 +358,25 @@ export default defineComponent({
   background-color: #2a2f32;
 }
 
-.chat-bottom {
+.bottom-bar {
   background-color: #2a2f32;
   height: 58px;
+  display: flex;
+  width: 100%;
+}
+
+.bottom-bar-left {
+  flex-grow: 1;
+  text-align: center;
+}
+
+.bottom-bar-center {
+  flex-grow: 10;
+}
+
+.bottom-bar-right {
+  flex-grow: 1;
+  text-align: center;
 }
 
 .scroll-to-bottom-fab {
