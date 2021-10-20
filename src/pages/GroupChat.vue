@@ -201,6 +201,7 @@ import { ROUTE_NAMES } from "src/router/routeNames";
 import MessagePanel from "src/components/chat/MessagePanel.vue";
 import GroupDetails from "src/components/chat/rightPanel/GroupDetails.vue";
 import GroupChatSearch from "src/components/chat/rightPanel/GroupChatSearch.vue";
+import UserService from "../services/users";
 
 export default defineComponent({
   name: "ChatDetails",
@@ -233,6 +234,8 @@ export default defineComponent({
         }
       ]
     };
+
+    // const users = useLoadUsers();
 
     const state = reactive({
       messages: [],
@@ -329,6 +332,8 @@ export default defineComponent({
         };
       });
       scrollToEndOfMsgContainer();
+      const users = UserService.getAll();
+      console.log(users);
     });
 
     return {
@@ -342,6 +347,7 @@ export default defineComponent({
       openRightPanel,
       groupDetails,
       GROUP_CHAT_RIGHT_PANEL
+      // users
     };
   }
 });
