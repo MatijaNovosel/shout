@@ -119,7 +119,7 @@
           :emoji-panel-open="state.emojiPanelOpen"
         />
         <div class="emoji-panel" v-if="state.emojiPanelOpen">
-          <emoji-picker />
+          <emoji-picker @close="state.emojiPanelOpen = false" />
         </div>
         <div class="bottom-bar q-py-sm q-px-md">
           <div class="bottom-bar-left">

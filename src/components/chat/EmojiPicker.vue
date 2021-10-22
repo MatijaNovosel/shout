@@ -1,6 +1,45 @@
 <template>
   <div class="emoji-list">
-    {{ state.emojis }}
+    <q-tabs
+      v-model="state.tab"
+      dense
+      class="text-grey"
+      active-color="teal"
+      indicator-color="teal"
+      align="left"
+    >
+      <q-tab
+        :name="category"
+        :icon="formatTabIcon(category)"
+        v-for="(category, i) in state.categories"
+        :key="i"
+      />
+    </q-tabs>
+    <q-input
+      bg-color="blue-grey-10"
+      dark
+      dense
+      rounded
+      standout
+      placeholder="Search emojis"
+      class="q-pa-md emoji-search"
+    >
+      <template #prepend>
+        <q-icon name="mdi-magnify" />
+      </template>
+    </q-input>
+    <q-tab-panels v-model="state.tab" style="height: 92px" class="emoji-tab-panels">
+      <q-tab-panel
+        class="q-py-none"
+        :name="category"
+        v-for="(category, i) in state.categories"
+        :key="i"
+      >
+        <span v-for="(emoji, i) in state.emojis[category]" :key="i" class="cursor-pointer emoji">
+          {{ emoji }}
+        </span>
+      </q-tab-panel>
+    </q-tab-panels>
   </div>
 </template>
 
@@ -22,7 +61,14 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const state = reactive({
-      visible: false,
+      tab: "People",
+      categories: computed(() => {
+        const ctg = [];
+        for (const category in emojis) {
+          ctg.push(category);
+        }
+        return ctg;
+      }),
       emojis: computed(() => {
         if (props.search) {
           const obj = {};
@@ -48,8 +94,25 @@ export default defineComponent({
     };
 
     const escape = (e) => {
-      if (state.visible === true && e.keyCode === 27) {
-        state.visible = false;
+      if (e.keyCode === 27) {
+        emit("close");
+      }
+    };
+
+    const formatTabIcon = (category) => {
+      switch (category) {
+        case "People":
+          return "mdi-emoticon";
+        case "Nature":
+          return "mdi-leaf";
+        case "Objects":
+          return "mdi-book-open-blank-variant";
+        case "Places":
+          return "mdi-map-marker";
+        case "Symbols":
+          return "mdi-triangle";
+        default:
+          return "mdi-circle";
       }
     };
 
@@ -63,7 +126,8 @@ export default defineComponent({
 
     return {
       state,
-      insert
+      insert,
+      formatTabIcon
     };
   }
 });
@@ -73,5 +137,18 @@ export default defineComponent({
 .emoji-list {
   max-height: 200px;
   overflow-y: auto;
+  background-color: #2a2f32;
+}
+
+.emoji-tab-panels {
+  background-color: #1d2022;
+}
+
+.emoji-search {
+  background-color: #1d2022;
+}
+
+.emoji {
+  font-size: 26px;
 }
 </style>
