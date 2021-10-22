@@ -116,10 +116,20 @@
           @should-show-scroll-to-bottom="shouldShowScrollToBottom"
           :messages="state.messages"
           :scroll-to-bottom-trigger="state.scrollToBottomTrigger"
+          :emoji-panel-open="state.emojiPanelOpen"
         />
+        <div class="emoji-panel" v-if="state.emojiPanelOpen">
+          <emoji-picker />
+        </div>
         <div class="bottom-bar q-py-sm q-px-md">
           <div class="bottom-bar-left">
-            <q-btn flat round color="white" icon="mdi-emoticon" />
+            <q-btn
+              flat
+              round
+              :color="state.emojiPanelOpen ? 'teal' : 'white'"
+              icon="mdi-emoticon"
+              @click="state.emojiPanelOpen = !state.emojiPanelOpen"
+            />
             <q-btn flat round color="white" icon="mdi-paperclip" />
           </div>
           <div class="bottom-bar-center">
@@ -170,6 +180,7 @@
             icon="mdi-chevron-down"
             color="grey-9"
             class="scroll-to-bottom-fab"
+            :style="state.fabStyle"
           />
         </div>
       </div>
@@ -193,7 +204,7 @@
 </template>
 
 <script>
-import { defineComponent, reactive, onMounted } from "vue";
+import { defineComponent, reactive, onMounted, computed } from "vue";
 import { range, randInt, downloadURI } from "src/utils/helpers";
 import { loremIpsum, MSG_TYPE, GROUP_CHAT_RIGHT_PANEL } from "src/utils/constants";
 import { format } from "date-fns";
@@ -202,13 +213,15 @@ import MessagePanel from "src/components/chat/MessagePanel.vue";
 import GroupDetails from "src/components/chat/rightPanel/GroupDetails.vue";
 import GroupChatSearch from "src/components/chat/rightPanel/GroupChatSearch.vue";
 import UserService from "../services/users";
+import EmojiPicker from "src/components/chat/EmojiPicker.vue";
 
 export default defineComponent({
   name: "ChatDetails",
   components: {
     MessagePanel,
     GroupDetails,
-    GroupChatSearch
+    GroupChatSearch,
+    EmojiPicker
   },
   setup() {
     const groupDetails = {
@@ -240,6 +253,7 @@ export default defineComponent({
     const state = reactive({
       messages: [],
       recording: false,
+      emojiPanelOpen: false,
       recordingCancelled: false,
       mediaRecorder: null,
       recordedChunks: [],
@@ -247,7 +261,18 @@ export default defineComponent({
       shouldShowScrollToBottom: false,
       scrollToBottomTrigger: false,
       rightPanelOpen: false,
-      activeRightPanel: GROUP_CHAT_RIGHT_PANEL.DETAILS
+      activeRightPanel: GROUP_CHAT_RIGHT_PANEL.DETAILS,
+      fabStyle: computed(() => {
+        if (state.emojiPanelOpen === true) {
+          return {
+            bottom: "285px"
+          };
+        } else {
+          return {
+            bottom: "85px"
+          };
+        }
+      })
     });
 
     const stopRecording = (cancel) => {
@@ -387,7 +412,10 @@ export default defineComponent({
 
 .scroll-to-bottom-fab {
   position: absolute;
-  bottom: 85px;
   right: 35px;
+}
+
+.emoji-panel {
+  height: 200px;
 }
 </style>

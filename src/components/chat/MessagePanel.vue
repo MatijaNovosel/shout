@@ -7,6 +7,7 @@
       opacity: 0.75
     }"
     class="msg-container row q-px-xl q-py-md"
+    :style="state.msgContainerStyle"
     ref="msgContainer"
     @scroll="msgContainerScrollChanged"
   >
@@ -52,7 +53,7 @@
 </template>
 
 <script>
-import { defineComponent, ref, reactive, nextTick, watch } from "vue";
+import { defineComponent, ref, reactive, nextTick, watch, computed } from "vue";
 import { MSG_TYPE } from "src/utils/constants";
 import ChatMessage from "./ChatMessage.vue";
 
@@ -67,6 +68,10 @@ export default defineComponent({
     scrollToBottomTrigger: {
       type: Boolean,
       required: true
+    },
+    emojiPanelOpen: {
+      type: Boolean,
+      required: true
     }
   },
   components: {
@@ -76,7 +81,20 @@ export default defineComponent({
     const msgContainer = ref(null);
 
     const state = reactive({
-      shouldShowScrollToBottom: false
+      shouldShowScrollToBottom: false,
+      msgContainerStyle: computed(() => {
+        if (props.emojiPanelOpen === true) {
+          return {
+            maxHeight: "calc(100% - 316px)",
+            height: "calc(100% - 316px)"
+          };
+        } else {
+          return {
+            maxHeight: "calc(100% - 116px)",
+            height: "calc(100% - 116px)"
+          };
+        }
+      })
     });
 
     const scrollToEndOfMsgContainer = () => {
@@ -107,8 +125,6 @@ export default defineComponent({
 <style lang="scss" scoped>
 .msg-container {
   position: relative;
-  max-height: calc(100% - 116px);
-  height: calc(100% - 116px);
 }
 
 .chat-msg {
