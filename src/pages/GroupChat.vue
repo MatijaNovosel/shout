@@ -119,7 +119,7 @@
           :emoji-panel-open="state.emojiPanelOpen"
         />
         <div class="emoji-panel" v-if="state.emojiPanelOpen">
-          <emoji-picker @close="state.emojiPanelOpen = false" />
+          <emoji-picker @close="state.emojiPanelOpen = false" @emoji="insertEmoji" />
         </div>
         <div class="bottom-bar q-py-sm q-px-md">
           <div class="bottom-bar-left">
@@ -360,6 +360,14 @@ export default defineComponent({
       state.rightPanelOpen = true;
     };
 
+    const insertEmoji = (emoji) => {
+      if (state.msgText === null) {
+        state.msgText = emoji;
+      } else {
+        state.msgText += emoji;
+      }
+    };
+
     onMounted(() => {
       state.messages = range(15).map((n) => {
         const userId = randInt(1, 2);
@@ -385,7 +393,8 @@ export default defineComponent({
       indexRoute: ROUTE_NAMES.INDEX,
       openRightPanel,
       groupDetails,
-      GROUP_CHAT_RIGHT_PANEL
+      GROUP_CHAT_RIGHT_PANEL,
+      insertEmoji
       // users
     };
   }

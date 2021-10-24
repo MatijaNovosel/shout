@@ -40,7 +40,7 @@
             v-for="(emoji, i) in Object.entries(state.emojisComputed[category])"
             :key="i"
             class="cursor-pointer emoji"
-            @click="insert"
+            @click="insert(emoji[1])"
           >
             {{ emoji[1] }}
             <q-tooltip anchor="top middle" self="bottom middle"> :{{ emoji[0] }}: </q-tooltip>
