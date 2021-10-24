@@ -160,9 +160,12 @@
                   flat
                   round
                   color="red"
-                  icon="mdi-arrow-left-circle"
+                  icon="mdi-close-circle"
                   @click="stopRecording(true)"
                 />
+                <span class="text-white">
+                  {{ state.elapsedRecordingSecondsFormatted }}
+                </span>
                 <q-btn
                   flat
                   round
@@ -205,7 +208,7 @@
 
 <script>
 import { defineComponent, reactive, onMounted, computed } from "vue";
-import { range, randInt, downloadURI } from "src/utils/helpers";
+import { range, randInt, downloadURI, secondsToElapsedTime } from "src/utils/helpers";
 import { loremIpsum, MSG_TYPE, GROUP_CHAT_RIGHT_PANEL } from "src/utils/constants";
 import { format } from "date-fns";
 import { ROUTE_NAMES } from "src/router/routeNames";
@@ -252,10 +255,16 @@ export default defineComponent({
 
     const state = reactive({
       messages: [],
+      elapsedRecordingSeconds: 0,
+      elapsedRecordingSecondsFormatted: computed(() => {
+        const { m, s } = secondsToElapsedTime(state.elapsedRecordingSeconds);
+        return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+      }),
       recording: false,
       emojiPanelOpen: false,
       recordingCancelled: false,
       mediaRecorder: null,
+      recordingInterval: null,
       recordedChunks: [],
       msgText: null,
       shouldShowScrollToBottom: false,
@@ -277,6 +286,8 @@ export default defineComponent({
 
     const stopRecording = (cancel) => {
       state.recording = false;
+      clearInterval(state.recordingInterval);
+      state.elapsedRecordingSeconds = 0;
       if (cancel === true) {
         state.recordingCancelled = cancel;
         state.mediaRecorder = null;
@@ -321,6 +332,9 @@ export default defineComponent({
 
     const record = () => {
       state.recording = true;
+      state.recordingInterval = setInterval(() => {
+        state.elapsedRecordingSeconds++;
+      }, 1000);
       navigator.mediaDevices.getUserMedia({ audio: true, video: false }).then(handleSuccess);
     };
 

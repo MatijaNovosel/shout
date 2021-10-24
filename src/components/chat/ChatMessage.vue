@@ -1,6 +1,11 @@
 <template>
   <div class="row q-py-sm q-px-md msg q-my-xs" :class="`bg-${bgColor} text-${textColor}`">
-    <div class="col-12 text-white">
+    <div
+      class="col-12 text-white full-width"
+      :class="{
+        'text-center': type === MSG_TYPE.AUDIO
+      }"
+    >
       <span v-if="type === MSG_TYPE.TXT">
         {{ txt }}
       </span>
@@ -49,7 +54,7 @@ export default defineComponent({
       required: true
     },
     audioContent: {
-      type: Object,
+      type: String,
       required: false
     },
     txt: {

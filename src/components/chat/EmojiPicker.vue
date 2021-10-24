@@ -30,19 +30,23 @@
     </q-input>
     <q-tab-panels v-model="state.tab" style="height: 92px" class="emoji-tab-panels">
       <q-tab-panel
-        class="q-py-none"
+        class="q-py-none text-center"
         :name="category"
         v-for="(category, i) in state.categories"
         :key="i"
       >
-        <span
-          v-for="(emoji, i) in Object.entries(state.emojisComputed[category])"
-          :key="i"
-          class="cursor-pointer emoji"
-        >
-          {{ emoji[1] }}
-          <q-tooltip anchor="top middle" self="bottom middle"> :{{ emoji[0] }}: </q-tooltip>
-        </span>
+        <template v-if="state.emojisComputed[category]">
+          <span
+            v-for="(emoji, i) in Object.entries(state.emojisComputed[category])"
+            :key="i"
+            class="cursor-pointer emoji"
+            @click="insert"
+          >
+            {{ emoji[1] }}
+            <q-tooltip anchor="top middle" self="bottom middle"> :{{ emoji[0] }}: </q-tooltip>
+          </span>
+        </template>
+        <span class="text-white" v-else> No emojis found. </span>
       </q-tab-panel>
     </q-tab-panels>
   </div>
