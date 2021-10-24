@@ -16,13 +16,13 @@
       />
     </q-tabs>
     <q-input
-      bg-color="blue-grey-10"
       dark
       dense
       rounded
       standout
       placeholder="Search emojis"
       class="q-pa-md emoji-search"
+      v-model="state.emojiSearchText"
     >
       <template #prepend>
         <q-icon name="mdi-magnify" />
@@ -35,8 +35,13 @@
         v-for="(category, i) in state.categories"
         :key="i"
       >
-        <span v-for="(emoji, i) in state.emojis[category]" :key="i" class="cursor-pointer emoji">
-          {{ emoji }}
+        <span
+          v-for="(emoji, i) in Object.entries(state.emojisComputed[category])"
+          :key="i"
+          class="cursor-pointer emoji"
+        >
+          {{ emoji[1] }}
+          <q-tooltip anchor="top middle" self="bottom middle"> :{{ emoji[0] }}: </q-tooltip>
         </span>
       </q-tab-panel>
     </q-tab-panels>
@@ -62,20 +67,15 @@ export default defineComponent({
   setup(props, { emit }) {
     const state = reactive({
       tab: "People",
-      categories: computed(() => {
-        const ctg = [];
-        for (const category in emojis) {
-          ctg.push(category);
-        }
-        return ctg;
-      }),
-      emojis: computed(() => {
-        if (props.search) {
+      emojiSearchText: null,
+      categories: ["People", "Nature", "Objects", "Places", "Symbols"],
+      emojisComputed: computed(() => {
+        if (state.emojiSearchText !== null && state.emojiSearchText !== "") {
           const obj = {};
           for (const category in emojis) {
             obj[category] = {};
             for (const emoji in emojis[category]) {
-              if (new RegExp(`.*${escapeRegExp(props.search)}.*`).test(emoji)) {
+              if (new RegExp(`.*${escapeRegExp(state.emojiSearchText)}.*`).test(emoji)) {
                 obj[category][emoji] = emojis[category][emoji];
               }
             }
