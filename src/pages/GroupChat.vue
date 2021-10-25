@@ -215,7 +215,6 @@ import { ROUTE_NAMES } from "src/router/routeNames";
 import MessagePanel from "src/components/chat/MessagePanel.vue";
 import GroupDetails from "src/components/chat/rightPanel/GroupDetails.vue";
 import GroupChatSearch from "src/components/chat/rightPanel/GroupChatSearch.vue";
-import UserService from "../services/users";
 import EmojiPicker from "src/components/chat/EmojiPicker.vue";
 
 export default defineComponent({
@@ -250,8 +249,6 @@ export default defineComponent({
         }
       ]
     };
-
-    // const users = useLoadUsers();
 
     const state = reactive({
       messages: [],
@@ -369,7 +366,7 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      state.messages = range(15).map((n) => {
+      state.messages = range(15).map(() => {
         const userId = randInt(1, 2);
         return {
           userId,
@@ -379,8 +376,6 @@ export default defineComponent({
         };
       });
       scrollToEndOfMsgContainer();
-      const users = UserService.getAll();
-      console.log(users);
     });
 
     return {

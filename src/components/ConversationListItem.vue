@@ -12,7 +12,7 @@
       </q-item-label>
       <q-item-label caption lines="1">
         {{
-          `${conversation.lastMsg.you ? "You: " : `${conversation.lastMsg.userName}: `}${
+          `${conversation.lastMsg.you ? "You: " : `${conversation.lastMsg.username}: `}${
             conversation.lastMsg.txt
           }`
         }}

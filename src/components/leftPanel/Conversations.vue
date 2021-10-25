@@ -72,6 +72,7 @@
 import { defineComponent, reactive, computed, onMounted } from "vue";
 import ConversationListItem from "src/components/ConversationListItem.vue";
 import { CONVERSTATION_TYPE, MSG_TYPE } from "src/utils/constants";
+import ChatService from "src/services/chats";
 
 export default defineComponent({
   name: "conversations",
@@ -134,7 +135,26 @@ export default defineComponent({
       }
     };
 
-    onMounted(() => {
+    onMounted(async () => {
+      const chats = await ChatService.getAll();
+      chats.forEach((snapshot) => {
+        const data = snapshot.data();
+        state.conversations.push({
+          id: snapshot.id,
+          createdAt: new Date(data.createdAt.seconds),
+          name: data.name,
+          avatar: data.avatar,
+          type: data.type,
+          lastMsg: {
+            txt: data.lastMsg.txt,
+            you: data.lastMsg.you,
+            username: data.lastMsg.username,
+            sentAt: new Date(data.lastMsg.sentAt.seconds),
+            type: data.lastMsg.type
+          }
+        });
+      });
+
       const selfConversation = {
         id: 1,
         type: CONVERSTATION_TYPE.SELF,
@@ -172,7 +192,7 @@ export default defineComponent({
         lastMsg: {
           txt: "Hello!",
           you: false,
-          userName: "Some user",
+          username: "Some user",
           sentAt: new Date(),
           type: MSG_TYPE.TXT
         }
