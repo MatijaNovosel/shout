@@ -28,7 +28,7 @@
         <q-icon name="mdi-magnify" />
       </template>
     </q-input>
-    <q-tab-panels v-model="state.tab" style="height: 92px" class="emoji-tab-panels">
+    <q-tab-panels v-model="state.tab" style="height: 92px" class="emoji-tab-panels q-pb-sm">
       <q-tab-panel
         class="q-py-none text-center"
         :name="category"

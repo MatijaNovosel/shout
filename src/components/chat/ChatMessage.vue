@@ -23,7 +23,7 @@
       <q-btn size="xs" flat round icon="mdi-chevron-down">
         <q-menu dark left>
           <q-list dense style="min-width: 100px">
-            <q-item clickable v-close-popup @click="openRightPanel">
+            <q-item clickable v-close-popup>
               <q-item-section>Reply</q-item-section>
             </q-item>
             <q-item clickable v-close-popup>

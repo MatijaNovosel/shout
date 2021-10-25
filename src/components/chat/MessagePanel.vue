@@ -1,61 +1,64 @@
 <template>
-  <q-scroll-area
-    :thumb-style="{
-      right: '2px',
-      backgroundColor: '#97999c',
-      width: '5px',
-      opacity: 0.75
-    }"
-    class="msg-container row q-px-xl q-py-md"
-    :style="state.msgContainerStyle"
-    ref="msgContainer"
-    @scroll="msgContainerScrollChanged"
-  >
-    <q-menu dark touch-position context-menu>
-      <q-list dense style="min-width: 100px">
-        <q-item clickable v-close-popup>
-          <q-item-section>Contact info</q-item-section>
-        </q-item>
-        <q-item clickable v-close-popup>
-          <q-item-section>Select messages</q-item-section>
-        </q-item>
-        <q-item clickable v-close-popup>
-          <q-item-section>Mute notifications</q-item-section>
-        </q-item>
-        <q-item clickable v-close-popup>
-          <q-item-section>Clear messages</q-item-section>
-        </q-item>
-        <q-item clickable v-close-popup>
-          <q-item-section>Delete chat</q-item-section>
-        </q-item>
-      </q-list>
-    </q-menu>
-    <div
-      v-for="message in messages"
-      :key="message.id"
-      class="col-12 row pos-rel"
-      :class="{
-        'justify-end': message.sent
+  <upload-overlay>
+    <q-scroll-area
+      :thumb-style="{
+        right: '2px',
+        backgroundColor: '#97999c',
+        width: '5px',
+        opacity: 0.75
       }"
+      class="msg-container row q-px-xl q-py-md"
+      :style="state.msgContainerStyle"
+      ref="msgContainer"
+      @scroll="msgContainerScrollChanged"
     >
-      <chat-message
-        :audio-content="message.audioContent"
-        :txt="message.txt"
-        sent-at="7 minutes ago"
-        :bg-color="message.sent ? 'teal-9' : 'blue-grey-9'"
-        text-color="white"
-        class="chat-msg pos-rel"
-        :type="message.type"
-        :sent="message.sent"
-      />
-    </div>
-  </q-scroll-area>
+      <q-menu dark touch-position context-menu>
+        <q-list dense style="min-width: 100px">
+          <q-item clickable v-close-popup>
+            <q-item-section>Contact info</q-item-section>
+          </q-item>
+          <q-item clickable v-close-popup>
+            <q-item-section>Select messages</q-item-section>
+          </q-item>
+          <q-item clickable v-close-popup>
+            <q-item-section>Mute notifications</q-item-section>
+          </q-item>
+          <q-item clickable v-close-popup>
+            <q-item-section>Clear messages</q-item-section>
+          </q-item>
+          <q-item clickable v-close-popup>
+            <q-item-section>Delete chat</q-item-section>
+          </q-item>
+        </q-list>
+      </q-menu>
+      <div
+        v-for="message in messages"
+        :key="message.id"
+        class="col-12 row pos-rel"
+        :class="{
+          'justify-end': message.sent
+        }"
+      >
+        <chat-message
+          :audio-content="message.audioContent"
+          :txt="message.txt"
+          sent-at="7 minutes ago"
+          :bg-color="message.sent ? 'teal-9' : 'blue-grey-9'"
+          text-color="white"
+          class="chat-msg pos-rel"
+          :type="message.type"
+          :sent="message.sent"
+        />
+      </div>
+    </q-scroll-area>
+  </upload-overlay>
 </template>
 
 <script>
 import { defineComponent, ref, reactive, nextTick, watch, computed } from "vue";
 import { MSG_TYPE } from "src/utils/constants";
 import ChatMessage from "./ChatMessage.vue";
+import UploadOverlay from "../UploadOverlay.vue";
 
 export default defineComponent({
   name: "message-panel",
@@ -75,7 +78,8 @@ export default defineComponent({
     }
   },
   components: {
-    ChatMessage
+    ChatMessage,
+    UploadOverlay
   },
   setup(props, { emit }) {
     const msgContainer = ref(null);
