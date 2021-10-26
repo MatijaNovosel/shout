@@ -138,10 +138,12 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
+@import "src/utils/variables.scss";
+
 .emoji-list {
   max-height: 200px;
   overflow-y: auto;
-  background-color: #2a2f32;
+  background-color: $bg-dark-3;
 }
 
 .emoji-tab-panels {

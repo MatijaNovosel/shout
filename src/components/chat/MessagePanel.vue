@@ -62,7 +62,7 @@ import UploadOverlay from "../UploadOverlay.vue";
 
 export default defineComponent({
   name: "message-panel",
-  emits: ["should-show-scroll-to-bottom"],
+  emits: ["should-show-scroll-to-bottom", "file-uploaded"],
   props: {
     messages: {
       type: Array,
@@ -112,7 +112,7 @@ export default defineComponent({
     };
 
     const filesUploaded = (files) => {
-      console.log(files);
+      emit("file-uploaded", files);
     };
 
     watch(

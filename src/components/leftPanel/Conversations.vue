@@ -224,7 +224,7 @@ export default defineComponent({
 }
 
 .chat-top {
-  background-color: #2a2f32;
+  background-color: $bg-dark-3;
 }
 
 .enable-desktop-notifications-link {

@@ -1,7 +1,7 @@
 <template>
   <div class="overlay-container" @dragover="dragover" @drop="drop">
     <div class="full-width overlay-indicator" v-show="state.draggingOver" @dragleave="dragleave">
-      <h2 class="pointer-events-none text-grey text-h6 overlay-indicator-text">Drag file here</h2>
+      <h2 class="pointer-events-none text-grey text-h6">Drag file here</h2>
     </div>
     <input
       type="file"
@@ -82,10 +82,5 @@ export default defineComponent({
 
 .pointer-events-none {
   pointer-events: none;
-}
-
-.overlay-indicator-text {
-  border: 2px dotted grey;
-  padding: 33%;
 }
 </style>

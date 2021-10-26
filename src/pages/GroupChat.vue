@@ -112,12 +112,23 @@
             </q-btn>
           </div>
         </div>
-        <message-panel
-          @should-show-scroll-to-bottom="shouldShowScrollToBottom"
-          :messages="state.messages"
-          :scroll-to-bottom-trigger="state.scrollToBottomTrigger"
-          :emoji-panel-open="state.emojiPanelOpen"
-        />
+        <keep-alive>
+          <message-panel
+            v-show="!state.addingFile"
+            @should-show-scroll-to-bottom="shouldShowScrollToBottom"
+            @file-uploaded="fileUploaded"
+            :messages="state.messages"
+            :scroll-to-bottom-trigger="state.scrollToBottomTrigger"
+            :emoji-panel-open="state.emojiPanelOpen"
+          />
+        </keep-alive>
+        <keep-alive>
+          <add-file-panel
+            @close="state.addingFile = false"
+            :files="state.files"
+            v-show="state.addingFile"
+          />
+        </keep-alive>
         <div class="emoji-panel" v-if="state.emojiPanelOpen">
           <emoji-picker @close="state.emojiPanelOpen = false" @emoji="insertEmoji" />
         </div>
@@ -177,7 +188,7 @@
             </template>
           </div>
           <q-btn
-            v-show="state.shouldShowScrollToBottom"
+            v-show="state.shouldShowScrollToBottom && !state.addingFile"
             @click="scrollToEndOfMsgContainer"
             fab
             icon="mdi-chevron-down"
@@ -216,6 +227,7 @@ import MessagePanel from "src/components/chat/MessagePanel.vue";
 import GroupDetails from "src/components/chat/rightPanel/GroupDetails.vue";
 import GroupChatSearch from "src/components/chat/rightPanel/GroupChatSearch.vue";
 import EmojiPicker from "src/components/chat/EmojiPicker.vue";
+import AddFilePanel from "src/components/AddFilePanel.vue";
 
 export default defineComponent({
   name: "ChatDetails",
@@ -223,7 +235,8 @@ export default defineComponent({
     MessagePanel,
     GroupDetails,
     GroupChatSearch,
-    EmojiPicker
+    EmojiPicker,
+    AddFilePanel
   },
   setup() {
     const groupDetails = {
@@ -251,7 +264,9 @@ export default defineComponent({
     };
 
     const state = reactive({
+      addingFile: false,
       messages: [],
+      files: [],
       elapsedRecordingSeconds: 0,
       elapsedRecordingSecondsFormatted: computed(() => {
         const { m, s } = secondsToElapsedTime(state.elapsedRecordingSeconds);
@@ -365,6 +380,11 @@ export default defineComponent({
       }
     };
 
+    const fileUploaded = (files) => {
+      state.addingFile = true;
+      state.files = files;
+    };
+
     onMounted(() => {
       state.messages = range(15).map(() => {
         const userId = randInt(1, 2);
@@ -389,7 +409,8 @@ export default defineComponent({
       openRightPanel,
       groupDetails,
       GROUP_CHAT_RIGHT_PANEL,
-      insertEmoji
+      insertEmoji,
+      fileUploaded
       // users
     };
   }
@@ -397,6 +418,8 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
+@import "src/utils/variables.scss";
+
 .chat-panel-bg {
   position: relative;
   background-image: url("../assets/bgTransparent.png");
@@ -404,11 +427,11 @@ export default defineComponent({
 }
 
 .chat-top {
-  background-color: #2a2f32;
+  background-color: $bg-dark-3;
 }
 
 .bottom-bar {
-  background-color: #2a2f32;
+  background-color: $bg-dark-3;
   height: 58px;
   display: flex;
   width: 100%;

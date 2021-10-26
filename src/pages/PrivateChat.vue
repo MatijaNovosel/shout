@@ -280,6 +280,8 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
+@import "src/utils/variables.scss";
+
 .chat-panel-bg {
   position: relative;
   background-image: url("../assets/bgTransparent.png");
@@ -287,11 +289,11 @@ export default defineComponent({
 }
 
 .chat-top {
-  background-color: #2a2f32;
+  background-color: $bg-dark-3;
 }
 
 .chat-bottom {
-  background-color: #2a2f32;
+  background-color: $bg-dark-3;
   height: 58px;
 }
 
@@ -302,7 +304,7 @@ export default defineComponent({
 }
 
 .bottom-bar {
-  background-color: #2a2f32;
+  background-color: $bg-dark-3;
   height: 58px;
   display: flex;
   width: 100%;
