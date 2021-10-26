@@ -141,7 +141,7 @@ export default defineComponent({
         const data = snapshot.data();
         state.conversations.push({
           id: snapshot.id,
-          createdAt: new Date(data.createdAt.seconds),
+          createdAt: new Date(data.createdAt.seconds * 1000),
           name: data.name,
           avatar: data.avatar,
           type: data.type,
@@ -149,7 +149,7 @@ export default defineComponent({
             txt: data.lastMsg.txt,
             you: data.lastMsg.you,
             username: data.lastMsg.username,
-            sentAt: new Date(data.lastMsg.sentAt.seconds),
+            sentAt: new Date(data.lastMsg.sentAt.seconds * 1000),
             type: data.lastMsg.type
           }
         });

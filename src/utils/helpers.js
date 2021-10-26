@@ -1,3 +1,5 @@
+import { MIME_TYPES, MIME_TYPE_ICONS } from "./constants";
+
 export function range(start, stop, step) {
   if (typeof stop === "undefined") {
     stop = start;
@@ -51,4 +53,13 @@ export function secondsToElapsedTime(secs) {
   };
 
   return obj;
+}
+
+export function getFileExtension(fileName) {
+  const ext = /^.+\.([^.]+)$/.exec(fileName);
+  return ext == null ? "" : ext[1];
+}
+
+export function getFileIcon(fileName) {
+  return MIME_TYPE_ICONS[MIME_TYPES[getFileExtension(fileName)]];
 }

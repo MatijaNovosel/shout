@@ -132,7 +132,7 @@
         <div class="emoji-panel" v-if="state.emojiPanelOpen">
           <emoji-picker @close="state.emojiPanelOpen = false" @emoji="insertEmoji" />
         </div>
-        <div class="bottom-bar q-py-sm q-px-md">
+        <div class="bottom-bar q-py-sm q-px-md" v-show="!state.addingFile">
           <div class="bottom-bar-left">
             <q-btn
               flat
@@ -382,7 +382,7 @@ export default defineComponent({
 
     const fileUploaded = (files) => {
       state.addingFile = true;
-      state.files = files;
+      state.files = [...files];
     };
 
     onMounted(() => {
