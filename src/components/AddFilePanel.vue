@@ -1,16 +1,42 @@
 <template>
   <div class="add-file-container column items-center">
     <div class="self-start justify-between row items-center q-px-md top-bar full-width">
-      <q-btn size="sm" color="grey" icon="mdi-close" round flat @click="$emit('close')" />
+      <q-btn size="sm" color="grey" icon="mdi-close" round flat @click="close" />
       <span class="text-white q-ml-sm">
         {{ state.selectedFile !== null ? state.selectedFile.name : "No files found" }}
       </span>
       <q-btn size="sm" color="grey" icon="mdi-send" round flat />
     </div>
-    <div class="column">
-      <div class="col-12 q-pt-lg row">
+    <div
+      class="row justify-center items-center align-center text-center"
+      v-if="state.selectedFile !== null"
+    >
+      <div
+        class="col-12 q-pt-lg row justify-center items-center align-center text-grey text-center"
+      >
+        <img
+          class="preview-box"
+          :src="state.selectedFile.image"
+          v-if="['jpg', 'png', 'jpeg', 'gif'].includes(getFileExtension(state.selectedFile.name))"
+        />
         <div
-          class="file-preview-item q-mr-md"
+          class="
+            preview-box-bg
+            column
+            justify-center
+            items-center
+            align-center
+            text-grey text-center
+          "
+          v-else
+        >
+          <q-icon size="60px" name="mdi-file" />
+          <span class="q-pt-sm"> No preview available. </span>
+        </div>
+      </div>
+      <div class="col-12 q-pt-lg row justify-center items-center">
+        <div
+          class="file-preview-item q-mr-md row justify-center items-center align-center"
           v-for="(file, i) in state.files"
           :key="i"
           :class="{
@@ -33,6 +59,12 @@
             size="40px"
             :name="getFileIcon(file.name)"
           />
+          <span class="text-bold text-grey q-mt-xs">
+            {{ getFileExtension(file.name).toUpperCase() }}
+          </span>
+        </div>
+        <div class="file-preview-item q-mr-md row justify-center items-center align-center">
+          <q-icon class="cursor-pointer" color="teal" size="40px" name="mdi-plus" />
         </div>
       </div>
     </div>
@@ -41,7 +73,7 @@
 
 <script>
 import { defineComponent, reactive, onMounted, onUnmounted, watch } from "vue";
-import { getFileIcon } from "src/utils/helpers";
+import { getFileIcon, getFileExtension, readUrl } from "src/utils/helpers";
 
 export default defineComponent({
   name: "add-file-panel",
@@ -58,9 +90,14 @@ export default defineComponent({
       files: []
     });
 
+    const close = () => {
+      state.files = [];
+      emit("close");
+    };
+
     const escape = (e) => {
       if (e.keyCode === 27) {
-        emit("close");
+        close();
       }
     };
 
@@ -70,15 +107,15 @@ export default defineComponent({
       if (state.files.length === 1) {
         state.selectedFile = null;
         state.files.splice(foundFileIndex, 1);
-        emit("close");
+        close();
       } else {
         if (state.selectedFile.name === file.name) {
           if (foundFileIndex - 1 in state.files) {
-            state.files.splice(foundFileIndex, 1);
             state.selectedFile = state.files[foundFileIndex - 1];
-          } else {
             state.files.splice(foundFileIndex, 1);
+          } else {
             state.selectedFile = state.files[foundFileIndex + 1];
+            state.files.splice(foundFileIndex, 1);
           }
         } else {
           state.files.splice(foundFileIndex, 1);
@@ -102,9 +139,14 @@ export default defineComponent({
 
     watch(
       () => props.files,
-      (val) => {
-        state.files = [...val];
-        if (state.files.length !== 0) {
+      async (val) => {
+        const files = [...val];
+        if (files.length !== 0) {
+          for (let i = 0; i < files.length; i++) {
+            const url = await readUrl(files[i]);
+            files[i].image = url;
+            state.files.push(files[i]);
+          }
           state.selectedFile = state.files[0];
         }
       },
@@ -117,7 +159,9 @@ export default defineComponent({
       state,
       getFileIcon,
       removeFile,
-      setActiveFile
+      setActiveFile,
+      getFileExtension,
+      close
     };
   }
 });
@@ -143,6 +187,8 @@ export default defineComponent({
   padding: 1em;
   border-radius: 8px;
   position: relative;
+  width: 90px;
+  height: 90px;
 }
 
 .active-file-item {
@@ -153,5 +199,16 @@ export default defineComponent({
   top: 2px;
   right: 2px;
   position: absolute;
+}
+
+.preview-box {
+  height: 300px;
+  width: 300px;
+  border-radius: 10px;
+}
+
+.preview-box-bg {
+  @extend .preview-box;
+  background-color: $bg-dark-3;
 }
 </style>
