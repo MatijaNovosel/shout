@@ -1,7 +1,7 @@
 <template>
-  <div class="overlay-container" @dragover="dragover" @dragleave="dragleave" @drop="drop">
-    <div class="full-height full-width overlay-indicator bg-grey" v-show="state.draggingOver">
-      <img src="../assets/plenkovic.jpg" />
+  <div class="overlay-container" @dragover="dragover" @drop="drop">
+    <div class="full-width overlay-indicator" v-show="state.draggingOver" @dragleave="dragleave">
+      <h2 class="pointer-events-none text-grey text-h6 overlay-indicator-text">Drag file here</h2>
     </div>
     <input
       type="file"
@@ -36,19 +36,18 @@ export default defineComponent({
     const dragover = (e) => {
       state.draggingOver = true;
       e.preventDefault();
-      // Add some visual fluff to show the user can drop its files here
     };
 
     const dragleave = (e) => {
+      console.log("btuh");
       state.draggingOver = false;
-      // Clean up
+      e.preventDefault();
     };
 
     const drop = (e) => {
       e.preventDefault();
       filePicker.value.files = e.dataTransfer.files;
       onChange();
-      // Clean up
     };
 
     return {
@@ -64,6 +63,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@import "src/utils/variables";
+
 .overlay-container {
   display: contents;
 }
@@ -74,5 +75,17 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
   z-index: 999;
+  background-color: $bg-dark-1;
+  height: calc(100% - 56px);
+  top: 56px;
+}
+
+.pointer-events-none {
+  pointer-events: none;
+}
+
+.overlay-indicator-text {
+  border: 2px dotted grey;
+  padding: 33%;
 }
 </style>

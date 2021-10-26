@@ -50,11 +50,13 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
+@import "src/utils/variables";
+
 .bg {
-  background-color: #131c21 !important;
+  background-color: $bg-dark-2 !important;
 }
 
 .back-button-container {
-  background-color: #323739;
+  background-color: $bg-dark-1;
 }
 </style>

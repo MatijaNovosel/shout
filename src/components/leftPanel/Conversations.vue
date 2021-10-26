@@ -212,12 +212,14 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
+@import "src/utils/variables";
+
 .search-bar-container {
-  background-color: #131c21;
+  background-color: $bg-dark-2;
 }
 
 .user-list-container {
-  background-color: #131c21;
+  background-color: $bg-dark-2;
   overflow-y: auto;
 }
 
