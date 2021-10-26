@@ -11,15 +11,28 @@
       <div class="col-12 q-pt-lg row">
         <div
           class="file-preview-item q-mr-md"
-          v-for="(file, i) in files"
+          v-for="(file, i) in state.files"
           :key="i"
           :class="{
             'active-file-item': state.selectedFile.name === file.name
           }"
-          @click="state.selectedFile = file"
         >
-          <q-btn class="top-right-remove-btn" size="xs" color="grey" icon="mdi-close" round flat />
-          <q-icon color="white" size="50px" :name="getFileIcon(file.name)" />
+          <q-btn
+            @click="removeFile(file)"
+            class="top-right-remove-btn"
+            size="xs"
+            color="grey"
+            icon="mdi-close"
+            round
+            flat
+          />
+          <q-icon
+            class="cursor-pointer"
+            @click="setActiveFile(file)"
+            color="white"
+            size="40px"
+            :name="getFileIcon(file.name)"
+          />
         </div>
       </div>
     </div>
@@ -51,6 +64,34 @@ export default defineComponent({
       }
     };
 
+    const removeFile = (file) => {
+      const foundFileIndex = state.files.findIndex((f) => f.name === file.name);
+
+      if (state.files.length === 1) {
+        state.selectedFile = null;
+        state.files.splice(foundFileIndex, 1);
+        emit("close");
+      } else {
+        if (state.selectedFile.name === file.name) {
+          if (foundFileIndex - 1 in state.files) {
+            state.files.splice(foundFileIndex, 1);
+            state.selectedFile = state.files[foundFileIndex - 1];
+          } else {
+            state.files.splice(foundFileIndex, 1);
+            state.selectedFile = state.files[foundFileIndex + 1];
+          }
+        } else {
+          state.files.splice(foundFileIndex, 1);
+        }
+      }
+    };
+
+    const setActiveFile = (file) => {
+      if (state.selectedFile.name !== file.name) {
+        state.selectedFile = file;
+      }
+    };
+
     onMounted(() => {
       document.addEventListener("keyup", escape);
     });
@@ -74,7 +115,9 @@ export default defineComponent({
 
     return {
       state,
-      getFileIcon
+      getFileIcon,
+      removeFile,
+      setActiveFile
     };
   }
 });
@@ -99,7 +142,6 @@ export default defineComponent({
   background-color: $bg-dark-3;
   padding: 1em;
   border-radius: 8px;
-  cursor: pointer;
   position: relative;
 }
 

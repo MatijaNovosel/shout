@@ -16,7 +16,10 @@
 </template>
 
 <script>
-import { defineComponent, reactive, ref } from "vue";
+import { defineComponent, reactive, ref, computed } from "vue";
+import { MIME_TYPES } from "src/utils/constants";
+import { getFileExtension } from "src/utils/helpers";
+import { Notify } from "quasar";
 
 export default defineComponent({
   name: "upload-overlay",
@@ -26,7 +29,14 @@ export default defineComponent({
 
     const state = reactive({
       filelist: [],
-      draggingOver: false
+      draggingOver: false,
+      allowedExtensions: computed(() => {
+        const extensions = [];
+        for (const extension in MIME_TYPES) {
+          extensions.push(extension);
+        }
+        return extensions;
+      })
     });
 
     const onChange = () => {
@@ -45,8 +55,23 @@ export default defineComponent({
 
     const drop = (e) => {
       e.preventDefault();
-      filePicker.value.files = e.dataTransfer.files;
+
       state.draggingOver = false;
+
+      if (
+        ![...e.dataTransfer.files]
+          .map((f) => getFileExtension(f.name).toLowerCase())
+          .every((ext) => state.allowedExtensions.includes(ext))
+      ) {
+        Notify.create({
+          message: "That file extension is not allowed!",
+          position: "top",
+          color: "red"
+        });
+        return;
+      }
+
+      filePicker.value.files = e.dataTransfer.files;
       onChange();
     };
 
