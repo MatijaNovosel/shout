@@ -20,7 +20,8 @@ import { defineComponent, reactive, ref } from "vue";
 
 export default defineComponent({
   name: "upload-overlay",
-  setup() {
+  emits: ["change"],
+  setup(props, { emit }) {
     const filePicker = ref(null);
 
     const state = reactive({
@@ -29,8 +30,7 @@ export default defineComponent({
     });
 
     const onChange = () => {
-      state.filelist = [...filePicker.value.files];
-      console.log(state.filelist);
+      emit("change", filePicker.value.files);
     };
 
     const dragover = (e) => {
@@ -39,7 +39,6 @@ export default defineComponent({
     };
 
     const dragleave = (e) => {
-      console.log("btuh");
       state.draggingOver = false;
       e.preventDefault();
     };
@@ -47,6 +46,7 @@ export default defineComponent({
     const drop = (e) => {
       e.preventDefault();
       filePicker.value.files = e.dataTransfer.files;
+      state.draggingOver = false;
       onChange();
     };
 

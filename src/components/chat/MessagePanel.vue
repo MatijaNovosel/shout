@@ -1,5 +1,5 @@
 <template>
-  <upload-overlay>
+  <upload-overlay @change="filesUploaded">
     <q-scroll-area
       :thumb-style="{
         right: '2px',
@@ -111,6 +111,10 @@ export default defineComponent({
       emit("should-show-scroll-to-bottom", e.verticalPercentage < 0.3);
     };
 
+    const filesUploaded = (files) => {
+      console.log(files);
+    };
+
     watch(
       () => props.scrollToBottomTrigger,
       () => scrollToEndOfMsgContainer()
@@ -120,7 +124,8 @@ export default defineComponent({
       msgContainer,
       msgContainerScrollChanged,
       state,
-      MSG_TYPE
+      MSG_TYPE,
+      filesUploaded
     };
   }
 });
