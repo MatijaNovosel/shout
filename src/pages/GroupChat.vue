@@ -121,6 +121,7 @@
             :scroll-to-bottom-trigger="state.scrollToBottomTrigger"
             :emoji-panel-open="state.emojiPanelOpen"
             :select-mode="state.selectMode"
+            :file-picker-trigger="state.filePickerTrigger"
           />
         </keep-alive>
         <keep-alive>
@@ -128,6 +129,7 @@
             @close="state.addingFile = false"
             :files="state.files"
             v-show="state.addingFile"
+            @trigger-file-picker="triggerFilePicker"
           />
         </keep-alive>
         <div class="emoji-panel" v-if="state.emojiPanelOpen">
@@ -140,9 +142,8 @@
               round
               :color="state.emojiPanelOpen ? 'teal' : 'white'"
               icon="mdi-emoticon"
-              @click="state.emojiPanelOpen = !state.emojiPanelOpen"
+              @click="openEmojiPanel"
             />
-            <q-btn flat round color="white" icon="mdi-paperclip" />
           </div>
           <div class="bottom-bar-center">
             <q-input
@@ -150,7 +151,7 @@
               dense
               rounded
               standout
-              placeholder="Type a message"
+              placeholder="Type a message or upload a file by dragging"
               v-model="state.msgText"
             />
           </div>
@@ -266,6 +267,7 @@ export default defineComponent({
 
     const state = reactive({
       addingFile: false,
+      filePickerTrigger: false,
       messages: [],
       selectMode: false,
       files: [],
@@ -365,6 +367,10 @@ export default defineComponent({
       }
     };
 
+    const triggerFilePicker = () => {
+      state.filePickerTrigger = !state.filePickerTrigger;
+    };
+
     const shouldShowScrollToBottom = (val) => {
       state.shouldShowScrollToBottom = val;
     };
@@ -385,6 +391,10 @@ export default defineComponent({
     const fileUploaded = (files) => {
       state.addingFile = true;
       state.files = [...files];
+    };
+
+    const openEmojiPanel = () => {
+      state.emojiPanelOpen = !state.emojiPanelOpen;
     };
 
     onMounted(() => {
@@ -412,8 +422,9 @@ export default defineComponent({
       groupDetails,
       GROUP_CHAT_RIGHT_PANEL,
       insertEmoji,
-      fileUploaded
-      // users
+      fileUploaded,
+      triggerFilePicker,
+      openEmojiPanel
     };
   }
 });

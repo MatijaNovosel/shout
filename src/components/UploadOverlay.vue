@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { defineComponent, reactive, ref, computed } from "vue";
+import { defineComponent, reactive, ref, computed, watch } from "vue";
 import { MIME_TYPES } from "src/utils/constants";
 import { getFileExtension } from "src/utils/helpers";
 import { Notify } from "quasar";
@@ -24,6 +24,12 @@ import { Notify } from "quasar";
 export default defineComponent({
   name: "upload-overlay",
   emits: ["change"],
+  props: {
+    filePickerTrigger: {
+      type: Boolean,
+      required: true
+    }
+  },
   setup(props, { emit }) {
     const filePicker = ref(null);
 
@@ -66,7 +72,18 @@ export default defineComponent({
         Notify.create({
           message: "That file extension is not allowed!",
           position: "top",
-          color: "red"
+          color: "dark",
+          textColor: "orange"
+        });
+        return;
+      }
+
+      if ([...e.dataTransfer.files].length > 5) {
+        Notify.create({
+          message: "You can upload a maximum of 5 files!",
+          position: "top",
+          color: "dark",
+          textColor: "orange"
         });
         return;
       }
@@ -74,6 +91,13 @@ export default defineComponent({
       filePicker.value.files = e.dataTransfer.files;
       onChange();
     };
+
+    watch(
+      () => props.filePickerTrigger,
+      () => {
+        filePicker.value.click();
+      }
+    );
 
     return {
       dragover,

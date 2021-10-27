@@ -1,5 +1,5 @@
 <template>
-  <upload-overlay @change="filesUploaded">
+  <upload-overlay @change="filesUploaded" :file-picker-trigger="state.filePickerTrigger">
     <q-scroll-area
       :thumb-style="{
         right: '2px',
@@ -74,6 +74,10 @@ export default defineComponent({
       type: Boolean,
       required: true
     },
+    filePickerTrigger: {
+      type: Boolean,
+      required: true
+    },
     emojiPanelOpen: {
       type: Boolean,
       required: true
@@ -92,6 +96,7 @@ export default defineComponent({
 
     const state = reactive({
       shouldShowScrollToBottom: false,
+      filePickerTrigger: false,
       msgContainerStyle: computed(() => {
         if (props.emojiPanelOpen === true) {
           return {
@@ -128,6 +133,11 @@ export default defineComponent({
     watch(
       () => props.scrollToBottomTrigger,
       () => scrollToEndOfMsgContainer()
+    );
+
+    watch(
+      () => props.filePickerTrigger,
+      () => (state.filePickerTrigger = !state.filePickerTrigger)
     );
 
     return {

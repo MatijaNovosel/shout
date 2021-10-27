@@ -63,8 +63,19 @@
             {{ getFileExtension(file.name).toUpperCase() }}
           </span>
         </div>
-        <div class="file-preview-item q-mr-md row justify-center items-center align-center">
-          <q-icon class="cursor-pointer" color="teal" size="40px" name="mdi-plus" />
+        <div
+          class="
+            file-preview-item
+            q-mr-md
+            row
+            justify-center
+            items-center
+            align-center
+            cursor-pointer
+          "
+          @click="triggerFilePickerManually"
+        >
+          <q-icon color="teal" size="40px" name="mdi-plus" />
         </div>
       </div>
     </div>
@@ -72,12 +83,12 @@
 </template>
 
 <script>
-import { defineComponent, reactive, onMounted, onUnmounted, watch } from "vue";
+import { defineComponent, reactive, onMounted, onUnmounted, watch, ref } from "vue";
 import { getFileIcon, getFileExtension, readUrl } from "src/utils/helpers";
 
 export default defineComponent({
   name: "add-file-panel",
-  emits: ["close"],
+  emits: ["close", "trigger-file-picker"],
   props: {
     files: {
       type: Object,
@@ -129,6 +140,10 @@ export default defineComponent({
       }
     };
 
+    const triggerFilePickerManually = () => {
+      emit("trigger-file-picker");
+    };
+
     onMounted(() => {
       document.addEventListener("keyup", escape);
     });
@@ -161,7 +176,8 @@ export default defineComponent({
       removeFile,
       setActiveFile,
       getFileExtension,
-      close
+      close,
+      triggerFilePickerManually
     };
   }
 });
