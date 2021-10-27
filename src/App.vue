@@ -22,12 +22,14 @@
 import { defineComponent, reactive } from "vue";
 import Conversations from "src/components/leftPanel/Conversations.vue";
 import Profile from "src/components/leftPanel/Profile.vue";
+import Settings from "src/components/leftPanel/Settings.vue";
 
 export default defineComponent({
   name: "App",
   components: {
     Conversations,
-    Profile
+    Profile,
+    Settings
   },
   setup() {
     const state = reactive({

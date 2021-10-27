@@ -21,7 +21,7 @@
               <q-item-section>Pinned</q-item-section>
             </q-item>
             <q-separator dark />
-            <q-item clickable v-close-popup>
+            <q-item clickable v-close-popup @click="$emit('set-left-panel', 'settings')">
               <q-item-section>Settings</q-item-section>
             </q-item>
             <q-separator dark />
