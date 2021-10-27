@@ -40,6 +40,7 @@
         }"
       >
         <chat-message
+          :select-mode="selectMode"
           :audio-content="message.audioContent"
           :txt="message.txt"
           sent-at="7 minutes ago"
@@ -48,6 +49,7 @@
           class="chat-msg pos-rel"
           :type="message.type"
           :sent="message.sent"
+          @selected="messageSelected"
         />
       </div>
     </q-scroll-area>
@@ -75,6 +77,10 @@ export default defineComponent({
     emojiPanelOpen: {
       type: Boolean,
       required: true
+    },
+    selectMode: {
+      type: Boolean,
+      required: false
     }
   },
   components: {
@@ -115,6 +121,10 @@ export default defineComponent({
       emit("file-uploaded", files);
     };
 
+    const messageSelected = () => {
+      //
+    };
+
     watch(
       () => props.scrollToBottomTrigger,
       () => scrollToEndOfMsgContainer()
@@ -125,7 +135,8 @@ export default defineComponent({
       msgContainerScrollChanged,
       state,
       MSG_TYPE,
-      filesUploaded
+      filesUploaded,
+      messageSelected
     };
   }
 });

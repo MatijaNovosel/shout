@@ -92,7 +92,7 @@
                   >
                     <q-item-section>Group info</q-item-section>
                   </q-item>
-                  <q-item clickable v-close-popup>
+                  <q-item clickable v-close-popup @click="state.selectMode = true">
                     <q-item-section>Select messages</q-item-section>
                   </q-item>
                   <q-item clickable v-close-popup>
@@ -120,6 +120,7 @@
             :messages="state.messages"
             :scroll-to-bottom-trigger="state.scrollToBottomTrigger"
             :emoji-panel-open="state.emojiPanelOpen"
+            :select-mode="state.selectMode"
           />
         </keep-alive>
         <keep-alive>
@@ -266,6 +267,7 @@ export default defineComponent({
     const state = reactive({
       addingFile: false,
       messages: [],
+      selectMode: false,
       files: [],
       elapsedRecordingSeconds: 0,
       elapsedRecordingSecondsFormatted: computed(() => {
