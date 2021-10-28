@@ -31,6 +31,10 @@ const routes = [
     ]
   },
   {
+    path: "/login",
+    component: () => import("pages/Login.vue")
+  },
+  {
     path: "/:catchAll(.*)*",
     component: () => import("pages/Error404.vue")
   }
