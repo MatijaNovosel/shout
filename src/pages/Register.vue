@@ -24,15 +24,15 @@
                 clearable
                 type="password"
                 label="Password"
-                v-model="state.email"
+                v-model="state.password"
               />
             </q-form>
           </q-card-section>
           <q-card-actions class="q-px-md row justify-center">
-            <q-btn @click="login" unelevated color="light-green-7" label="Login" />
+            <q-btn unelevated color="light-green-7" label="Register" @click="register" />
           </q-card-actions>
           <q-card-section class="text-center q-pa-none">
-            <p class="text-grey-6">Not registered? Create an account</p>
+            <p class="text-grey-6">Have an account? Sign in.</p>
           </q-card-section>
         </q-card>
       </div>
@@ -46,7 +46,7 @@ import firebase from "firebase";
 import { Notify } from "quasar";
 
 export default defineComponent({
-  name: "Login",
+  name: "Register",
   setup() {
     const state = reactive({
       email: null,
@@ -54,12 +54,12 @@ export default defineComponent({
       loading: false
     });
 
-    const login = () => {
+    const register = () => {
       try {
         state.loading = true;
-        firebase.auth().signInWithEmailAndPassword(state.email, state.password);
+        const data = firebase.auth().createUserWithEmailAndPassword(state.email, state.password);
         Notify.create({
-          message: "You have successfully signed in",
+          message: "You have successfully created an account",
           position: "top",
           color: "dark",
           textColor: "orange"
@@ -77,12 +77,13 @@ export default defineComponent({
     };
 
     return {
-      login,
+      register,
       state
     };
   }
 });
 </script>
+
 <style lang="scss" scoped>
 .login-card {
   width: 700px;
