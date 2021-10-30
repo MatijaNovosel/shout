@@ -76,11 +76,11 @@ export default defineComponent({
     },
     filePickerTrigger: {
       type: Boolean,
-      required: true
+      required: false
     },
     emojiPanelOpen: {
       type: Boolean,
-      required: true
+      required: false
     },
     selectMode: {
       type: Boolean,

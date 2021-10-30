@@ -25,7 +25,7 @@
               <q-item-section>Settings</q-item-section>
             </q-item>
             <q-separator dark />
-            <q-item clickable v-close-popup>
+            <q-item clickable v-close-popup @click="logOut">
               <q-item-section>Log out</q-item-section>
             </q-item>
           </q-list>
@@ -73,6 +73,10 @@ import { defineComponent, reactive, computed, onMounted } from "vue";
 import ConversationListItem from "src/components/ConversationListItem.vue";
 import { CONVERSTATION_TYPE, MSG_TYPE } from "src/utils/constants";
 import ChatService from "src/services/chats";
+import firebase from "firebase";
+import { Notify } from "quasar";
+import { ROUTE_NAMES } from "src/router/routeNames";
+import router from "src/router/index";
 
 export default defineComponent({
   name: "conversations",
@@ -203,9 +207,32 @@ export default defineComponent({
       state.conversations.push(groupConversation);
     });
 
+    const logOut = async () => {
+      try {
+        await firebase.auth().signOut();
+        Notify.create({
+          message: "Signed out!",
+          position: "top",
+          color: "dark",
+          textColor: "orange"
+        });
+        router().push({
+          name: ROUTE_NAMES.LOGIN
+        });
+      } catch (e) {
+        Notify.create({
+          message: e.message,
+          position: "top",
+          color: "dark",
+          textColor: "orange"
+        });
+      }
+    };
+
     return {
       state,
-      askNotificationPermission
+      askNotificationPermission,
+      logOut
     };
   }
 });

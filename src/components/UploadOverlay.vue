@@ -27,7 +27,7 @@ export default defineComponent({
   props: {
     filePickerTrigger: {
       type: Boolean,
-      required: true
+      required: false
     }
   },
   setup(props, { emit }) {

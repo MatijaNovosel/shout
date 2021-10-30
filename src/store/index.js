@@ -1,10 +1,12 @@
 import { store } from "quasar/wrappers";
 import { createStore } from "vuex";
+import userModule from "./user/index";
 
-export default store(function () {
-  const Store = createStore({
-    modules: {},
+export default store(() => {
+  return createStore({
+    modules: {
+      user: userModule
+    },
     strict: process.env.DEBUGGING
   });
-  return Store;
 });

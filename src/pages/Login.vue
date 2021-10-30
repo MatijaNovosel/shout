@@ -24,7 +24,7 @@
                 clearable
                 type="password"
                 label="Password"
-                v-model="state.email"
+                v-model="state.password"
               />
             </q-form>
           </q-card-section>
@@ -44,6 +44,8 @@
 import { defineComponent, reactive } from "vue";
 import firebase from "firebase";
 import { Notify } from "quasar";
+import router from "src/router/index";
+import { ROUTE_NAMES } from "src/router/routeNames";
 
 export default defineComponent({
   name: "Login",
@@ -54,15 +56,18 @@ export default defineComponent({
       loading: false
     });
 
-    const login = () => {
+    const login = async () => {
       try {
         state.loading = true;
-        firebase.auth().signInWithEmailAndPassword(state.email, state.password);
+        await firebase.auth().signInWithEmailAndPassword(state.email, state.password);
         Notify.create({
           message: "You have successfully signed in",
           position: "top",
           color: "dark",
           textColor: "orange"
+        });
+        router().push({
+          name: ROUTE_NAMES.HOME
         });
       } catch (e) {
         Notify.create({

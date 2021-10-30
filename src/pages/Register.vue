@@ -54,10 +54,15 @@ export default defineComponent({
       loading: false
     });
 
-    const register = () => {
+    const register = async () => {
       try {
         state.loading = true;
-        const data = firebase.auth().createUserWithEmailAndPassword(state.email, state.password);
+        const data = await firebase
+          .auth()
+          .createUserWithEmailAndPassword(state.email, state.password);
+        data.user.updateProfile({
+          displayName: state.email
+        });
         Notify.create({
           message: "You have successfully created an account",
           position: "top",

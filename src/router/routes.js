@@ -8,9 +8,16 @@ const routes = [
       {
         path: "",
         name: ROUTE_NAMES.HOME,
+        meta: {
+          authRequired: true
+        },
         component: () => import("src/pages/Home.vue"),
         children: [
-          { path: "/", name: ROUTE_NAMES.INDEX, component: () => import("src/pages/Index.vue") },
+          {
+            path: "/",
+            name: ROUTE_NAMES.INDEX,
+            component: () => import("src/pages/Index.vue")
+          },
           {
             path: "private-chat/:id",
             name: ROUTE_NAMES.PRIVATE_CHAT,
@@ -32,10 +39,12 @@ const routes = [
   },
   {
     path: "/login",
+    name: ROUTE_NAMES.LOGIN,
     component: () => import("pages/Login.vue")
   },
   {
     path: "/register",
+    name: ROUTE_NAMES.REGISTER,
     component: () => import("pages/Register.vue")
   },
   {
