@@ -32,4 +32,4 @@ yarn-error.log*
 *.njsproj
 *.sln
 
-/src/firebase/config.js
+/src/boot/firebaseConfig.js

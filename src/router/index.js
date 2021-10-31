@@ -1,8 +1,8 @@
 import { route } from "quasar/wrappers";
 import { createRouter, createWebHistory } from "vue-router";
 import routes from "./routes";
-import firebase from "firebase";
 import { ROUTE_NAMES } from "./routeNames";
+import firebase from "firebase";
 
 export default route(() => {
   const router = createRouter({
@@ -11,10 +11,10 @@ export default route(() => {
     history: createWebHistory()
   });
 
-  router.beforeEach((to, from, next) => {
-    if (to.matched.some((record) => record.meta.authRequired)) {
-      console.log(firebase.auth().currentUser);
-      if (firebase.auth().currentUser) {
+  router.beforeEach(async (to, from, next) => {
+    if (to.matched.some(record => record.meta.authRequired)) {
+      const user = await firebase.getCurrentUser();
+      if (user) {
         next();
       } else {
         next({

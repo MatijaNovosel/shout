@@ -1,6 +1,6 @@
-import firebase from "../firebase";
+import firebase from "src/boot/firebase";
 
-const chatsCollection = firebase.collection("/chats");
+const chatsCollection = firebase.firestore().collection("/chats");
 
 class ChatService {
   getAll() {
