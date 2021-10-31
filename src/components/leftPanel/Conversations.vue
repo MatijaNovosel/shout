@@ -74,8 +74,8 @@ import ConversationListItem from "src/components/ConversationListItem.vue";
 import firebase from "firebase";
 import { Notify } from "quasar";
 import { ROUTE_NAMES } from "src/router/routeNames";
-import router from "src/router/index";
 import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   name: "conversations",
@@ -85,6 +85,7 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
+    const router = useRouter();
 
     const state = reactive({
       conversations: computed(() => {
@@ -121,11 +122,11 @@ export default defineComponent({
         console.log("This browser does not support notifications.");
       } else {
         if (checkNotificationPromise()) {
-          Notification.requestPermission().then(permission => {
+          Notification.requestPermission().then((permission) => {
             handlePermission(permission);
           });
         } else {
-          Notification.requestPermission(permission => {
+          Notification.requestPermission((permission) => {
             handlePermission(permission);
           });
         }
@@ -151,7 +152,7 @@ export default defineComponent({
           color: "dark",
           textColor: "orange"
         });
-        router().push({
+        router.push({
           name: ROUTE_NAMES.LOGIN
         });
       } catch (e) {

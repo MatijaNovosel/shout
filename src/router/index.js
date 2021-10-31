@@ -12,7 +12,7 @@ export default route(() => {
   });
 
   router.beforeEach(async (to, from, next) => {
-    if (to.matched.some(record => record.meta.authRequired)) {
+    if (to.matched.some((record) => record.meta.authRequired)) {
       const user = await firebase.getCurrentUser();
       if (user) {
         next();

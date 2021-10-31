@@ -9,6 +9,7 @@ module.exports = configure(function (ctx) {
     extras: ["roboto-font", "material-icons", "mdi-v6"],
     build: {
       vueRouterMode: "history",
+      publicPath: "/",
       chainWebpack(chain) {
         chain.plugin("eslint-webpack-plugin").use(ESLintPlugin, [{ extensions: ["js", "vue"] }]);
       }

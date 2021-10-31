@@ -16,7 +16,7 @@
         </keep-alive>
       </div>
       <div class="col-9 full-height right-panel">
-        <router-view :key="$route.name" />
+        <router-view></router-view>
       </div>
     </div>
     <q-resize-observer @resize="changeMainContainerWidth" />

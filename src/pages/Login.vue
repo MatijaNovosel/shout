@@ -14,6 +14,7 @@
                 filled
                 clearable
                 type="email"
+                name="email"
                 label="Email"
                 v-model="state.email"
               />
@@ -23,6 +24,7 @@
                 filled
                 clearable
                 type="password"
+                name="password"
                 label="Password"
                 v-model="state.password"
               />
@@ -44,12 +46,14 @@
 import { defineComponent, reactive } from "vue";
 import firebase from "firebase";
 import { Notify } from "quasar";
-import router from "src/router/index";
+import { useRouter } from "vue-router";
 import { ROUTE_NAMES } from "src/router/routeNames";
 
 export default defineComponent({
   name: "Login",
   setup() {
+    const router = useRouter();
+
     const state = reactive({
       email: null,
       password: null,
@@ -66,8 +70,8 @@ export default defineComponent({
           color: "dark",
           textColor: "orange"
         });
-        router().push({
-          name: ROUTE_NAMES.HOME
+        router.push({
+          name: ROUTE_NAMES.INDEX
         });
       } catch (e) {
         Notify.create({

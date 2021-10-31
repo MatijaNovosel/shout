@@ -1,55 +1,63 @@
 import { ROUTE_NAMES } from "./routeNames";
+import MainLayout from "src/layouts/MainLayout.vue";
+import Login from "src/pages/Login.vue";
+import Register from "src/pages/Register.vue";
+import Home from "src/pages/Home.vue";
+import Index from "src/pages/Index.vue";
+import PrivateChat from "src/pages/PrivateChat.vue";
+import GroupChat from "src/pages/GroupChat.vue";
+import Error404 from "src/pages/Error404.vue";
 
 const routes = [
   {
     path: "/",
-    component: () => import("layouts/MainLayout.vue"),
+    component: MainLayout,
     children: [
       {
-        path: "",
+        path: "login",
+        name: ROUTE_NAMES.LOGIN,
+        component: Login
+      },
+      {
+        path: "register",
+        name: ROUTE_NAMES.REGISTER,
+        component: Register
+      },
+      {
+        path: "home",
         name: ROUTE_NAMES.HOME,
         meta: {
           authRequired: true
         },
-        component: () => import("src/pages/Home.vue"),
+        component: Home,
         children: [
           {
-            path: "/",
+            path: "",
             name: ROUTE_NAMES.INDEX,
-            component: () => import("src/pages/Index.vue")
+            component: Index
           },
           {
             path: "private-chat/:id",
             name: ROUTE_NAMES.PRIVATE_CHAT,
-            component: () => import("src/pages/PrivateChat.vue")
+            component: PrivateChat
           },
           {
             path: "group-chat/:id",
             name: ROUTE_NAMES.GROUP_CHAT,
-            component: () => import("src/pages/GroupChat.vue")
+            component: GroupChat
           },
           {
             path: "self-chat/:id",
             name: ROUTE_NAMES.SELF_CHAT,
-            component: () => import("src/pages/PrivateChat.vue")
+            component: PrivateChat
           }
         ]
       }
     ]
   },
   {
-    path: "/login",
-    name: ROUTE_NAMES.LOGIN,
-    component: () => import("pages/Login.vue")
-  },
-  {
-    path: "/register",
-    name: ROUTE_NAMES.REGISTER,
-    component: () => import("pages/Register.vue")
-  },
-  {
     path: "/:catchAll(.*)*",
-    component: () => import("pages/Error404.vue")
+    component: Error404
   }
 ];
 

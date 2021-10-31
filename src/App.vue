@@ -1,9 +1,5 @@
 <template>
-  <q-layout class="bg">
-    <q-page-container>
-      <router-view />
-    </q-page-container>
-  </q-layout>
+  <router-view></router-view>
 </template>
 
 <script>
@@ -13,9 +9,3 @@ export default defineComponent({
   name: "App"
 });
 </script>
-
-<style scoped lang="scss">
-.bg {
-  background-color: #090e11;
-}
-</style>
