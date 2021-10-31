@@ -1,5 +1,16 @@
 <template>
-  <q-page class="flex flex-center">
+  <q-page
+    v-if="state.appLoading"
+    class="bg-grey-10 window-height window-width row justify-center items-center"
+  >
+    <div class="row justify-center" style="width: 400px">
+      <span class="text-white text-h6 q-mb-md">
+        Loading ...
+      </span>
+      <q-linear-progress color="teal" indeterminate />
+    </div>
+  </q-page>
+  <q-page v-else class="flex flex-center">
     <div class="row main-container" :style="{ width: `${state.width - 300}px` }">
       <div class="col-3 full-height">
         <keep-alive>
@@ -15,10 +26,12 @@
 </template>
 
 <script>
-import { defineComponent, reactive } from "vue";
+import { defineComponent, reactive, computed, onMounted } from "vue";
 import Conversations from "src/components/leftPanel/Conversations.vue";
 import Profile from "src/components/leftPanel/Profile.vue";
 import Settings from "src/components/leftPanel/Settings.vue";
+import ChatService from "src/services/chats";
+import { useStore } from "vuex";
 
 export default defineComponent({
   name: "Home",
@@ -28,18 +41,52 @@ export default defineComponent({
     Settings
   },
   setup() {
+    const store = useStore();
+
     const state = reactive({
       width: 0,
-      leftPaneComponent: "conversations"
+      leftPaneComponent: "conversations",
+      appLoading: computed(() => store.getters["app/loading"])
     });
 
     const changeMainContainerWidth = () => {
       state.width = window.innerWidth - 100;
     };
 
-    const setLeftPanel = (name) => {
+    const setLeftPanel = name => {
       state.leftPaneComponent = name;
     };
+
+    onMounted(async () => {
+      await store.dispatch("app/setLoading", true);
+
+      const chats = await ChatService.getAll();
+      const chatsForStore = [];
+
+      chats.forEach(snapshot => {
+        const data = snapshot.data();
+        chatsForStore.push({
+          id: snapshot.id,
+          createdAt: new Date(data.createdAt.seconds * 1000),
+          name: data.name,
+          avatar: data.avatar,
+          type: data.type,
+          lastMsg: {
+            txt: data.lastMsg.txt,
+            you: data.lastMsg.you,
+            username: data.lastMsg.username,
+            sentAt: new Date(data.lastMsg.sentAt.seconds * 1000),
+            type: data.lastMsg.type
+          }
+        });
+      });
+
+      await store.dispatch("chats/setChats", chatsForStore);
+
+      setTimeout(async () => {
+        await store.dispatch("app/setLoading", false);
+      }, 750);
+    });
 
     return {
       changeMainContainerWidth,

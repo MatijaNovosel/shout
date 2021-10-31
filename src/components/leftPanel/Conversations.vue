@@ -69,14 +69,13 @@
 </template>
 
 <script>
-import { defineComponent, reactive, computed, onMounted } from "vue";
+import { defineComponent, reactive, computed } from "vue";
 import ConversationListItem from "src/components/ConversationListItem.vue";
-import { CONVERSTATION_TYPE, MSG_TYPE } from "src/utils/constants";
-import ChatService from "src/services/chats";
 import firebase from "firebase";
 import { Notify } from "quasar";
 import { ROUTE_NAMES } from "src/router/routeNames";
 import router from "src/router/index";
+import { useStore } from "vuex";
 
 export default defineComponent({
   name: "conversations",
@@ -85,8 +84,12 @@ export default defineComponent({
     ConversationListItem
   },
   setup() {
+    const store = useStore();
+
     const state = reactive({
-      conversations: [],
+      conversations: computed(() => {
+        return store.getters["chats/chats"];
+      }),
       userListContainerStyle: computed(() => {
         if (!state.notificationsEnablePanelActive) {
           return {
@@ -118,11 +121,11 @@ export default defineComponent({
         console.log("This browser does not support notifications.");
       } else {
         if (checkNotificationPromise()) {
-          Notification.requestPermission().then((permission) => {
+          Notification.requestPermission().then(permission => {
             handlePermission(permission);
           });
         } else {
-          Notification.requestPermission((permission) => {
+          Notification.requestPermission(permission => {
             handlePermission(permission);
           });
         }
@@ -138,74 +141,6 @@ export default defineComponent({
         // Handle sending notifications here
       }
     };
-
-    onMounted(async () => {
-      const chats = await ChatService.getAll();
-      chats.forEach((snapshot) => {
-        const data = snapshot.data();
-        state.conversations.push({
-          id: snapshot.id,
-          createdAt: new Date(data.createdAt.seconds * 1000),
-          name: data.name,
-          avatar: data.avatar,
-          type: data.type,
-          lastMsg: {
-            txt: data.lastMsg.txt,
-            you: data.lastMsg.you,
-            username: data.lastMsg.username,
-            sentAt: new Date(data.lastMsg.sentAt.seconds * 1000),
-            type: data.lastMsg.type
-          }
-        });
-      });
-
-      const selfConversation = {
-        id: 1,
-        type: CONVERSTATION_TYPE.SELF,
-        name: "Self conversation",
-        lastMsg: {
-          txt: "Hello!",
-          sentAt: new Date(),
-          type: MSG_TYPE.TXT,
-          you: true
-        }
-      };
-
-      const privateConversation = {
-        id: 2,
-        otherUser: {
-          id: 2,
-          name: "Name Surname",
-          avatar: "url/image.jpg"
-        },
-        name: "Name surname",
-        type: CONVERSTATION_TYPE.PRIVATE,
-        lastMsg: {
-          txt: "Hello!",
-          you: true,
-          sentAt: new Date(),
-          type: MSG_TYPE.TXT
-        }
-      };
-
-      const groupConversation = {
-        id: 3,
-        name: "Group convo",
-        avatar: "url/image.jpg",
-        type: CONVERSTATION_TYPE.GROUP,
-        lastMsg: {
-          txt: "Hello!",
-          you: false,
-          username: "Some user",
-          sentAt: new Date(),
-          type: MSG_TYPE.TXT
-        }
-      };
-
-      state.conversations.push(selfConversation);
-      state.conversations.push(privateConversation);
-      state.conversations.push(groupConversation);
-    });
 
     const logOut = async () => {
       try {
@@ -232,7 +167,8 @@ export default defineComponent({
     return {
       state,
       askNotificationPermission,
-      logOut
+      logOut,
+      store
     };
   }
 });
