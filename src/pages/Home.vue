@@ -4,9 +4,7 @@
     class="bg-grey-10 window-height window-width row justify-center items-center"
   >
     <div class="row justify-center" style="width: 400px">
-      <span class="text-white text-h6 q-mb-md">
-        Loading ...
-      </span>
+      <span class="text-white text-h6 q-mb-md"> Loading ... </span>
       <q-linear-progress color="teal" indeterminate />
     </div>
   </q-page>
@@ -53,7 +51,7 @@ export default defineComponent({
       state.width = window.innerWidth - 100;
     };
 
-    const setLeftPanel = name => {
+    const setLeftPanel = (name) => {
       state.leftPaneComponent = name;
     };
 
@@ -61,27 +59,7 @@ export default defineComponent({
       await store.dispatch("app/setLoading", true);
 
       const chats = await ChatService.getAll();
-      const chatsForStore = [];
-
-      chats.forEach(snapshot => {
-        const data = snapshot.data();
-        chatsForStore.push({
-          id: snapshot.id,
-          createdAt: new Date(data.createdAt.seconds * 1000),
-          name: data.name,
-          avatar: data.avatar,
-          type: data.type,
-          lastMsg: {
-            txt: data.lastMsg.txt,
-            you: data.lastMsg.you,
-            username: data.lastMsg.username,
-            sentAt: new Date(data.lastMsg.sentAt.seconds * 1000),
-            type: data.lastMsg.type
-          }
-        });
-      });
-
-      await store.dispatch("chats/setChats", chatsForStore);
+      await store.dispatch("chats/setChats", chats);
 
       setTimeout(async () => {
         await store.dispatch("app/setLoading", false);

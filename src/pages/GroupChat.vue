@@ -16,9 +16,9 @@
             <q-avatar size="40px">
               <img src="../assets/gopniks.jpg" />
             </q-avatar>
-            <div class="column q-ml-md">
-              <span> {{ groupDetails.name }} </span>
-              <span> {{ groupDetails.users.map((u) => u.username).join(", ") }} </span>
+            <div class="column q-ml-md" v-if="state.chatDetails">
+              <span> {{ state.chatDetails.name }} </span>
+              <span> {{ state.chatDetails.users.map((u) => u.username).join(", ") }} </span>
             </div>
           </div>
           <div class="row">
@@ -204,8 +204,8 @@
     <div class="col-4" v-show="state.rightPanelOpen">
       <keep-alive>
         <group-details
-          v-if="state.activeRightPanel === GROUP_CHAT_RIGHT_PANEL.DETAILS"
-          :group-details="groupDetails"
+          v-if="state.activeRightPanel === GROUP_CHAT_RIGHT_PANEL.DETAILS && state.chatDetails"
+          :group-details="state.chatDetails"
           @close="state.rightPanelOpen = false"
         />
       </keep-alive>
@@ -230,6 +230,8 @@ import GroupDetails from "src/components/chat/rightPanel/GroupDetails.vue";
 import GroupChatSearch from "src/components/chat/rightPanel/GroupChatSearch.vue";
 import EmojiPicker from "src/components/chat/EmojiPicker.vue";
 import AddFilePanel from "src/components/AddFilePanel.vue";
+import { useRoute } from "vue-router";
+import ChatService from "src/services/chats";
 
 export default defineComponent({
   name: "ChatDetails",
@@ -241,29 +243,7 @@ export default defineComponent({
     AddFilePanel
   },
   setup() {
-    const groupDetails = {
-      name: "Group chat",
-      createdAt: "19/10/2021 at 19:00",
-      description: "Add group description",
-      users: [
-        {
-          username: "You",
-          status: "I will not go, prefer a feast of friends to the giant family"
-        },
-        {
-          username: "User 1",
-          status: "Status for user 1"
-        },
-        {
-          username: "User 2",
-          status: "Status for user 2"
-        },
-        {
-          username: "User 3",
-          status: "Status for user 3"
-        }
-      ]
-    };
+    const route = useRoute();
 
     const state = reactive({
       addingFile: false,
@@ -276,6 +256,7 @@ export default defineComponent({
         const { m, s } = secondsToElapsedTime(state.elapsedRecordingSeconds);
         return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
       }),
+      chatDetails: null,
       recording: false,
       emojiPanelOpen: false,
       recordingCancelled: false,
@@ -397,7 +378,9 @@ export default defineComponent({
       state.emojiPanelOpen = !state.emojiPanelOpen;
     };
 
-    onMounted(() => {
+    onMounted(async () => {
+      const uid = route.params.id;
+      state.chatDetails = await ChatService.getDetails(uid);
       state.messages = range(15).map(() => {
         const userId = randInt(1, 2);
         return {
@@ -419,7 +402,6 @@ export default defineComponent({
       shouldShowScrollToBottom,
       indexRoute: ROUTE_NAMES.INDEX,
       openRightPanel,
-      groupDetails,
       GROUP_CHAT_RIGHT_PANEL,
       insertEmoji,
       fileUploaded,
