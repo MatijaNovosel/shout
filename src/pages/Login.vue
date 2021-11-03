@@ -1,32 +1,38 @@
 <template>
-  <q-page class="bg-teal window-height window-width row justify-center items-center">
+  <q-page class="bg-black window-height window-width row justify-center items-center">
     <div class="column">
       <div class="row">
-        <h5 class="text-h5 text-white q-my-md">Chat app</h5>
-      </div>
-      <div class="row">
-        <q-card square bordered class="q-pa-lg shadow-1 login-card">
+        <q-card dark square bordered class="q-pa-lg login-card no-border">
           <q-card-section>
+            {{ emailErrors }}
             <q-form class="q-gutter-md">
               <q-input
+                dark
                 dense
                 square
                 filled
                 clearable
+                bottom-slots
                 type="email"
                 name="email"
                 label="Email"
-                v-model="state.email"
+                v-model="email"
+                :error-message="emailErrors"
+                :error="emailErrors"
               />
               <q-input
+                dark
                 dense
                 square
                 filled
                 clearable
+                bottom-slots
                 type="password"
                 name="password"
                 label="Password"
-                v-model="state.password"
+                v-model="password"
+                :error-message="passwordErrors"
+                :error="passwordErrors"
               />
             </q-form>
           </q-card-section>
@@ -48,22 +54,31 @@ import firebase from "firebase";
 import { Notify } from "quasar";
 import { useRouter } from "vue-router";
 import { ROUTE_NAMES } from "src/router/routeNames";
+import { useField } from "vee-validate";
+import * as yup from "yup";
 
 export default defineComponent({
   name: "Login",
   setup() {
+    const { value: email, errorMesage: emailErrors } = useField(
+      "email",
+      yup.string().required().email()
+    );
+    const { value: password, errorMessages: passwordErrors } = useField(
+      "password",
+      yup.string().required()
+    );
+
     const router = useRouter();
 
     const state = reactive({
-      email: null,
-      password: null,
       loading: false
     });
 
     const login = async () => {
       try {
         state.loading = true;
-        await firebase.auth().signInWithEmailAndPassword(state.email, state.password);
+        await firebase.auth().signInWithEmailAndPassword(email, password);
         Notify.create({
           message: "You have successfully signed in",
           position: "top",
@@ -87,7 +102,10 @@ export default defineComponent({
 
     return {
       login,
-      state
+      email,
+      password,
+      emailErrors,
+      passwordErrors
     };
   }
 });

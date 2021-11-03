@@ -24,7 +24,7 @@ const routes = [
         component: Register
       },
       {
-        path: "home",
+        path: "",
         name: ROUTE_NAMES.HOME,
         meta: {
           authRequired: true
