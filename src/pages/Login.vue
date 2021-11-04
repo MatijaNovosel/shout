@@ -3,8 +3,7 @@
     <div class="column">
       <div class="row">
         <q-card dark square bordered class="q-pa-lg login-card no-border">
-          <q-form class="q-gutter-md" @submit="login">
-            {{ errors }}
+          <q-form class="q-gutter-md" @submit="onSubmit">
             <q-card-section class="text-white">
               <q-input
                 dark
@@ -15,7 +14,10 @@
                 type="email"
                 name="email"
                 label="Email"
-                v-model="email"
+                v-model="values.email"
+                :error="submitCount > 0 && errors.email !== undefined"
+                :error-message="errors.email"
+                :hide-bottom-space="submitCount == 0 || errors.email === undefined"
               />
               <q-input
                 dark
@@ -26,15 +28,30 @@
                 type="password"
                 name="password"
                 label="Password"
-                v-model="password"
+                v-model="values.password"
                 class="q-mt-md"
+                :error="submitCount > 0 && errors.password !== undefined"
+                :error-message="errors.password"
+                :hide-bottom-space="submitCount == 0 || errors.password === undefined"
               />
             </q-card-section>
             <q-card-actions class="row justify-center q-mt-none">
               <q-btn type="submit" unelevated color="light-green-7" label="Login" />
             </q-card-actions>
             <q-card-section class="text-center q-pa-none">
-              <p class="text-grey-6">Not registered? Create an account</p>
+              <p class="text-grey-6">
+                Not registered?
+                <span
+                  class="text-teal text-bold cursor-pointer"
+                  @click="
+                    $router.push({
+                      name: registerRoute
+                    })
+                  "
+                >
+                  Create an account
+                </span>
+              </p>
             </q-card-section>
           </q-form>
         </q-card>
@@ -49,7 +66,7 @@ import firebase from "firebase";
 import { Notify } from "quasar";
 import { useRouter } from "vue-router";
 import { ROUTE_NAMES } from "src/router/routeNames";
-import { useForm, useField } from "vee-validate";
+import { useForm } from "vee-validate";
 import * as yup from "yup";
 
 export default defineComponent({
@@ -60,10 +77,7 @@ export default defineComponent({
       password: yup.string().required().nullable().label("Password")
     });
 
-    const { value: email } = useField("email");
-    const { value: password } = useField("password");
-
-    const { handleSubmit, errors } = useForm({
+    const { handleSubmit, errors, values, submitCount } = useForm({
       validationSchema: schema
     });
 
@@ -73,10 +87,10 @@ export default defineComponent({
       loading: false
     });
 
-    const login = handleSubmit(async () => {
+    const onSubmit = handleSubmit(async () => {
       try {
         state.loading = true;
-        await firebase.auth().signInWithEmailAndPassword(email, password);
+        await firebase.auth().signInWithEmailAndPassword(values.email, values.password);
         Notify.create({
           message: "You have successfully signed in",
           position: "top",
@@ -99,10 +113,11 @@ export default defineComponent({
     });
 
     return {
-      login,
-      email,
-      password,
-      errors
+      onSubmit,
+      values,
+      submitCount,
+      errors,
+      registerRoute: ROUTE_NAMES.REGISTER
     };
   }
 });
