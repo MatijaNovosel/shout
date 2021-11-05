@@ -77,3 +77,20 @@ export const readUrl = (file) => {
     reader.readAsDataURL(file);
   });
 };
+
+export const bytesToSize = (bytes) => {
+  const sizes = ["b", "kB", "MB", "GB", "TB"];
+  if (bytes === 0) return "0 Byte";
+  const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+  return Math.round(bytes / Math.pow(1024, i), 2) + " " + sizes[i];
+};
+
+export const downloadFile = (file) => {
+  const link = document.createElement("a");
+  link.setAttribute("target", "_blank");
+  link.setAttribute("href", URL.createObjectURL(file));
+  link.setAttribute("download", file.name);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};

@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { defineComponent, reactive, ref, computed, watch } from "vue";
+import { defineComponent, reactive, ref, computed, watch, inject } from "vue";
 import { MIME_TYPES } from "src/utils/constants";
 import { getFileExtension } from "src/utils/helpers";
 import { Notify } from "quasar";
@@ -24,14 +24,11 @@ import { Notify } from "quasar";
 export default defineComponent({
   name: "upload-overlay",
   emits: ["change"],
-  props: {
-    filePickerTrigger: {
-      type: Boolean,
-      required: false
-    }
-  },
   setup(props, { emit }) {
     const filePicker = ref(null);
+
+    // Plugins
+    const filePickerTrigger = inject("filePickerTrigger");
 
     const state = reactive({
       filelist: [],
@@ -93,7 +90,7 @@ export default defineComponent({
     };
 
     watch(
-      () => props.filePickerTrigger,
+      () => filePickerTrigger.value,
       () => {
         filePicker.value.click();
       }

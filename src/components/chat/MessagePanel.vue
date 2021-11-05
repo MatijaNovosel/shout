@@ -1,5 +1,5 @@
 <template>
-  <upload-overlay @change="filesUploaded" :file-picker-trigger="state.filePickerTrigger">
+  <upload-overlay @change="filesUploaded">
     <q-scroll-area
       :thumb-style="{
         right: '2px',
@@ -40,7 +40,6 @@
         }"
       >
         <chat-message
-          :select-mode="selectMode"
           :audio-content="message.audioContent"
           :txt="message.txt"
           sent-at="7 minutes ago"
@@ -50,6 +49,7 @@
           :type="message.type"
           :sent="message.sent"
           @selected="messageSelected"
+          :file-content="message.fileContent"
         />
       </div>
     </q-scroll-area>
@@ -74,15 +74,7 @@ export default defineComponent({
       type: Boolean,
       required: true
     },
-    filePickerTrigger: {
-      type: Boolean,
-      required: false
-    },
     emojiPanelOpen: {
-      type: Boolean,
-      required: false
-    },
-    selectMode: {
       type: Boolean,
       required: false
     }
@@ -96,7 +88,6 @@ export default defineComponent({
 
     const state = reactive({
       shouldShowScrollToBottom: false,
-      filePickerTrigger: false,
       msgContainerStyle: computed(() => {
         if (props.emojiPanelOpen === true) {
           return {
@@ -133,11 +124,6 @@ export default defineComponent({
     watch(
       () => props.scrollToBottomTrigger,
       () => scrollToEndOfMsgContainer()
-    );
-
-    watch(
-      () => props.filePickerTrigger,
-      () => (state.filePickerTrigger = !state.filePickerTrigger)
     );
 
     return {

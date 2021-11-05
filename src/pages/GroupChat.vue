@@ -92,7 +92,7 @@
                   >
                     <q-item-section>Group info</q-item-section>
                   </q-item>
-                  <q-item clickable v-close-popup @click="state.selectMode = true">
+                  <q-item clickable v-close-popup @click="messageSelectMode = true">
                     <q-item-section>Select messages</q-item-section>
                   </q-item>
                   <q-item clickable v-close-popup>
@@ -120,18 +120,15 @@
             :messages="state.messages"
             :scroll-to-bottom-trigger="state.scrollToBottomTrigger"
             :emoji-panel-open="state.emojiPanelOpen"
-            :select-mode="state.selectMode"
-            :file-picker-trigger="state.filePickerTrigger"
           />
         </keep-alive>
-        <keep-alive>
-          <add-file-panel
-            @close="state.addingFile = false"
-            :files="state.files"
-            v-show="state.addingFile"
-            @trigger-file-picker="triggerFilePicker"
-          />
-        </keep-alive>
+        <add-file-panel
+          @close="state.addingFile = false"
+          :files="state.files"
+          v-if="state.addingFile"
+          @trigger-file-picker="triggerFilePicker"
+          @send-files="sendFiles"
+        />
         <div class="emoji-panel" v-if="state.emojiPanelOpen">
           <emoji-picker @close="state.emojiPanelOpen = false" @emoji="insertEmoji" />
         </div>
@@ -220,7 +217,7 @@
 </template>
 
 <script>
-import { defineComponent, reactive, onMounted, computed } from "vue";
+import { provide, defineComponent, reactive, onMounted, computed, ref } from "vue";
 import { range, randInt, downloadURI, secondsToElapsedTime } from "src/utils/helpers";
 import { loremIpsum, MSG_TYPE, GROUP_CHAT_RIGHT_PANEL } from "src/utils/constants";
 import { format } from "date-fns";
@@ -245,11 +242,16 @@ export default defineComponent({
   setup() {
     const route = useRoute();
 
+    // Plugins (provides and injects)
+    const filePickerTrigger = ref(false);
+    provide("filePickerTrigger", filePickerTrigger);
+
+    const messageSelectMode = ref(false);
+    provide("messageSelectMode", messageSelectMode);
+
     const state = reactive({
       addingFile: false,
-      filePickerTrigger: false,
       messages: [],
-      selectMode: false,
       files: [],
       elapsedRecordingSeconds: 0,
       elapsedRecordingSecondsFormatted: computed(() => {
@@ -349,7 +351,7 @@ export default defineComponent({
     };
 
     const triggerFilePicker = () => {
-      state.filePickerTrigger = !state.filePickerTrigger;
+      filePickerTrigger.value = !filePickerTrigger.value;
     };
 
     const shouldShowScrollToBottom = (val) => {
@@ -376,6 +378,18 @@ export default defineComponent({
 
     const openEmojiPanel = () => {
       state.emojiPanelOpen = !state.emojiPanelOpen;
+    };
+
+    const sendFiles = () => {
+      state.files.forEach((file) => {
+        state.messages.push({
+          userId: 1,
+          sent: true,
+          type: MSG_TYPE.FILE,
+          fileContent: file
+        });
+      });
+      scrollToEndOfMsgContainer();
     };
 
     onMounted(async () => {
@@ -406,7 +420,9 @@ export default defineComponent({
       insertEmoji,
       fileUploaded,
       triggerFilePicker,
-      openEmojiPanel
+      openEmojiPanel,
+      sendFiles,
+      messageSelectMode
     };
   }
 });

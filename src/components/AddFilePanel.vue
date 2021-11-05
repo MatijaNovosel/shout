@@ -5,7 +5,7 @@
       <span class="text-white q-ml-sm">
         {{ state.selectedFile !== null ? state.selectedFile.name : "No files found" }}
       </span>
-      <q-btn size="sm" color="grey" icon="mdi-send" round flat />
+      <q-btn size="sm" color="grey" icon="mdi-send" round flat @click="sendFiles" />
     </div>
     <div
       class="row justify-center items-center align-center text-center"
@@ -83,12 +83,12 @@
 </template>
 
 <script>
-import { defineComponent, reactive, onMounted, onUnmounted, watch, ref } from "vue";
+import { defineComponent, reactive, onMounted, onUnmounted, watch } from "vue";
 import { getFileIcon, getFileExtension, readUrl } from "src/utils/helpers";
 
 export default defineComponent({
   name: "add-file-panel",
-  emits: ["close", "trigger-file-picker"],
+  emits: ["close", "trigger-file-picker", "send-files"],
   props: {
     files: {
       type: Object,
@@ -110,6 +110,11 @@ export default defineComponent({
       if (e.keyCode === 27) {
         close();
       }
+    };
+
+    const sendFiles = () => {
+      emit("send-files");
+      close();
     };
 
     const removeFile = (file) => {
@@ -177,7 +182,8 @@ export default defineComponent({
       setActiveFile,
       getFileExtension,
       close,
-      triggerFilePickerManually
+      triggerFilePickerManually,
+      sendFiles
     };
   }
 });

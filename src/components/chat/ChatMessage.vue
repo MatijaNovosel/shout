@@ -1,19 +1,20 @@
 <template>
   <div class="row q-py-sm q-px-md msg q-my-xs" :class="`bg-${bgColor} text-${textColor}`">
-    <div class="row col-1 d-flex justify-center items-center" v-if="selectMode">
+    <div class="row col-1 d-flex justify-center items-center" v-if="messageSelectMode">
       <q-checkbox @change="messageSelected" v-model="state.selected" />
     </div>
     <div
       class="row"
       :class="{
-        'col-12': !selectMode,
-        'col-11': selectMode
+        'col-12': !messageSelectMode,
+        'col-11': messageSelectMode
       }"
     >
       <div
         class="col-12 text-white full-width"
         :class="{
-          'text-center': type === MSG_TYPE.AUDIO
+          'text-center': type === MSG_TYPE.AUDIO,
+          'bg-teal-10 rounded-borders': type === MSG_TYPE.FILE
         }"
       >
         <span v-if="type === MSG_TYPE.TXT">
@@ -25,37 +26,64 @@
             Your browser does not support the audio element.
           </audio>
         </div>
+        <div v-else-if="type === MSG_TYPE.FILE" class="row justify-between q-pa-sm items-center">
+          <div>
+            <div class="text-white">
+              <q-icon color="white" size="30px" :name="getFileIcon(fileContent.name)" />
+              <span class="q-ml-sm">
+                {{ fileContent.name }}
+              </span>
+            </div>
+          </div>
+          <q-btn
+            @click="download"
+            color="grey-10"
+            round
+            icon="mdi-download"
+            size="10px"
+            class="q-mr-sm"
+          />
+        </div>
       </div>
-      <div class="col-12 text-grey q-mt-xs justify-between">
-        <span>
-          {{ sentAt }}
+      <div
+        class="col-12 text-grey q-mt-xs row"
+        :class="{ 'justify-between q-mt-sm': type === MSG_TYPE.FILE }"
+      >
+        <span v-if="type === MSG_TYPE.FILE">
+          {{ `${getFileExtension(fileContent.name)} • ${bytesToSize(fileContent.size)}` }}
         </span>
-        <q-btn size="xs" flat round icon="mdi-chevron-down">
-          <q-menu dark left>
-            <q-list dense style="min-width: 100px">
-              <q-item clickable v-close-popup>
-                <q-item-section>Reply</q-item-section>
-              </q-item>
-              <q-item clickable v-close-popup>
-                <q-item-section>Forward message</q-item-section>
-              </q-item>
-              <q-item clickable v-close-popup>
-                <q-item-section>Star message</q-item-section>
-              </q-item>
-              <q-item clickable v-close-popup>
-                <q-item-section>Delete message</q-item-section>
-              </q-item>
-            </q-list>
-          </q-menu>
-        </q-btn>
+        <div>
+          <span class="q-mr-sm">
+            {{ sentAt }}
+          </span>
+          <q-btn size="xs" flat round icon="mdi-chevron-down">
+            <q-menu dark left>
+              <q-list dense style="min-width: 100px">
+                <q-item clickable v-close-popup>
+                  <q-item-section>Reply</q-item-section>
+                </q-item>
+                <q-item clickable v-close-popup>
+                  <q-item-section>Forward message</q-item-section>
+                </q-item>
+                <q-item clickable v-close-popup>
+                  <q-item-section>Star message</q-item-section>
+                </q-item>
+                <q-item clickable v-close-popup>
+                  <q-item-section>Delete message</q-item-section>
+                </q-item>
+              </q-list>
+            </q-menu>
+          </q-btn>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { defineComponent, reactive } from "vue";
+import { defineComponent, reactive, inject } from "vue";
 import { MSG_TYPE } from "src/utils/constants";
+import { getFileIcon, getFileExtension, bytesToSize, downloadFile } from "src/utils/helpers";
 
 export default defineComponent({
   name: "chat-message",
@@ -89,8 +117,8 @@ export default defineComponent({
       type: Boolean,
       required: true
     },
-    selectMode: {
-      type: Boolean,
+    fileContent: {
+      type: Object,
       required: false
     }
   },
@@ -99,14 +127,25 @@ export default defineComponent({
       selected: false
     });
 
+    const messageSelectMode = inject("messageSelectMode");
+
     const messageSelected = () => {
       emit("selected");
+    };
+
+    const download = () => {
+      downloadFile(props.fileContent);
     };
 
     return {
       MSG_TYPE,
       state,
-      messageSelected
+      messageSelected,
+      messageSelectMode,
+      getFileIcon,
+      getFileExtension,
+      bytesToSize,
+      download
     };
   }
 });

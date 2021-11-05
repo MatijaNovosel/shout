@@ -7,7 +7,8 @@ export const MSG_TYPE = {
   REPLY: 3,
   IMG: 4,
   VID: 5,
-  GIF: 6
+  GIF: 6,
+  FILE: 7
 };
 
 export const CONVERSTATION_TYPE = {
