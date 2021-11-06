@@ -3,8 +3,8 @@
     <div class="column">
       <div class="row">
         <q-card dark square bordered class="q-pa-lg shadow-1 login-card no-border">
-          <q-card-section>
-            <q-form class="q-gutter-md" @click="onSubmit" autocomplete="off">
+          <q-form class="q-gutter-md" @submit="onSubmit" autocomplete="off">
+            <q-card-section>
               <q-input
                 dark
                 dense
@@ -32,26 +32,26 @@
                 :error-message="errors.password"
                 :hide-bottom-space="submitCount == 0 || errors.password === undefined"
               />
-            </q-form>
-          </q-card-section>
-          <q-card-actions class="q-px-md row justify-center">
-            <q-btn type="submit" unelevated color="light-green-7" label="Register" />
-          </q-card-actions>
-          <q-card-section class="text-center q-pa-none">
-            <p class="text-grey-6">
-              Have an account?
-              <span
-                class="text-teal text-bold cursor-pointer"
-                @click="
-                  $router.push({
-                    name: loginRoute
-                  })
-                "
-              >
-                Sign in
-              </span>
-            </p>
-          </q-card-section>
+            </q-card-section>
+            <q-card-actions class="q-px-md row justify-center">
+              <q-btn type="submit" unelevated color="light-green-7" label="Register" />
+            </q-card-actions>
+            <q-card-section class="text-center q-pa-none">
+              <p class="text-grey-6">
+                Have an account?
+                <span
+                  class="text-teal text-bold cursor-pointer"
+                  @click="
+                    $router.push({
+                      name: loginRoute
+                    })
+                  "
+                >
+                  Sign in
+                </span>
+              </p>
+            </q-card-section>
+          </q-form>
         </q-card>
       </div>
     </div>
@@ -65,6 +65,7 @@ import { Notify } from "quasar";
 import { useForm } from "vee-validate";
 import * as yup from "yup";
 import { ROUTE_NAMES } from "src/router/routeNames";
+import UserService from "src/services/users";
 
 export default defineComponent({
   name: "Register",
@@ -88,8 +89,10 @@ export default defineComponent({
         const data = await firebase
           .auth()
           .createUserWithEmailAndPassword(values.email, values.password);
-        data.user.updateProfile({
-          displayName: values.email
+        await UserService.addUser({
+          id: data.user.uid,
+          username: values.email,
+          email: values.email
         });
         Notify.create({
           message: "You have successfully created an account",

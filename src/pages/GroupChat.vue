@@ -218,8 +218,8 @@
 
 <script>
 import { provide, defineComponent, reactive, onMounted, computed, ref } from "vue";
-import { range, randInt, downloadURI, secondsToElapsedTime } from "src/utils/helpers";
-import { loremIpsum, MSG_TYPE, GROUP_CHAT_RIGHT_PANEL } from "src/utils/constants";
+import { downloadURI, secondsToElapsedTime } from "src/utils/helpers";
+import { MSG_TYPE, GROUP_CHAT_RIGHT_PANEL } from "src/utils/constants";
 import { format } from "date-fns";
 import { ROUTE_NAMES } from "src/router/routeNames";
 import MessagePanel from "src/components/chat/MessagePanel.vue";
@@ -395,15 +395,7 @@ export default defineComponent({
     onMounted(async () => {
       const uid = route.params.id;
       state.chatDetails = await ChatService.getDetails(uid);
-      state.messages = range(15).map(() => {
-        const userId = randInt(1, 2);
-        return {
-          userId,
-          txt: loremIpsum.substr(0, randInt(10, loremIpsum.length)),
-          sent: userId === 1,
-          type: MSG_TYPE.TXT
-        };
-      });
+      state.messages = [...state.chatDetails.messages];
       scrollToEndOfMsgContainer();
     });
 
@@ -421,8 +413,7 @@ export default defineComponent({
       fileUploaded,
       triggerFilePicker,
       openEmojiPanel,
-      sendFiles,
-      messageSelectMode
+      sendFiles
     };
   }
 });
