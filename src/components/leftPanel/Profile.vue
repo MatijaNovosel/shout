@@ -16,7 +16,7 @@
     <q-input
       dark
       label="Your name"
-      model-value="Matija"
+      :model-value="state.user.data.username"
       label-color="teal"
       class="full-width q-px-lg"
       readonly
@@ -34,13 +34,18 @@
 </template>
 
 <script>
-import { defineComponent, reactive } from "vue";
+import { defineComponent, reactive, computed } from "vue";
+import { useStore } from "vuex";
 
 export default defineComponent({
   name: "profile",
   emits: ["set-left-panel"],
   setup() {
-    const state = reactive({});
+    const store = useStore();
+
+    const state = reactive({
+      user: computed(() => store.getters["user/user"])
+    });
 
     return {
       state

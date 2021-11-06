@@ -1,5 +1,5 @@
 const state = () => ({
-  loading: false
+  chats: []
 });
 
 export default state;

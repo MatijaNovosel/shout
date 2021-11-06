@@ -19,7 +19,7 @@
       </q-item-label>
     </q-item-section>
     <q-item-section side top>
-      {{ formatDistanceToNow(conversation.lastMsg.sentAt) }} ago
+      {{ formatDistanceToNow(new Date(conversation.lastMsg.sentAt)) }} ago
     </q-item-section>
     <q-menu
       dark

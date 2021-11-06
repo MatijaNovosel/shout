@@ -1,5 +1,4 @@
 import firebase from "src/boot/firebase";
-import { doc, setDoc } from "firebase/firestore";
 
 class UserService {
   constructor() {
@@ -24,6 +23,11 @@ class UserService {
       username: user.username,
       email: user.email
     });
+  }
+
+  async getDetails(uid) {
+    const user = await this.userCollection.doc(uid).get();
+    return user.data();
   }
 }
 
