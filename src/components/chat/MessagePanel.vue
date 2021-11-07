@@ -113,7 +113,10 @@ export default defineComponent({
     };
 
     const msgContainerScrollChanged = (e) => {
-      emit("should-show-scroll-to-bottom", e.verticalPercentage < 0.3);
+      emit(
+        "should-show-scroll-to-bottom",
+        e.verticalPercentage !== 0 && e.verticalPercentage < 0.3
+      );
     };
 
     const filesUploaded = (files) => {

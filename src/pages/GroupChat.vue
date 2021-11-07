@@ -8,19 +8,24 @@
       }"
     >
       <div class="column full-height chat-panel-bg justify-between">
-        <div class="chat-top row justify-between q-py-sm q-px-md">
+        <div class="chat-top row justify-between q-py-sm">
+          <q-linear-progress
+            v-if="state.loading"
+            dark
+            rounded
+            indeterminate
+            color="secondary"
+            class="chat-top-loading-bar"
+          />
           <div
-            class="row text-white cursor-pointer"
+            class="row text-white cursor-pointer q-pl-md"
             @click="openRightPanel(GROUP_CHAT_RIGHT_PANEL.DETAILS)"
           >
             <q-avatar size="40px">
               <img src="../assets/gopniks.jpg" />
             </q-avatar>
-            <div class="column q-ml-md">
-              <template v-if="state.loading">
-                <span> Loading ... </span>
-                <span> A few moments more </span>
-              </template>
+            <div class="column q-ml-md justify-center">
+              <span v-if="state.loading"> Loading ... </span>
               <template v-else>
                 <template v-if="state.chatDetails">
                   <span> {{ state.chatDetails.name }} </span>
@@ -29,7 +34,7 @@
               </template>
             </div>
           </div>
-          <div class="row">
+          <div class="row q-mr-md">
             <q-btn
               @click="$router.push({ name: indexRoute })"
               flat
@@ -507,5 +512,10 @@ export default defineComponent({
 
 .emoji-panel {
   height: 200px;
+}
+
+.chat-top-loading-bar {
+  position: absolute;
+  top: 56px;
 }
 </style>
