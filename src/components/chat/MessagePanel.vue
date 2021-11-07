@@ -43,7 +43,7 @@
           :id="message.id"
           :audio-content="message.audioContent"
           :txt="message.txt"
-          :sent-at="format(new Date(message.sentAt.seconds * 1000), 'dd.MM.yyyy. HH:mm')"
+          :sent-at="formatSentAt(message)"
           :bg-color="message.sent ? 'teal-9' : 'blue-grey-9'"
           text-color="white"
           class="chat-msg pos-rel"
@@ -128,6 +128,10 @@ export default defineComponent({
       emit("delete-msg", msgId);
     };
 
+    const formatSentAt = (msg) => {
+      return format(msg.sentAt, "dd.MM.yyyy. HH:mm");
+    };
+
     watch(
       () => props.scrollToBottomTrigger,
       () => scrollToEndOfMsgContainer()
@@ -141,7 +145,7 @@ export default defineComponent({
       filesUploaded,
       messageSelected,
       deleteMsg,
-      format
+      formatSentAt
     };
   }
 });

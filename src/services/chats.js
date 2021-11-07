@@ -36,7 +36,7 @@ class ChatService {
     const data = refGet.data();
 
     const messages = ref.collection("messages");
-    const messagesGet = await messages.get();
+    const messagesGet = await messages.orderBy("sentAt", "desc").get();
 
     const files = ref.collection("files");
 
@@ -44,7 +44,9 @@ class ChatService {
 
     messagesGet.forEach((m) => {
       const msgData = m.data();
-      msgCol.push({ id: m.id, ...msgData });
+      msgData.sentAt = new Date(msgData.sentAt.seconds * 1000);
+      msgData.id = m.id;
+      msgCol.push(msgData);
     });
 
     for (let i = 0; i < msgCol.length; i++) {

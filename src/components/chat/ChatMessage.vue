@@ -59,14 +59,14 @@
           <q-btn size="xs" flat round icon="mdi-chevron-down">
             <q-menu dark left>
               <q-list dense style="min-width: 100px">
-                <q-item clickable v-close-popup>
+                <q-item clickable v-close-popup v-if="!sent">
                   <q-item-section>Reply</q-item-section>
                 </q-item>
                 <q-item clickable v-close-popup>
                   <q-item-section>Forward message</q-item-section>
                 </q-item>
                 <q-item clickable v-close-popup>
-                  <q-item-section>Star message</q-item-section>
+                  <q-item-section>Pin message</q-item-section>
                 </q-item>
                 <q-item clickable v-close-popup @click="deleteMsg">
                   <q-item-section>Delete message</q-item-section>
