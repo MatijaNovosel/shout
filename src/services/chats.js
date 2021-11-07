@@ -44,7 +44,7 @@ class ChatService {
 
     messagesGet.forEach((m) => {
       const msgData = m.data();
-      msgCol.push(msgData);
+      msgCol.push({ id: m.id, ...msgData });
     });
 
     for (let i = 0; i < msgCol.length; i++) {
@@ -72,26 +72,40 @@ class ChatService {
 
   async uploadFile(file, chatId, userId) {
     const guid = generateGuid();
-
     const chatsRef = this.chatsCollection.doc(chatId);
-
     const messages = chatsRef.collection("messages");
-
-    messages.add({
+    await messages.add({
       userId: userId,
       sent: true,
       type: MSG_TYPE.FILE,
       sentAt: new Date(),
       fileId: guid
     });
-
     const chatFiles = chatsRef.collection("files");
-
     chatFiles.doc(guid).set({
       name: file.name
     });
+    await firebase.storage().ref(guid).put(file);
+  }
 
-    const storageRef = await firebase.storage().ref(guid).put(file);
+  async sendMessage(msg) {
+    const chatsRef = this.chatsCollection.doc(msg.chatId);
+    const messages = chatsRef.collection("messages");
+    await messages.add({
+      userId: msg.userId,
+      type: MSG_TYPE.TXT,
+      sentAt: new Date(),
+      txt: msg.txt
+    });
+  }
+
+  async deleteMessage(chatId, msgId) {
+    const chatsRef = this.chatsCollection.doc(chatId);
+    const messages = chatsRef.collection("messages");
+    const doc = await messages.where(firebase.firestore.FieldPath.documentId(), "==", msgId).get();
+    doc.forEach((e) => {
+      e.ref.delete();
+    });
   }
 }
 

@@ -68,7 +68,7 @@
                 <q-item clickable v-close-popup>
                   <q-item-section>Star message</q-item-section>
                 </q-item>
-                <q-item clickable v-close-popup>
+                <q-item clickable v-close-popup @click="deleteMsg">
                   <q-item-section>Delete message</q-item-section>
                 </q-item>
               </q-list>
@@ -87,8 +87,12 @@ import { getFileIcon, getFileExtension, bytesToSize, downloadFile } from "src/ut
 
 export default defineComponent({
   name: "chat-message",
-  emits: ["selected"],
+  emits: ["selected", "delete-msg"],
   props: {
+    id: {
+      type: String,
+      required: true
+    },
     type: {
       type: Number,
       required: true
@@ -137,6 +141,10 @@ export default defineComponent({
       downloadFile(props.fileContent);
     };
 
+    const deleteMsg = () => {
+      emit("delete-msg", props.id);
+    };
+
     return {
       MSG_TYPE,
       state,
@@ -145,7 +153,8 @@ export default defineComponent({
       getFileIcon,
       getFileExtension,
       bytesToSize,
-      download
+      download,
+      deleteMsg
     };
   }
 });

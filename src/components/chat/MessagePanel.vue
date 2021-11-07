@@ -40,16 +40,18 @@
         }"
       >
         <chat-message
+          :id="message.id"
           :audio-content="message.audioContent"
           :txt="message.txt"
-          sent-at="7 minutes ago"
+          :sent-at="format(new Date(message.sentAt.seconds * 1000), 'dd.MM.yyyy. HH:mm')"
           :bg-color="message.sent ? 'teal-9' : 'blue-grey-9'"
           text-color="white"
           class="chat-msg pos-rel"
           :type="message.type"
           :sent="message.sent"
-          @selected="messageSelected"
           :file-content="message.fileContent"
+          @selected="messageSelected"
+          @delete-msg="deleteMsg"
         />
       </div>
     </q-scroll-area>
@@ -61,10 +63,11 @@ import { defineComponent, ref, reactive, nextTick, watch, computed } from "vue";
 import { MSG_TYPE } from "src/utils/constants";
 import ChatMessage from "./ChatMessage.vue";
 import UploadOverlay from "../UploadOverlay.vue";
+import { format } from "date-fns";
 
 export default defineComponent({
   name: "message-panel",
-  emits: ["should-show-scroll-to-bottom", "file-uploaded"],
+  emits: ["should-show-scroll-to-bottom", "file-uploaded", "delete-msg"],
   props: {
     messages: {
       type: Array,
@@ -121,6 +124,10 @@ export default defineComponent({
       //
     };
 
+    const deleteMsg = (msgId) => {
+      emit("delete-msg", msgId);
+    };
+
     watch(
       () => props.scrollToBottomTrigger,
       () => scrollToEndOfMsgContainer()
@@ -132,7 +139,9 @@ export default defineComponent({
       state,
       MSG_TYPE,
       filesUploaded,
-      messageSelected
+      messageSelected,
+      deleteMsg,
+      format
     };
   }
 });

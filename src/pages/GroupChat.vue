@@ -125,6 +125,7 @@
             v-show="!state.addingFile"
             @should-show-scroll-to-bottom="shouldShowScrollToBottom"
             @file-uploaded="fileUploaded"
+            @delete-msg="deleteMsg"
             :messages="state.messages"
             :scroll-to-bottom-trigger="state.scrollToBottomTrigger"
             :emoji-panel-open="state.emojiPanelOpen"
@@ -349,13 +350,20 @@ export default defineComponent({
       navigator.mediaDevices.getUserMedia({ audio: true, video: false }).then(handleSuccess);
     };
 
-    const sendTxtMsg = () => {
+    const sendTxtMsg = async () => {
       if (state.msgText !== null && state.msgText !== "" && state.msgText.length > 4) {
+        await ChatService.sendMessage({
+          userId: store.getters["user/user"].data.id,
+          type: MSG_TYPE.TXT,
+          txt: state.msgText,
+          chatId: state.chatDetails.id
+        });
         state.messages.push({
-          userId: 1,
+          userId: store.getters["user/user"].data.id,
           sent: true,
           type: MSG_TYPE.TXT,
-          txt: state.msgText
+          txt: state.msgText,
+          sentAt: new Date()
         });
         state.msgText = null;
         scrollToEndOfMsgContainer();
@@ -409,6 +417,10 @@ export default defineComponent({
       scrollToEndOfMsgContainer();
     };
 
+    const deleteMsg = async (id) => {
+      await ChatService.deleteMessage(state.chatDetails.id, id);
+    };
+
     onMounted(async () => {
       try {
         state.loading = true;
@@ -447,7 +459,8 @@ export default defineComponent({
       fileUploaded,
       triggerFilePicker,
       openEmojiPanel,
-      sendFiles
+      sendFiles,
+      deleteMsg
     };
   }
 });
