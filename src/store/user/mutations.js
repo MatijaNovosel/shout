@@ -3,7 +3,6 @@ export default {
     state.user.loggedIn = value;
   },
   SET_USER(state, data) {
-    console.log(data);
     state.user.data = data;
   }
 };

@@ -94,3 +94,15 @@ export const downloadFile = (file) => {
   link.click();
   document.body.removeChild(link);
 };
+
+export const generateGuid = () => {
+  return Date.now().toString(36) + Math.random().toString(36).substring(2);
+};
+
+export const getFileFromUrl = async (url, name, defaultType = "image/jpeg") => {
+  const response = await fetch(url);
+  const data = await response.blob();
+  return new File([data], name, {
+    type: response.headers.get("content-type") || defaultType
+  });
+};

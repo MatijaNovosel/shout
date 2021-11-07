@@ -1,6 +1,5 @@
 export default {
   fetchUser({ commit }, user) {
-    console.log(user);
     commit("SET_LOGGED_IN", user !== null);
     if (user) {
       commit("SET_USER", user);

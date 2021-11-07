@@ -1,4 +1,6 @@
 import firebase from "src/boot/firebase";
+import { generateGuid, getFileFromUrl } from "src/utils/helpers";
+import { MSG_TYPE } from "src/utils/constants";
 
 class ChatService {
   constructor() {
@@ -36,11 +38,25 @@ class ChatService {
     const messages = ref.collection("messages");
     const messagesGet = await messages.get();
 
+    const files = ref.collection("files");
+
     const msgCol = [];
 
     messagesGet.forEach((m) => {
-      msgCol.push(m.data());
+      const msgData = m.data();
+      msgCol.push(msgData);
     });
+
+    for (let i = 0; i < msgCol.length; i++) {
+      if (msgCol[i].type === MSG_TYPE.FILE) {
+        const file = firebase.storage().ref(msgCol[i].fileId);
+        const url = await file.getDownloadURL();
+        const fileData = files.doc(msgCol[i].fileId);
+        const fileDataGet = await fileData.get();
+        const fileContent = await getFileFromUrl(url, fileDataGet.data().name);
+        msgCol[i].fileContent = fileContent;
+      }
+    }
 
     return {
       id: uid,
@@ -52,6 +68,30 @@ class ChatService {
       description: data.description,
       messages: msgCol
     };
+  }
+
+  async uploadFile(file, chatId, userId) {
+    const guid = generateGuid();
+
+    const chatsRef = this.chatsCollection.doc(chatId);
+
+    const messages = chatsRef.collection("messages");
+
+    messages.add({
+      userId: userId,
+      sent: true,
+      type: MSG_TYPE.FILE,
+      sentAt: new Date(),
+      fileId: guid
+    });
+
+    const chatFiles = chatsRef.collection("files");
+
+    chatFiles.doc(guid).set({
+      name: file.name
+    });
+
+    const storageRef = await firebase.storage().ref(guid).put(file);
   }
 }
 

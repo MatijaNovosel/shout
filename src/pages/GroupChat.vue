@@ -16,9 +16,17 @@
             <q-avatar size="40px">
               <img src="../assets/gopniks.jpg" />
             </q-avatar>
-            <div class="column q-ml-md" v-if="state.chatDetails">
-              <span> {{ state.chatDetails.name }} </span>
-              <span> {{ state.chatDetails.users.map((u) => u.username).join(", ") }} </span>
+            <div class="column q-ml-md">
+              <template v-if="state.loading">
+                <span> Loading ... </span>
+                <span> A few moments more </span>
+              </template>
+              <template v-else>
+                <template v-if="state.chatDetails">
+                  <span> {{ state.chatDetails.name }} </span>
+                  <span> {{ state.chatDetails.users.map((u) => u.username).join(", ") }} </span>
+                </template>
+              </template>
             </div>
           </div>
           <div class="row">
@@ -124,10 +132,10 @@
         </keep-alive>
         <add-file-panel
           @close="state.addingFile = false"
-          :files="state.files"
-          v-if="state.addingFile"
           @trigger-file-picker="triggerFilePicker"
           @send-files="sendFiles"
+          :files="state.files"
+          v-if="state.addingFile"
         />
         <div class="emoji-panel" v-if="state.emojiPanelOpen">
           <emoji-picker @close="state.emojiPanelOpen = false" @emoji="insertEmoji" />
@@ -229,6 +237,8 @@ import EmojiPicker from "src/components/chat/EmojiPicker.vue";
 import AddFilePanel from "src/components/AddFilePanel.vue";
 import { useRoute } from "vue-router";
 import ChatService from "src/services/chats";
+import { useStore } from "vuex";
+import { Notify } from "quasar";
 
 export default defineComponent({
   name: "ChatDetails",
@@ -240,6 +250,7 @@ export default defineComponent({
     AddFilePanel
   },
   setup() {
+    const store = useStore();
     const route = useRoute();
 
     // Plugins (provides and injects)
@@ -250,6 +261,7 @@ export default defineComponent({
     provide("messageSelectMode", messageSelectMode);
 
     const state = reactive({
+      loading: false,
       addingFile: false,
       messages: [],
       files: [],
@@ -380,23 +392,45 @@ export default defineComponent({
       state.emojiPanelOpen = !state.emojiPanelOpen;
     };
 
-    const sendFiles = () => {
-      state.files.forEach((file) => {
+    const sendFiles = async () => {
+      for (let i = 0; i < state.files.length; i++) {
+        await ChatService.uploadFile(
+          state.files[i],
+          state.chatDetails.id,
+          store.getters["user/user"].data.id
+        );
         state.messages.push({
-          userId: 1,
+          userId: store.getters["user/user"].data.id,
           sent: true,
           type: MSG_TYPE.FILE,
-          fileContent: file
+          fileContent: state.files[i]
         });
-      });
+      }
       scrollToEndOfMsgContainer();
     };
 
     onMounted(async () => {
-      const uid = route.params.id;
-      state.chatDetails = await ChatService.getDetails(uid);
-      state.messages = [...state.chatDetails.messages];
-      scrollToEndOfMsgContainer();
+      try {
+        state.loading = true;
+        const uid = route.params.id;
+        state.chatDetails = await ChatService.getDetails(uid);
+        state.messages = [
+          ...state.chatDetails.messages.map((m) => ({
+            ...m,
+            sent: store.getters["user/user"].data.id === m.userId
+          }))
+        ];
+        scrollToEndOfMsgContainer();
+      } catch (e) {
+        Notify.create({
+          message: e.message,
+          position: "top",
+          color: "dark",
+          textColor: "orange"
+        });
+      } finally {
+        state.loading = false;
+      }
     });
 
     return {
