@@ -15,19 +15,20 @@
       <q-menu dark touch-position context-menu>
         <q-list dense style="min-width: 100px">
           <q-item clickable v-close-popup>
-            <q-item-section>Contact info</q-item-section>
+            <q-item-section>
+              {{ chatType === CHAT_TYPE.GROUP ? "Group details" : "Contact info" }}
+            </q-item-section>
           </q-item>
-          <q-item clickable v-close-popup>
+          <q-item clickable v-close-popup @click="$emit('select-messages')">
             <q-item-section>Select messages</q-item-section>
           </q-item>
           <q-item clickable v-close-popup>
             <q-item-section>Mute notifications</q-item-section>
           </q-item>
           <q-item clickable v-close-popup>
-            <q-item-section>Clear messages</q-item-section>
-          </q-item>
-          <q-item clickable v-close-popup>
-            <q-item-section>Delete chat</q-item-section>
+            <q-item-section>
+              {{ chatType === CHAT_TYPE.GROUP ? "Leave group" : "Delete chat" }}
+            </q-item-section>
           </q-item>
         </q-list>
       </q-menu>
@@ -50,7 +51,11 @@
           :sent="message.sent"
           :file-content="message.fileContent"
           text-color="white"
-          class="chat-msg pos-rel"
+          class="pos-rel"
+          :style="{
+            maxWidth: '85%',
+            width: message.type === MSG_TYPE.AUDIO && '33%'
+          }"
         />
       </div>
     </q-scroll-area>
@@ -59,14 +64,14 @@
 
 <script>
 import { defineComponent, ref, reactive, nextTick, watch, computed } from "vue";
-import { MSG_TYPE } from "src/utils/constants";
+import { MSG_TYPE, CHAT_TYPE } from "src/utils/constants";
 import ChatMessage from "./ChatMessage.vue";
 import UploadOverlay from "../UploadOverlay.vue";
 import { format } from "date-fns";
 
 export default defineComponent({
   name: "message-panel",
-  emits: ["should-show-scroll-to-bottom", "file-uploaded", "delete-msg"],
+  emits: ["should-show-scroll-to-bottom", "file-uploaded", "delete-msg", "select-messages"],
   props: {
     messages: {
       type: Array,
@@ -78,6 +83,10 @@ export default defineComponent({
     },
     emojiPanelOpen: {
       type: Boolean,
+      required: false
+    },
+    chatType: {
+      type: Number,
       required: false
     }
   },
@@ -147,7 +156,8 @@ export default defineComponent({
       filesUploaded,
       messageSelected,
       deleteMsg,
-      formatSentAt
+      formatSentAt,
+      CHAT_TYPE
     };
   }
 });
@@ -156,9 +166,5 @@ export default defineComponent({
 <style lang="scss" scoped>
 .msg-container {
   position: relative;
-}
-
-.chat-msg {
-  max-width: 85%;
 }
 </style>

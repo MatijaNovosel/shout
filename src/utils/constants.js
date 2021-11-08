@@ -11,7 +11,7 @@ export const MSG_TYPE = {
   FILE: 7
 };
 
-export const CONVERSTATION_TYPE = {
+export const CHAT_TYPE = {
   PRIVATE: 1,
   GROUP: 2,
   SELF: 3

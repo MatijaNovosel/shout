@@ -1,13 +1,13 @@
 <template>
   <div class="row q-py-sm q-px-md msg q-my-xs" :class="`bg-${bgColor} text-${textColor}`">
-    <div class="row col-1 d-flex justify-center items-center" v-if="messageSelectMode">
-      <q-checkbox @change="messageSelected" v-model="state.selected" />
+    <div class="row col-2 d-flex justify-center items-center align-center" v-if="messageSelectMode">
+      <q-checkbox size="xs" @change="messageSelected" v-model="state.selected" />
     </div>
     <div
       class="row"
       :class="{
         'col-12': !messageSelectMode,
-        'col-11': messageSelectMode
+        'col-10': messageSelectMode
       }"
     >
       <div
@@ -163,5 +163,11 @@ export default defineComponent({
 .msg {
   border-radius: 6px;
   font-size: 12px;
+}
+
+audio {
+  width: 100%;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 </style>

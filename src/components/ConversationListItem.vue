@@ -25,10 +25,7 @@
       dark
       touch-position
       context-menu
-      v-if="
-        conversation.type === CONVERSTATION_TYPE.PRIVATE ||
-        conversation.type === CONVERSTATION_TYPE.GROUP
-      "
+      v-if="conversation.type === CHAT_TYPE.PRIVATE || conversation.type === CHAT_TYPE.GROUP"
     >
       <q-list dense style="min-width: 100px">
         <q-item clickable v-close-popup>
@@ -37,13 +34,13 @@
         <q-item clickable v-close-popup>
           <q-item-section>Mute notifications</q-item-section>
         </q-item>
-        <q-item clickable v-close-popup v-if="conversation.type === CONVERSTATION_TYPE.PRIVATE">
+        <q-item clickable v-close-popup v-if="conversation.type === CHAT_TYPE.PRIVATE">
           <q-item-section>Delete chat</q-item-section>
         </q-item>
         <q-item clickable v-close-popup>
           <q-item-section>Pin chat</q-item-section>
         </q-item>
-        <q-item clickable v-close-popup v-if="conversation.type === CONVERSTATION_TYPE.GROUP">
+        <q-item clickable v-close-popup v-if="conversation.type === CHAT_TYPE.GROUP">
           <q-item-section>Exit group</q-item-section>
         </q-item>
         <q-item clickable v-close-popup>
@@ -56,7 +53,7 @@
 
 <script>
 import { defineComponent } from "vue";
-import { CONVERSTATION_TYPE } from "../utils/constants";
+import { CHAT_TYPE } from "../utils/constants";
 import { formatDistanceToNow } from "date-fns";
 import { ROUTE_NAMES } from "src/router/routeNames";
 
@@ -71,11 +68,11 @@ export default defineComponent({
   setup(props) {
     const getConversationIcon = () => {
       switch (props.conversation.type) {
-        case CONVERSTATION_TYPE.PRIVATE:
+        case CHAT_TYPE.PRIVATE:
           return "mdi-account-supervisor";
-        case CONVERSTATION_TYPE.GROUP:
+        case CHAT_TYPE.GROUP:
           return "mdi-account-group";
-        case CONVERSTATION_TYPE.SELF:
+        case CHAT_TYPE.SELF:
           return "mdi-account";
         default:
           return "mdi-circle";
@@ -90,13 +87,13 @@ export default defineComponent({
       };
 
       switch (props.conversation.type) {
-        case CONVERSTATION_TYPE.PRIVATE:
+        case CHAT_TYPE.PRIVATE:
           route.name = ROUTE_NAMES.PRIVATE_CHAT;
           break;
-        case CONVERSTATION_TYPE.GROUP:
+        case CHAT_TYPE.GROUP:
           route.name = ROUTE_NAMES.GROUP_CHAT;
           break;
-        case CONVERSTATION_TYPE.SELF:
+        case CHAT_TYPE.SELF:
           route.name = ROUTE_NAMES.SELF_CHAT;
           break;
         default:
@@ -109,7 +106,7 @@ export default defineComponent({
 
     return {
       formatDistanceToNow,
-      CONVERSTATION_TYPE,
+      CHAT_TYPE,
       getConversationIcon,
       getRoute
     };

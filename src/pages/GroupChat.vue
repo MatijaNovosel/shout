@@ -131,9 +131,11 @@
             @should-show-scroll-to-bottom="shouldShowScrollToBottom"
             @file-uploaded="fileUploaded"
             @delete-msg="deleteMsg"
+            @select-messages="messageSelectMode = true"
             :messages="state.messages"
             :scroll-to-bottom-trigger="state.scrollToBottomTrigger"
             :emoji-panel-open="state.emojiPanelOpen"
+            :chat-type="CHAT_TYPE.GROUP"
           />
         </keep-alive>
         <add-file-panel
@@ -233,7 +235,7 @@
 <script>
 import { provide, defineComponent, reactive, onMounted, computed, ref } from "vue";
 import { downloadURI, secondsToElapsedTime } from "src/utils/helpers";
-import { MSG_TYPE, GROUP_CHAT_RIGHT_PANEL } from "src/utils/constants";
+import { MSG_TYPE, GROUP_CHAT_RIGHT_PANEL, CHAT_TYPE } from "src/utils/constants";
 import { format } from "date-fns";
 import { ROUTE_NAMES } from "src/router/routeNames";
 import MessagePanel from "src/components/chat/MessagePanel.vue";
@@ -473,7 +475,9 @@ export default defineComponent({
       triggerFilePicker,
       openEmojiPanel,
       sendFiles,
-      deleteMsg
+      deleteMsg,
+      CHAT_TYPE,
+      messageSelectMode
     };
   }
 });
