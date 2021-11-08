@@ -132,6 +132,7 @@
             @file-uploaded="fileUploaded"
             @delete-msg="deleteMsg"
             @select-messages="messageSelectMode = true"
+            @open-details="openRightPanel(GROUP_CHAT_RIGHT_PANEL.DETAILS)"
             :messages="state.messages"
             :scroll-to-bottom-trigger="state.scrollToBottomTrigger"
             :emoji-panel-open="state.emojiPanelOpen"

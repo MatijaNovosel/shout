@@ -14,7 +14,7 @@
     >
       <q-menu dark touch-position context-menu>
         <q-list dense style="min-width: 100px">
-          <q-item clickable v-close-popup>
+          <q-item clickable v-close-popup @click="$emit('open-details')">
             <q-item-section>
               {{ chatType === CHAT_TYPE.GROUP ? "Group details" : "Contact info" }}
             </q-item-section>
@@ -71,7 +71,13 @@ import { format } from "date-fns";
 
 export default defineComponent({
   name: "message-panel",
-  emits: ["should-show-scroll-to-bottom", "file-uploaded", "delete-msg", "select-messages"],
+  emits: [
+    "should-show-scroll-to-bottom",
+    "file-uploaded",
+    "delete-msg",
+    "select-messages",
+    "open-details"
+  ],
   props: {
     messages: {
       type: Array,
