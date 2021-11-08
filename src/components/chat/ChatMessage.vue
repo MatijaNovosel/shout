@@ -21,8 +21,8 @@
           {{ txt }}
         </span>
         <div v-else-if="type === MSG_TYPE.AUDIO">
-          <audio controls>
-            <source :src="audioContent" type="audio/webm" />
+          <audio controls v-if="fileContent">
+            <source :src="state.getAudioContent" type="audio/webm" />
             Your browser does not support the audio element.
           </audio>
         </div>
@@ -81,7 +81,7 @@
 </template>
 
 <script>
-import { defineComponent, reactive, inject } from "vue";
+import { defineComponent, reactive, inject, computed } from "vue";
 import { MSG_TYPE } from "src/utils/constants";
 import { getFileIcon, getFileExtension, bytesToSize, downloadFile } from "src/utils/helpers";
 
@@ -96,10 +96,6 @@ export default defineComponent({
     type: {
       type: Number,
       required: true
-    },
-    audioContent: {
-      type: String,
-      required: false
     },
     txt: {
       type: String,
@@ -128,7 +124,10 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const state = reactive({
-      selected: false
+      selected: false,
+      getAudioContent: computed(() => {
+        return URL.createObjectURL(props.fileContent);
+      })
     });
 
     const messageSelectMode = inject("messageSelectMode");

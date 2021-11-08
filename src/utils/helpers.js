@@ -106,3 +106,7 @@ export const getFileFromUrl = async (url, name, defaultType = "image/jpeg") => {
     type: response.headers.get("content-type") || defaultType
   });
 };
+
+export const blobToFile = (blob, fileName) => {
+  return new File([blob], fileName, { type: blob.type });
+};

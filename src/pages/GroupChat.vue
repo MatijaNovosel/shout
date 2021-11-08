@@ -322,24 +322,32 @@ export default defineComponent({
       );
     };
 
-    const handleSuccess = (stream) => {
+    const mediaRecorderStopListener = async () => {
+      if (!state.recordingCancelled) {
+        await ChatService.sendAudioMessage(
+          new Blob(state.recordedChunks),
+          state.chatDetails.id,
+          store.getters["user/user"].data.id
+        );
+        state.messages.push({
+          userId: store.getters["user/user"].data.id,
+          sent: true,
+          sentAt: new Date(),
+          type: MSG_TYPE.AUDIO,
+          fileContent: URL.createObjectURL(new Blob(state.recordedChunks))
+        });
+        scrollToEndOfMsgContainer();
+      }
+    };
+
+    const handleSuccess = async (stream) => {
       state.mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
       state.mediaRecorder.addEventListener("dataavailable", (e) => {
         if (e.data.size > 0) {
           state.recordedChunks.push(e.data);
         }
       });
-      state.mediaRecorder.addEventListener("stop", () => {
-        if (!state.recordingCancelled) {
-          state.messages.push({
-            userId: 1,
-            sent: true,
-            type: MSG_TYPE.AUDIO,
-            audioContent: URL.createObjectURL(new Blob(state.recordedChunks))
-          });
-          scrollToEndOfMsgContainer();
-        }
-      });
+      state.mediaRecorder.addEventListener("stop", mediaRecorderStopListener);
       state.mediaRecorder.start();
     };
 

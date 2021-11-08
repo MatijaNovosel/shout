@@ -40,18 +40,17 @@
         }"
       >
         <chat-message
+          @selected="messageSelected"
+          @delete-msg="deleteMsg"
           :id="message.id"
-          :audio-content="message.audioContent"
           :txt="message.txt"
           :sent-at="formatSentAt(message)"
           :bg-color="message.sent ? 'teal-9' : 'blue-grey-9'"
-          text-color="white"
-          class="chat-msg pos-rel"
           :type="message.type"
           :sent="message.sent"
           :file-content="message.fileContent"
-          @selected="messageSelected"
-          @delete-msg="deleteMsg"
+          text-color="white"
+          class="chat-msg pos-rel"
         />
       </div>
     </q-scroll-area>
