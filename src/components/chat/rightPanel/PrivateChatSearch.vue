@@ -8,7 +8,7 @@
         <span class="text-white q-ml-sm"> Search messages </span>
       </div>
     </div>
-    <q-input dark label="Group name" label-color="teal" class="full-width q-px-lg" readonly>
+    <q-input dark label="Search" label-color="teal" class="full-width q-px-lg" readonly>
       <template #append>
         <q-icon size="xs" name="mdi-pencil" />
       </template>

@@ -110,3 +110,7 @@ export const getFileFromUrl = async (url, name, defaultType = "image/jpeg") => {
 export const blobToFile = (blob, fileName) => {
   return new File([blob], fileName, { type: blob.type });
 };
+
+export const sample = (arr) => {
+  return arr[Math.floor(Math.random() * arr.length)];
+};

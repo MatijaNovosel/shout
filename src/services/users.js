@@ -1,4 +1,5 @@
 import firebase from "src/boot/firebase";
+import { range, sample } from "src/utils/helpers";
 
 class UserService {
   constructor() {
@@ -21,7 +22,8 @@ class UserService {
   async addUser(user) {
     await this.userCollection.doc(user.id).set({
       username: user.username,
-      email: user.email
+      email: user.email,
+      shorthandId: range(6).map(() => sample(range(6)).toString())
     });
   }
 

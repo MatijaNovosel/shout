@@ -1,24 +1,21 @@
 <template>
   <div class="chat-top row justify-between q-py-sm q-px-md">
-    <q-avatar class="cursor-pointer" @click="$emit('set-left-panel', 'profile')" size="40px">
-      <img src="../../assets/me.jpg" />
-    </q-avatar>
+    <div class="row items-center">
+      <q-avatar class="cursor-pointer" @click="$emit('set-left-panel', 'profile')" size="40px">
+        <img src="../../assets/me.jpg" />
+      </q-avatar>
+      <span class="q-ml-sm text-white text-weight-bold">
+        {{ `${state.user.data.username}#${state.user.data.shorthandId}` }}
+      </span>
+    </div>
     <div class="row">
       <q-btn flat round color="white" icon="mdi-circle-outline" />
-      <q-btn flat round color="white" icon="mdi-message-text" />
+      <q-btn flat round color="white" icon="mdi-message-text" @click="openNewChatDialog" />
       <q-btn flat round color="white" icon="mdi-dots-vertical">
         <q-menu dark right :offset="[-15, -5]">
           <q-list dense style="min-width: 100px">
             <q-item clickable v-close-popup>
               <q-item-section>New group</q-item-section>
-            </q-item>
-            <q-separator dark />
-            <q-item clickable v-close-popup>
-              <q-item-section>Archived</q-item-section>
-            </q-item>
-            <q-separator dark />
-            <q-item clickable v-close-popup>
-              <q-item-section>Pinned</q-item-section>
             </q-item>
             <q-separator dark />
             <q-item clickable v-close-popup @click="$emit('set-left-panel', 'settings')">
@@ -66,6 +63,7 @@
       <q-separator dark inset="item" v-if="i !== state.conversations.length - 1" />
     </div>
   </q-list>
+  <new-chat-dialog v-model="state.newChatDialog" />
 </template>
 
 <script>
@@ -76,21 +74,22 @@ import { Notify } from "quasar";
 import { ROUTE_NAMES } from "src/router/routeNames";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import NewChatDialog from "src/components/NewChatDialog.vue";
 
 export default defineComponent({
   name: "conversations",
   emits: ["set-left-panel"],
   components: {
-    ConversationListItem
+    ConversationListItem,
+    NewChatDialog
   },
   setup() {
     const store = useStore();
     const router = useRouter();
 
     const state = reactive({
-      conversations: computed(() => {
-        return store.getters["chats/chats"];
-      }),
+      user: computed(() => store.getters["user/user"]),
+      conversations: computed(() => store.getters["chats/chats"]),
       userListContainerStyle: computed(() => {
         if (!state.notificationsEnablePanelActive) {
           return {
@@ -105,7 +104,8 @@ export default defineComponent({
         }
       }),
       notificationsEnabled: false,
-      notificationsEnablePanelActive: true
+      notificationsEnablePanelActive: true,
+      newChatDialog: false
     });
 
     const checkNotificationPromise = () => {
@@ -165,11 +165,16 @@ export default defineComponent({
       }
     };
 
+    const openNewChatDialog = () => {
+      state.newChatDialog = true;
+    };
+
     return {
       state,
       askNotificationPermission,
       logOut,
-      store
+      store,
+      openNewChatDialog
     };
   }
 });
