@@ -1,5 +1,6 @@
 import firebase from "src/boot/firebase";
 import { range, sample, readDocuments, checkUsernamePattern } from "src/utils/helpers";
+import store from "src/store/index";
 
 class UserService {
   constructor() {
@@ -35,7 +36,16 @@ class UserService {
   async searchByUsername(searchQuery) {
     if (checkUsernamePattern(searchQuery)) {
       const username = searchQuery.split("#")[0];
+
+      const storeRef = await store();
+      const currentUser = storeRef.getters["user/user"];
+
+      if (username === currentUser.data.username) {
+        return [];
+      }
+
       const shorthandId = searchQuery.split("#")[1];
+
       const res = await readDocuments("users", {
         where: [
           ["username", "==", username],
