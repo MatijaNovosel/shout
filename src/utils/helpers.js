@@ -1,4 +1,5 @@
 import { MIME_TYPES, MIME_TYPE_ICONS } from "./constants";
+import firebase from "src/boot/firebase";
 
 export const range = (start, stop, step) => {
   if (typeof stop === "undefined") {
@@ -113,4 +114,45 @@ export const blobToFile = (blob, fileName) => {
 
 export const sample = (arr) => {
   return arr[Math.floor(Math.random() * arr.length)];
+};
+
+export const readDocuments = async (collection, options = {}) => {
+  const { where, orderBy, limit } = options;
+  let query = firebase.firestore().collection(collection);
+
+  if (where) {
+    if (where[0] instanceof Array) {
+      // It's an array of array
+      for (const w of where) {
+        query = query.where(...w);
+      }
+    } else {
+      query = query.where(...where);
+    }
+  }
+
+  if (orderBy) {
+    query = query.orderBy(...orderBy);
+  }
+
+  if (limit) {
+    query = query.limit(limit);
+  }
+
+  const res = await query.get();
+
+  return res;
+};
+
+export const checkUsernamePattern = (username) => {
+  return /^[A-Za-z]+#[0-9]{6}$/.test(username);
+};
+
+export const copyToClipboard = (text) => {
+  const clipboardData =
+    event.clipboardData ||
+    window.clipboardData ||
+    event.originalEvent?.clipboardData ||
+    navigator.clipboard;
+  clipboardData.writeText(text);
 };

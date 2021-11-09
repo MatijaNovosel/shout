@@ -16,6 +16,9 @@
           rounded
           standout
           placeholder="Search for a username"
+          v-model="state.searchQuery"
+          @update:model-value="search"
+          :loading="state.searching"
         >
           <template #prepend>
             <q-icon name="mdi-magnify" />
@@ -58,6 +61,8 @@
 <script>
 import { defineComponent, reactive, computed } from "vue";
 import { useStore } from "vuex";
+import { debounce } from "debounce";
+import UserService from "src/services/users";
 
 export default defineComponent({
   name: "new-chat-dialog",
@@ -72,16 +77,29 @@ export default defineComponent({
 
     const state = reactive({
       user: computed(() => store.getters["user/user"]),
-      filteredUsers: []
+      filteredUsers: [],
+      searchQuery: null,
+      searching: false
     });
 
     const close = () => {
       emit("update:modelValue", false);
     };
 
+    const findUser = async () => {
+      state.searching = true;
+      state.filteredUsers = await UserService.searchByUsername(state.searchQuery);
+      setTimeout(() => {
+        state.searching = false;
+      }, 400);
+    };
+
+    const search = debounce(findUser, 750);
+
     return {
       state,
-      close
+      close,
+      search
     };
   }
 });

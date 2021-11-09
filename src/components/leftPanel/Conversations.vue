@@ -4,7 +4,10 @@
       <q-avatar class="cursor-pointer" @click="$emit('set-left-panel', 'profile')" size="40px">
         <img src="../../assets/me.jpg" />
       </q-avatar>
-      <span class="q-ml-sm text-white text-weight-bold">
+      <span
+        class="q-ml-md text-grey-6 text-weight-bold cursor-pointer"
+        @click="copyUsernameToClipboard"
+      >
         {{ `${state.user.data.username}#${state.user.data.shorthandId}` }}
       </span>
     </div>
@@ -75,6 +78,7 @@ import { ROUTE_NAMES } from "src/router/routeNames";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import NewChatDialog from "src/components/NewChatDialog.vue";
+import { copyToClipboard } from "src/utils/helpers";
 
 export default defineComponent({
   name: "conversations",
@@ -169,12 +173,22 @@ export default defineComponent({
       state.newChatDialog = true;
     };
 
+    const copyUsernameToClipboard = () => {
+      copyToClipboard(`${state.user.data.username}#${state.user.data.shorthandId}`);
+      Notify.create({
+        message: "Username copied to clipboard",
+        position: "top",
+        color: "dark",
+        textColor: "orange"
+      });
+    };
+
     return {
       state,
       askNotificationPermission,
       logOut,
-      store,
-      openNewChatDialog
+      openNewChatDialog,
+      copyUsernameToClipboard
     };
   }
 });
