@@ -12,22 +12,21 @@
         <avatar-editor
           :width="400"
           :height="400"
-          :set-scale-trigger="state.avatarEditorScaleVal"
           ref="avatarEditor"
-          @image-ready="onImageReady"
           image="https://cdn.quasar.dev/img/avatar.png"
+          @image-ready="onImageReady"
+          v-model:scale="state.avatarEditorScale"
         />
         <br />
         <avatar-editor-scale
-          :set-scale-trigger="state.avatarEditorScale"
-          @change-scale="onChangeScale"
           :width="250"
-          :min="1"
-          :max="3"
-          :step="0.02"
+          :min="state.scaleMin"
+          :max="state.scaleMax"
+          :step="state.scaleStep"
+          v-model:scale="state.avatarEditorScale"
         />
         <br />
-        <button @click="saveClicked">Save</button>
+        <q-btn color="teal" @click="saveClicked"> Save </q-btn>
       </q-card-section>
     </q-card>
   </q-dialog>
@@ -52,17 +51,16 @@ export default defineComponent({
   emits: ["update:modelValue"],
   setup(props, { emit }) {
     const state = reactive({
-      avatarEditorScale: 0,
-      avatarEditorScaleVal: 0
+      avatarEditorScale: 1,
+      scaleMin: 1,
+      scaleMax: 3,
+      scaleStep: 0.02
     });
+
     const avatarEditor = ref(null);
 
     const close = () => {
       emit("update:modelValue", false);
-    };
-
-    const onChangeScale = (scale) => {
-      state.avatarEditorScaleVal = parseFloat(scale);
     };
 
     const saveClicked = () => {
@@ -76,9 +74,15 @@ export default defineComponent({
 
     const handleWheelEvent = (e) => {
       if (e.deltaY > 0) {
-        state.avatarEditorScale += 0.02;
+        // Down
+        if (state.avatarEditorScale - state.scaleStep >= state.scaleMin) {
+          state.avatarEditorScale -= state.scaleStep;
+        }
       } else {
-        state.avatarEditorScale -= 0.02;
+        // Up
+        if (state.avatarEditorScale + state.scaleStep <= state.scaleMax) {
+          state.avatarEditorScale += state.scaleStep;
+        }
       }
     };
 
@@ -95,7 +99,6 @@ export default defineComponent({
       close,
       avatarEditor,
       saveClicked,
-      onChangeScale,
       onImageReady
     };
   }

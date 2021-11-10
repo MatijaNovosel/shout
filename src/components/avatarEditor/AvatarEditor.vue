@@ -65,7 +65,7 @@ export default defineComponent({
         return [0, 0, 0, 0.5];
       }
     },
-    setScaleTrigger: {
+    scale: {
       type: Number
     }
   },
@@ -393,18 +393,12 @@ export default defineComponent({
     );
 
     watch(
-      () => state.scale,
-      () => {
+      () => props.scale,
+      (val) => {
+        state.scale = val;
         if (state.imageLoaded) {
           redraw();
         }
-      }
-    );
-
-    watch(
-      () => props.setScaleTrigger,
-      (val) => {
-        changeScale(val);
       }
     );
 

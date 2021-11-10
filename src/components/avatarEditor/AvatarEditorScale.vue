@@ -1,11 +1,11 @@
 <template>
   <input
-    v-model="state.scale"
     type="range"
     :min="min"
     :max="max"
     :step="step"
     :style="{ width: `${width}px` }"
+    v-model="state.scale"
   />
 </template>
 
@@ -14,7 +14,7 @@ import { defineComponent, reactive, watch } from "vue";
 
 export default defineComponent({
   name: "avatar-editor-scale",
-  emits: ["change-scale"],
+  emits: ["update:scale"],
   props: {
     width: {
       type: Number,
@@ -32,30 +32,27 @@ export default defineComponent({
       type: Number,
       default: 0.01
     },
-    setScaleTrigger: {
-      type: Number
+    scale: {
+      type: Number,
+      required: true
     }
   },
   setup(props, { emit }) {
     const state = reactive({
-      scale: 1
+      scale: props.scale
     });
 
-    const setScale = (scale) => {
-      state.scale = scale;
-    };
-
     watch(
-      () => props.setScaleTrigger,
+      () => props.scale,
       (val) => {
-        setScale(val);
+        state.scale = val;
       }
     );
 
     watch(
       () => state.scale,
       (val) => {
-        emit("change-scale", val);
+        emit("update:scale", parseFloat(val));
       }
     );
 
