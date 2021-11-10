@@ -13,7 +13,7 @@
           :width="400"
           :height="400"
           ref="avatarEditor"
-          image="https://cdn.quasar.dev/img/avatar.png"
+          :image="state.userAvatar"
           @image-ready="onImageReady"
           v-model:scale="state.avatarEditorScale"
         />
@@ -33,11 +33,12 @@
 </template>
 
 <script>
-import { defineComponent, reactive, ref, onMounted, onUnmounted } from "vue";
+import { defineComponent, reactive, ref, onMounted, onUnmounted, computed } from "vue";
 import AvatarEditor from "src/components/avatarEditor/AvatarEditor.vue";
 import AvatarEditorScale from "src/components/avatarEditor/AvatarEditorScale.vue";
 import { dataURLtoFile } from "src/utils/helpers";
 import UserService from "src/services/users";
+import { useStore } from "vuex";
 
 export default defineComponent({
   name: "avatar-editor-dialog",
@@ -52,11 +53,14 @@ export default defineComponent({
   },
   emits: ["update:modelValue"],
   setup(props, { emit }) {
+    const store = useStore();
+
     const state = reactive({
       avatarEditorScale: 1,
       scaleMin: 1,
       scaleMax: 3,
-      scaleStep: 0.02
+      scaleStep: 0.02,
+      userAvatar: computed(() => store.getters["user/user"].avatarUrl)
     });
 
     const avatarEditor = ref(null);

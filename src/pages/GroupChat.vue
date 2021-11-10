@@ -330,10 +330,10 @@ export default defineComponent({
         await ChatService.sendAudioMessage(
           new Blob(state.recordedChunks),
           state.chatDetails.id,
-          store.getters["user/user"].data.id
+          store.getters["user/user"].id
         );
         state.messages.push({
-          userId: store.getters["user/user"].data.id,
+          userId: store.getters["user/user"].id,
           sent: true,
           sentAt: new Date(),
           type: MSG_TYPE.AUDIO,
@@ -369,13 +369,13 @@ export default defineComponent({
     const sendTxtMsg = async () => {
       if (state.msgText !== null && state.msgText !== "" && state.msgText.length > 4) {
         await ChatService.sendMessage({
-          userId: store.getters["user/user"].data.id,
+          userId: store.getters["user/user"].id,
           type: MSG_TYPE.TXT,
           txt: state.msgText,
           chatId: state.chatDetails.id
         });
         state.messages.push({
-          userId: store.getters["user/user"].data.id,
+          userId: store.getters["user/user"].id,
           sent: true,
           type: MSG_TYPE.TXT,
           txt: state.msgText,
@@ -421,10 +421,10 @@ export default defineComponent({
         await ChatService.uploadFile(
           state.files[i],
           state.chatDetails.id,
-          store.getters["user/user"].data.id
+          store.getters["user/user"].id
         );
         state.messages.push({
-          userId: store.getters["user/user"].data.id,
+          userId: store.getters["user/user"].id,
           sent: true,
           type: MSG_TYPE.FILE,
           fileContent: state.files[i]
@@ -445,7 +445,7 @@ export default defineComponent({
         state.messages = [
           ...state.chatDetails.messages.map((m) => ({
             ...m,
-            sent: store.getters["user/user"].data.id === m.userId
+            sent: store.getters["user/user"].id === m.userId
           }))
         ];
         scrollToEndOfMsgContainer();

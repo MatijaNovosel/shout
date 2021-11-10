@@ -75,11 +75,12 @@ class UserService {
     const retVal = await firebase.storage().ref(guid).put(file);
     const url = await retVal.ref.getDownloadURL();
     const storeRef = await store();
-    const user = storeRef.getters["user/user"];
-    const userData = { ...user.data };
-    userData.avatarUrl = url;
-    await this.userCollection.doc(user.id).set(userData);
-    await storeRef.dispatch("user/fetchUser", userData);
+    const user = { ...storeRef.getters["user/user"] };
+    const userId = user.id;
+    user.avatarUrl = url;
+    delete user.id;
+    await this.userCollection.doc(userId).set(user);
+    await storeRef.dispatch("user/changePfp", url);
   }
 }
 

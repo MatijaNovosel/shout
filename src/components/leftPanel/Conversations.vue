@@ -2,13 +2,14 @@
   <div class="chat-top row justify-between q-py-sm q-px-md">
     <div class="row items-center">
       <q-avatar class="cursor-pointer" @click="$emit('set-left-panel', 'profile')" size="40px">
-        <img src="../../assets/me.jpg" />
+        <img :src="state.user.avatarUrl" />
       </q-avatar>
       <span
+        v-if="state.user"
         class="q-ml-md text-grey-6 text-weight-bold cursor-pointer"
         @click="copyUsernameToClipboard"
       >
-        {{ `${state.user.data.username}#${state.user.data.shorthandId}` }}
+        {{ `${state.user.username}#${state.user.shorthandId}` }}
       </span>
     </div>
     <div class="row">
@@ -174,7 +175,7 @@ export default defineComponent({
     };
 
     const copyUsernameToClipboard = () => {
-      copyToClipboard(`${state.user.data.username}#${state.user.data.shorthandId}`);
+      copyToClipboard(`${state.user.username}#${state.user.shorthandId}`);
       Notify.create({
         message: "Username copied to clipboard",
         position: "top",

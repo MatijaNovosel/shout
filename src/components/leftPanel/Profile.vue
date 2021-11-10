@@ -11,7 +11,7 @@
       <span class="text-white text-h6 q-ml-sm"> Profile </span>
     </div>
     <q-avatar size="200px" class="q-my-lg">
-      <img :src="state.user.avatarUrl" />
+      <img :src="state.avatarUrl" />
       <q-btn
         padding="sm"
         color="teal"
@@ -57,7 +57,8 @@ export default defineComponent({
     const store = useStore();
 
     const state = reactive({
-      user: computed(() => store.getters["user/user"].data),
+      user: computed(() => store.getters["user/user"]),
+      avatarUrl: computed(() => store.getters["user/user"].avatarUrl),
       avatarEditorDialog: false
     });
 
