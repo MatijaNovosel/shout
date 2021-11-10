@@ -8,7 +8,7 @@
           <q-tooltip>Close</q-tooltip>
         </q-btn>
       </q-bar>
-      <q-card-section>
+      <q-card-section class="column items-center justify-center">
         <avatar-editor
           :width="400"
           :height="400"
@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import { defineComponent, reactive, ref, provide } from "vue";
+import { defineComponent, reactive, ref, onMounted, onUnmounted } from "vue";
 import AvatarEditor from "src/components/avatarEditor/AvatarEditor.vue";
 import AvatarEditorScale from "src/components/avatarEditor/AvatarEditorScale.vue";
 
@@ -73,6 +73,22 @@ export default defineComponent({
     const onImageReady = (scale) => {
       state.avatarEditorScale = parseFloat(scale);
     };
+
+    const handleWheelEvent = (e) => {
+      if (e.deltaY > 0) {
+        state.avatarEditorScale += 0.02;
+      } else {
+        state.avatarEditorScale -= 0.02;
+      }
+    };
+
+    onMounted(() => {
+      document.addEventListener("wheel", handleWheelEvent);
+    });
+
+    onUnmounted(() => {
+      document.removeEventListener("wheel", handleWheelEvent);
+    });
 
     return {
       state,
