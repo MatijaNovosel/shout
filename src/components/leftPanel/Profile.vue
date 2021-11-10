@@ -12,18 +12,26 @@
     </div>
     <q-avatar size="200px" class="q-my-lg">
       <img src="../../assets/me.jpg" />
+      <q-btn
+        padding="sm"
+        color="teal"
+        icon="mdi-pencil"
+        fab
+        class="change-pfp-btn"
+        @click="uploadProfilePicture"
+      />
     </q-avatar>
     <q-input
       dark
-      label="Your name"
-      :model-value="state.user.data.username"
+      label="Username"
+      :model-value="`${state.user.data.username}#${state.user.data.shorthandId}`"
       label-color="teal"
       class="full-width q-px-lg"
       readonly
     />
     <q-input
       dark
-      label="About"
+      label="Status"
       autogrow
       model-value="I will not go, prefer a feast of friends to the giant family"
       label-color="teal"
@@ -31,24 +39,40 @@
       readonly
     />
   </div>
+  <input type="file" hidden @change="onChange" ref="filePicker" accept=".pdf,.jpg,.jpeg,.png" />
 </template>
 
 <script>
-import { defineComponent, reactive, computed } from "vue";
+import { defineComponent, reactive, computed, ref } from "vue";
 import { useStore } from "vuex";
+import UserService from "src/services/users";
 
 export default defineComponent({
   name: "profile",
   emits: ["set-left-panel"],
   setup() {
     const store = useStore();
+    const filePicker = ref(null);
 
     const state = reactive({
       user: computed(() => store.getters["user/user"])
     });
 
+    const uploadProfilePicture = () => {
+      filePicker.value.click();
+    };
+
+    const onChange = async () => {
+      const file = filePicker.value.files[0];
+      const pictureUrl = await UserService.uploadProfilePicture(file);
+      console.log(pictureUrl);
+    };
+
     return {
-      state
+      state,
+      uploadProfilePicture,
+      filePicker,
+      onChange
     };
   }
 });
@@ -63,5 +87,11 @@ export default defineComponent({
 
 .back-button-container {
   background-color: $bg-dark-1;
+}
+
+.change-pfp-btn {
+  top: 10px;
+  right: 10px;
+  position: absolute;
 }
 </style>

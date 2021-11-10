@@ -1,5 +1,11 @@
 import firebase from "src/boot/firebase";
-import { range, sample, readDocuments, checkUsernamePattern } from "src/utils/helpers";
+import {
+  range,
+  sample,
+  readDocuments,
+  checkUsernamePattern,
+  generateGuid
+} from "src/utils/helpers";
 import store from "src/store/index";
 
 class UserService {
@@ -62,6 +68,13 @@ class UserService {
       return users;
     }
     return [];
+  }
+
+  async uploadProfilePicture(file) {
+    const guid = generateGuid();
+    const retVal = await firebase.storage().ref(guid).put(file);
+    const url = await retVal.ref.getDownloadURL();
+    return url;
   }
 }
 
