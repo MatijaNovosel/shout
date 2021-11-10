@@ -26,7 +26,7 @@
           v-model:scale="state.avatarEditorScale"
         />
         <br />
-        <q-btn color="teal" @click="saveClicked"> Save </q-btn>
+        <q-btn color="teal" @click="save"> Save </q-btn>
       </q-card-section>
     </q-card>
   </q-dialog>
@@ -36,6 +36,8 @@
 import { defineComponent, reactive, ref, onMounted, onUnmounted } from "vue";
 import AvatarEditor from "src/components/avatarEditor/AvatarEditor.vue";
 import AvatarEditorScale from "src/components/avatarEditor/AvatarEditorScale.vue";
+import { dataURLtoFile } from "src/utils/helpers";
+import UserService from "src/services/users";
 
 export default defineComponent({
   name: "avatar-editor-dialog",
@@ -63,9 +65,12 @@ export default defineComponent({
       emit("update:modelValue", false);
     };
 
-    const saveClicked = () => {
-      const img = avatarEditor.value.getImageScaled();
-      console.log(img);
+    const save = () => {
+      const canvasData = avatarEditor.value.getImageScaled();
+      const img = canvasData.toDataURL("image/png");
+      const imgFile = dataURLtoFile(img, "savedImg.png");
+      UserService.uploadProfilePicture(imgFile);
+      close();
     };
 
     const onImageReady = (scale) => {
@@ -98,7 +103,7 @@ export default defineComponent({
       state,
       close,
       avatarEditor,
-      saveClicked,
+      save,
       onImageReady
     };
   }

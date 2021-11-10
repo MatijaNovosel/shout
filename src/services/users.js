@@ -74,7 +74,12 @@ class UserService {
     const guid = generateGuid();
     const retVal = await firebase.storage().ref(guid).put(file);
     const url = await retVal.ref.getDownloadURL();
-    return url;
+    const storeRef = await store();
+    const user = storeRef.getters["user/user"];
+    const userData = { ...user.data };
+    userData.avatarUrl = url;
+    await this.userCollection.doc(user.id).set(userData);
+    await storeRef.dispatch("user/fetchUser", userData);
   }
 }
 

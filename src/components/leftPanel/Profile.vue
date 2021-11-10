@@ -11,7 +11,7 @@
       <span class="text-white text-h6 q-ml-sm"> Profile </span>
     </div>
     <q-avatar size="200px" class="q-my-lg">
-      <img src="../../assets/me.jpg" />
+      <img :src="state.user.avatarUrl" />
       <q-btn
         padding="sm"
         color="teal"
@@ -24,7 +24,7 @@
     <q-input
       dark
       label="Username"
-      :model-value="`${state.user.data.username}#${state.user.data.shorthandId}`"
+      :model-value="`${state.user.username}#${state.user.shorthandId}`"
       label-color="teal"
       class="full-width q-px-lg"
       readonly
@@ -39,14 +39,12 @@
       readonly
     />
   </div>
-  <input type="file" hidden @change="onChange" ref="filePicker" accept=".pdf,.jpg,.jpeg,.png" />
   <avatar-editor-dialog v-model="state.avatarEditorDialog" />
 </template>
 
 <script>
-import { defineComponent, reactive, computed, ref } from "vue";
+import { defineComponent, reactive, computed } from "vue";
 import { useStore } from "vuex";
-import UserService from "src/services/users";
 import AvatarEditorDialog from "../avatarEditor/AvatarEditorDialog.vue";
 
 export default defineComponent({
@@ -57,29 +55,19 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
-    const filePicker = ref(null);
 
     const state = reactive({
-      user: computed(() => store.getters["user/user"]),
+      user: computed(() => store.getters["user/user"].data),
       avatarEditorDialog: false
     });
 
     const uploadProfilePicture = () => {
       state.avatarEditorDialog = true;
-      // filePicker.value.click();
-    };
-
-    const onChange = async () => {
-      const file = filePicker.value.files[0];
-      const pictureUrl = await UserService.uploadProfilePicture(file);
-      console.log(pictureUrl);
     };
 
     return {
       state,
-      uploadProfilePicture,
-      filePicker,
-      onChange
+      uploadProfilePicture
     };
   }
 });

@@ -37,7 +37,7 @@ const drawRoundedRect = (context, x, y, width, height, borderRadius) => {
 
 export default defineComponent({
   name: "avatar-editor",
-  emits: ["image-ready"],
+  emits: ["image-ready", "update:scale"],
   props: {
     image: {
       type: String,
@@ -314,24 +314,6 @@ export default defineComponent({
       paintImage(state.context, state.state.image, props.border);
     };
 
-    const getImage = () => {
-      const cropRect = getCroppingRect();
-      const image = state.state.image;
-      // Get actual pixel coordinates
-      cropRect.x *= image.resource.width;
-      cropRect.y *= image.resource.height;
-      cropRect.width *= image.resource.width;
-      cropRect.height *= image.resource.height;
-      // Create a canvas with the correct dimensions
-      const canvas = document.createElement("canvas");
-      canvas.width = cropRect.width;
-      canvas.height = cropRect.height;
-      // Draw the full-size image at the correct position,
-      // The image gets truncated to the size of the canvas.
-      canvas.getContext("2d").drawImage(image.resource, -cropRect.x, -cropRect.y);
-      return canvas;
-    };
-
     const getImageScaled = () => {
       const { width, height } = getDimensions();
       const canvas = document.createElement("canvas");
@@ -360,11 +342,6 @@ export default defineComponent({
       } else {
         filePicker.value.click();
       }
-    };
-
-    const changeScale = (sc) => {
-      state.changed = true;
-      state.scale = sc;
     };
 
     const fileSelected = (e) => {
@@ -428,7 +405,8 @@ export default defineComponent({
       onDragStart,
       onDragEnd,
       onMouseMove,
-      filePicker
+      filePicker,
+      getImageScaled
     };
   }
 });
