@@ -40,26 +40,33 @@
     />
   </div>
   <input type="file" hidden @change="onChange" ref="filePicker" accept=".pdf,.jpg,.jpeg,.png" />
+  <avatar-editor-dialog v-model="state.avatarEditorDialog" />
 </template>
 
 <script>
 import { defineComponent, reactive, computed, ref } from "vue";
 import { useStore } from "vuex";
 import UserService from "src/services/users";
+import AvatarEditorDialog from "../avatarEditor/AvatarEditorDialog.vue";
 
 export default defineComponent({
   name: "profile",
   emits: ["set-left-panel"],
+  components: {
+    AvatarEditorDialog
+  },
   setup() {
     const store = useStore();
     const filePicker = ref(null);
 
     const state = reactive({
-      user: computed(() => store.getters["user/user"])
+      user: computed(() => store.getters["user/user"]),
+      avatarEditorDialog: false
     });
 
     const uploadProfilePicture = () => {
-      filePicker.value.click();
+      state.avatarEditorDialog = true;
+      // filePicker.value.click();
     };
 
     const onChange = async () => {
