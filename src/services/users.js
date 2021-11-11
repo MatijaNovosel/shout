@@ -80,7 +80,7 @@ class UserService {
     user.avatarUrl = url;
     delete user.id;
     await this.userCollection.doc(userId).set(user);
-    await storeRef.dispatch("user/changePfp", url);
+    await firebase.getCurrentUser();
   }
 }
 

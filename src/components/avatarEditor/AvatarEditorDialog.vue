@@ -37,7 +37,6 @@ import { defineComponent, reactive, ref, onMounted, onUnmounted, computed } from
 import AvatarEditor from "src/components/avatarEditor/AvatarEditor.vue";
 import AvatarEditorScale from "src/components/avatarEditor/AvatarEditorScale.vue";
 import { dataURLtoFile } from "src/utils/helpers";
-import UserService from "src/services/users";
 import { useStore } from "vuex";
 
 export default defineComponent({
@@ -51,7 +50,7 @@ export default defineComponent({
       type: Boolean
     }
   },
-  emits: ["update:modelValue"],
+  emits: ["update:modelValue", "save"],
   setup(props, { emit }) {
     const store = useStore();
 
@@ -73,7 +72,7 @@ export default defineComponent({
       const canvasData = avatarEditor.value.getImageScaled();
       const img = canvasData.toDataURL("image/png");
       const imgFile = dataURLtoFile(img, "savedImg.png");
-      UserService.uploadProfilePicture(imgFile);
+      emit("save", imgFile);
       close();
     };
 

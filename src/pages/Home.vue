@@ -12,7 +12,16 @@
     <div class="row main-container" :style="{ width: `${state.width - 300}px` }">
       <div class="col-3 full-height">
         <keep-alive>
-          <component @set-left-panel="setLeftPanel" :is="state.leftPaneComponent" />
+          <profile @set-left-panel="setLeftPanel" v-if="state.leftPaneComponent === 'profile'" />
+        </keep-alive>
+        <keep-alive>
+          <settings @set-left-panel="setLeftPanel" v-if="state.leftPaneComponent === 'settings'" />
+        </keep-alive>
+        <keep-alive>
+          <conversations
+            @set-left-panel="setLeftPanel"
+            v-if="state.leftPaneComponent === 'conversations'"
+          />
         </keep-alive>
       </div>
       <div class="col-9 full-height right-panel">

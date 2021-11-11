@@ -11,20 +11,20 @@
       <span class="text-white text-h6 q-ml-sm"> Profile </span>
     </div>
     <q-avatar size="200px" class="q-my-lg">
-      <img :src="state.avatarUrl" />
+      <img :src="user.avatarUrl" />
       <q-btn
         padding="sm"
         color="teal"
         icon="mdi-pencil"
         fab
         class="change-pfp-btn"
-        @click="uploadProfilePicture"
+        @click="openAvatarEditorDialog"
       />
     </q-avatar>
     <q-input
       dark
       label="Username"
-      :model-value="`${state.user.username}#${state.user.shorthandId}`"
+      :model-value="`${user.username}#${user.shorthandId}`"
       label-color="teal"
       class="full-width q-px-lg"
       readonly
@@ -39,13 +39,14 @@
       readonly
     />
   </div>
-  <avatar-editor-dialog v-model="state.avatarEditorDialog" />
+  <avatar-editor-dialog @save="uploadPfp" v-model="state.avatarEditorDialog" />
 </template>
 
 <script>
 import { defineComponent, reactive, computed } from "vue";
 import { useStore } from "vuex";
 import AvatarEditorDialog from "../avatarEditor/AvatarEditorDialog.vue";
+import UserService from "src/services/users";
 
 export default defineComponent({
   name: "profile",
@@ -57,18 +58,22 @@ export default defineComponent({
     const store = useStore();
 
     const state = reactive({
-      user: computed(() => store.getters["user/user"]),
-      avatarUrl: computed(() => store.getters["user/user"].avatarUrl),
       avatarEditorDialog: false
     });
 
-    const uploadProfilePicture = () => {
+    const openAvatarEditorDialog = () => {
       state.avatarEditorDialog = true;
+    };
+
+    const uploadPfp = async (imgFile) => {
+      await UserService.uploadProfilePicture(imgFile);
     };
 
     return {
       state,
-      uploadProfilePicture
+      openAvatarEditorDialog,
+      uploadPfp,
+      user: computed(() => store.getters["user/user"])
     };
   }
 });

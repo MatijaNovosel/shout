@@ -5,8 +5,5 @@ export default {
     } else {
       commit("SET_USER", null);
     }
-  },
-  changePfp({ commit }, url) {
-    commit("CHANGE_PFP", url);
   }
 };
