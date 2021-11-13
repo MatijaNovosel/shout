@@ -1,5 +1,7 @@
-export default function () {
+import StorageService from "src/services/storage";
+
+export default () => {
   return {
-    user: null
+    user: JSON.parse(StorageService.getSavedState("user"))
   };
-}
+};

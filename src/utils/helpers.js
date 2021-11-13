@@ -1,5 +1,5 @@
 import { MIME_TYPES, MIME_TYPE_ICONS } from "./constants";
-import firebase from "src/boot/firebase";
+import { firebase } from "src/boot/firebase";
 
 export const range = (start, stop, step) => {
   if (typeof stop === "undefined") {

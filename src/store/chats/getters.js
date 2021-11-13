@@ -1,5 +1,3 @@
 export default {
-  chats(state) {
-    return state.chats;
-  }
+  chats: (state) => state.chats
 };

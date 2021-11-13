@@ -1,5 +1,7 @@
+import StorageService from "src/services/storage";
+
 const state = () => ({
-  chats: []
+  chats: JSON.parse(StorageService.getSavedState("chats"))
 });
 
 export default state;

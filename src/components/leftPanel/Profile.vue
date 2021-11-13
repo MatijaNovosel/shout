@@ -11,7 +11,8 @@
       <span class="text-white text-h6 q-ml-sm"> Profile </span>
     </div>
     <q-avatar size="200px" class="q-my-lg">
-      <img :src="user.avatarUrl" />
+      <q-spinner size="md" color="teal" v-if="state.uploadingPfp" />
+      <img :src="user.avatarUrl" v-else />
       <q-btn
         padding="sm"
         color="teal"
@@ -47,6 +48,7 @@ import { defineComponent, reactive, computed } from "vue";
 import { useStore } from "vuex";
 import AvatarEditorDialog from "../avatarEditor/AvatarEditorDialog.vue";
 import UserService from "src/services/users";
+import { Notify } from "quasar";
 
 export default defineComponent({
   name: "profile",
@@ -58,7 +60,8 @@ export default defineComponent({
     const store = useStore();
 
     const state = reactive({
-      avatarEditorDialog: false
+      avatarEditorDialog: false,
+      uploadingPfp: false
     });
 
     const openAvatarEditorDialog = () => {
@@ -66,7 +69,28 @@ export default defineComponent({
     };
 
     const uploadPfp = async (imgFile) => {
-      await UserService.uploadProfilePicture(imgFile);
+      try {
+        state.uploadingPfp = true;
+        const url = await UserService.uploadProfilePicture(imgFile, store.getters["user/user"].id);
+        const userDetails = { ...store.getters["user/user"] };
+        userDetails.avatarUrl = url;
+        await store.dispatch("user/fetchUser", userDetails);
+        Notify.create({
+          message: "Successfully updated profile picture",
+          position: "top",
+          color: "dark",
+          textColor: "orange"
+        });
+      } catch (e) {
+        Notify.create({
+          message: "Failed to update profile picture",
+          position: "top",
+          color: "dark",
+          textColor: "orange"
+        });
+      } finally {
+        state.uploadingPfp = false;
+      }
     };
 
     return {

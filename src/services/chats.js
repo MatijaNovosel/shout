@@ -1,4 +1,4 @@
-import firebase from "src/boot/firebase";
+import { firebase } from "src/boot/firebase";
 import { generateGuid, getFileFromUrl, blobToFile } from "src/utils/helpers";
 import { MSG_TYPE } from "src/utils/constants";
 

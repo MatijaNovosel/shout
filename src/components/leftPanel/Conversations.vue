@@ -1,16 +1,17 @@
 <template>
   <div class="chat-top row justify-between q-py-sm q-px-md">
     <div class="row items-center">
-      <q-avatar class="cursor-pointer" @click="$emit('set-left-panel', 'profile')" size="40px">
-        <img :src="state.user.avatarUrl" />
-      </q-avatar>
-      <span
-        v-if="state.user"
-        class="q-ml-md text-grey-6 text-weight-bold cursor-pointer"
-        @click="copyUsernameToClipboard"
-      >
-        {{ `${state.user.username}#${state.user.shorthandId}` }}
-      </span>
+      <template v-if="user">
+        <q-avatar class="cursor-pointer" @click="$emit('set-left-panel', 'profile')" size="40px">
+          <img :src="user.avatarUrl" />
+        </q-avatar>
+        <span
+          class="q-ml-md text-grey-6 text-weight-bold cursor-pointer"
+          @click="copyUsernameToClipboard"
+        >
+          {{ `${user.username}#${user.shorthandId}` }}
+        </span>
+      </template>
     </div>
     <div class="row">
       <q-btn flat round color="white" icon="mdi-circle-outline" />
@@ -62,9 +63,9 @@
   </div>
   <q-separator />
   <q-list dark class="rounded-borders user-list-container" :style="state.userListContainerStyle">
-    <div v-for="(conversation, i) in state.conversations" :key="conversation.id">
+    <div v-for="(conversation, i) in conversations" :key="conversation.id">
       <conversation-list-item :conversation="conversation" />
-      <q-separator dark inset="item" v-if="i !== state.conversations.length - 1" />
+      <q-separator dark inset="item" v-if="i !== conversations.length - 1" />
     </div>
   </q-list>
   <new-chat-dialog v-model="state.newChatDialog" />
@@ -73,7 +74,6 @@
 <script>
 import { defineComponent, reactive, computed } from "vue";
 import ConversationListItem from "src/components/ConversationListItem.vue";
-import firebase from "firebase";
 import { Notify } from "quasar";
 import { ROUTE_NAMES } from "src/router/routeNames";
 import { useStore } from "vuex";
@@ -93,8 +93,6 @@ export default defineComponent({
     const router = useRouter();
 
     const state = reactive({
-      user: computed(() => store.getters["user/user"]),
-      conversations: computed(() => store.getters["chats/chats"]),
       userListContainerStyle: computed(() => {
         if (!state.notificationsEnablePanelActive) {
           return {
@@ -150,13 +148,13 @@ export default defineComponent({
 
     const logOut = async () => {
       try {
-        await firebase.auth().signOut();
         Notify.create({
           message: "Signed out!",
           position: "top",
           color: "dark",
           textColor: "orange"
         });
+        await store.dispatch("user/fetchUser", null);
         router.push({
           name: ROUTE_NAMES.LOGIN
         });
@@ -175,7 +173,9 @@ export default defineComponent({
     };
 
     const copyUsernameToClipboard = () => {
-      copyToClipboard(`${state.user.username}#${state.user.shorthandId}`);
+      copyToClipboard(
+        `${store.getters["user/user"].username}#${store.getters["user/user"].shorthandId}`
+      );
       Notify.create({
         message: "Username copied to clipboard",
         position: "top",
@@ -189,7 +189,9 @@ export default defineComponent({
       askNotificationPermission,
       logOut,
       openNewChatDialog,
-      copyUsernameToClipboard
+      copyUsernameToClipboard,
+      user: computed(() => store.getters["user/user"]),
+      conversations: computed(() => store.getters["chats/chats"])
     };
   }
 });

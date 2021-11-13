@@ -1,5 +1,5 @@
 export default {
-  user(state) {
+  user: (state) => {
     return state.user;
   }
 };

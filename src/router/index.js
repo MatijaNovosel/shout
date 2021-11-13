@@ -4,7 +4,7 @@ import routes from "./routes";
 import { ROUTE_NAMES } from "./routeNames";
 import firebase from "firebase";
 
-export default route(() => {
+export default route(({ store }) => {
   const router = createRouter({
     scrollBehavior: () => ({ left: 0, top: 0 }),
     routes,
@@ -13,7 +13,7 @@ export default route(() => {
 
   router.beforeEach(async (to, from, next) => {
     if (to.matched.some((record) => record.meta.authRequired)) {
-      const user = await firebase.getCurrentUser();
+      const user = store.getters["user/user"];
       if (user) {
         next();
       } else {

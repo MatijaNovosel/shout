@@ -1,4 +1,4 @@
-import firebase from "src/boot/firebase";
+import { firebase } from "src/boot/firebase";
 import {
   range,
   sample,
@@ -70,17 +70,14 @@ class UserService {
     return [];
   }
 
-  async uploadProfilePicture(file) {
+  async uploadProfilePicture(file, userId) {
     const guid = generateGuid();
     const retVal = await firebase.storage().ref(guid).put(file);
     const url = await retVal.ref.getDownloadURL();
-    const storeRef = await store();
-    const user = { ...storeRef.getters["user/user"] };
-    const userId = user.id;
-    user.avatarUrl = url;
-    delete user.id;
-    await this.userCollection.doc(userId).set(user);
-    await firebase.getCurrentUser();
+    await this.userCollection.doc(userId).update({
+      avatarUrl: url
+    });
+    return url;
   }
 }
 
