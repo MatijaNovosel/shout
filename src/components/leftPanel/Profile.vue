@@ -40,7 +40,11 @@
       readonly
     />
   </div>
-  <avatar-editor-dialog @save="uploadPfp" v-model="state.avatarEditorDialog" />
+  <avatar-editor-dialog
+    @save="uploadPfp"
+    v-model="state.avatarEditorDialog"
+    :initial-image="user.avatarUrl"
+  />
 </template>
 
 <script>

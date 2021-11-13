@@ -13,7 +13,7 @@
           :width="400"
           :height="400"
           ref="avatarEditor"
-          :image="state.userAvatar"
+          :image="initialImage"
           @image-ready="onImageReady"
           v-model:scale="state.avatarEditorScale"
         />
@@ -48,6 +48,9 @@ export default defineComponent({
   props: {
     modelValue: {
       type: Boolean
+    },
+    initialImage: {
+      type: String
     }
   },
   emits: ["update:modelValue", "save"],

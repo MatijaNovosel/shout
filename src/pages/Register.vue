@@ -24,6 +24,18 @@
                 square
                 filled
                 clearable
+                label="Username"
+                v-model="values.username"
+                :error="submitCount > 0 && errors.username !== undefined"
+                :error-message="errors.username"
+                :hide-bottom-space="submitCount == 0 || errors.username === undefined"
+              />
+              <q-input
+                dark
+                dense
+                square
+                filled
+                clearable
                 type="password"
                 label="Password"
                 v-model="values.password"
@@ -72,6 +84,7 @@ export default defineComponent({
   setup() {
     const schema = yup.object({
       email: yup.string().required().email().nullable().label("Email"),
+      username: yup.string().required().email().nullable().label("Username"),
       password: yup.string().required().nullable().label("Password")
     });
 
@@ -91,7 +104,7 @@ export default defineComponent({
           .createUserWithEmailAndPassword(values.email, values.password);
         await UserService.addUser({
           id: data.user.uid,
-          username: values.email,
+          username: values.username,
           email: values.email
         });
         Notify.create({

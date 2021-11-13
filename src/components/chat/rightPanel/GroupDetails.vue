@@ -12,7 +12,16 @@
       </div>
     </div>
     <q-avatar size="200px" class="q-my-lg">
-      <img src="../../../assets/gopniks.jpg" />
+      <q-spinner size="md" color="teal" v-if="uploadingPfp" />
+      <img :src="groupDetails.avatar" v-else />
+      <q-btn
+        padding="sm"
+        color="teal"
+        icon="mdi-pencil"
+        fab
+        class="change-pfp-btn"
+        @click="openAvatarEditorDialog"
+      />
     </q-avatar>
     <q-input
       dark
@@ -77,23 +86,35 @@
 
 <script>
 import { defineComponent, reactive } from "vue";
+import { useStore } from "vuex";
 
 export default defineComponent({
   name: "group-details",
-  emits: ["close"],
+  emits: ["close", "open-avatar-editor"],
   props: {
     groupDetails: {
       type: Object,
       required: true
+    },
+    uploadingPfp: {
+      type: Boolean
     }
   },
-  setup() {
+  setup(props, { emit }) {
+    const store = useStore();
+
     const state = reactive({
-      muteNotifications: false
+      muteNotifications: false,
+      avatarEditorDialog: false
     });
 
+    const openAvatarEditorDialog = () => {
+      emit("open-avatar-editor");
+    };
+
     return {
-      state
+      state,
+      openAvatarEditorDialog
     };
   }
 });
@@ -109,5 +130,11 @@ export default defineComponent({
 .back-button-container {
   background-color: $bg-dark-1;
   height: 58px;
+}
+
+.change-pfp-btn {
+  top: 10px;
+  right: 10px;
+  position: absolute;
 }
 </style>

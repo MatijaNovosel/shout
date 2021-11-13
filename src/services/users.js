@@ -27,9 +27,10 @@ class UserService {
   }
 
   async addUser(user) {
-    await this.userCollection.doc(user.id).set({
-      username: user.username,
-      email: user.email,
+    const { id, email, username } = user;
+    await this.userCollection.doc(id).set({
+      username,
+      email,
       shorthandId: range(6).map(() => sample(range(6)).toString())
     });
   }

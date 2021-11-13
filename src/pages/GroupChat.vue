@@ -21,8 +21,8 @@
             class="row text-white cursor-pointer q-pl-md"
             @click="openRightPanel(GROUP_CHAT_RIGHT_PANEL.DETAILS)"
           >
-            <q-avatar size="40px">
-              <img src="../assets/gopniks.jpg" />
+            <q-avatar size="40px" v-if="state.chatDetails">
+              <img :src="state.chatDetails.avatar" />
             </q-avatar>
             <div class="column q-ml-md justify-center">
               <span v-if="state.loading"> Loading ... </span>
@@ -220,7 +220,9 @@
         <group-details
           v-if="state.activeRightPanel === GROUP_CHAT_RIGHT_PANEL.DETAILS && state.chatDetails"
           :group-details="state.chatDetails"
+          :uploading-pfp="state.uploadingPfp"
           @close="state.rightPanelOpen = false"
+          @open-avatar-editor="state.avatarEditorDialog = true"
         />
       </keep-alive>
       <keep-alive>
@@ -231,6 +233,12 @@
       </keep-alive>
     </div>
   </div>
+  <avatar-editor-dialog
+    @save="uploadGroupPfp"
+    v-model="state.avatarEditorDialog"
+    :initial-image="state.chatDetails.avatar"
+    v-if="state.chatDetails"
+  />
 </template>
 
 <script>
@@ -248,6 +256,7 @@ import { useRoute } from "vue-router";
 import ChatService from "src/services/chats";
 import { useStore } from "vuex";
 import { Notify } from "quasar";
+import AvatarEditorDialog from "src/components/avatarEditor/AvatarEditorDialog.vue";
 
 export default defineComponent({
   name: "ChatDetails",
@@ -256,7 +265,8 @@ export default defineComponent({
     GroupDetails,
     GroupChatSearch,
     EmojiPicker,
-    AddFilePanel
+    AddFilePanel,
+    AvatarEditorDialog
   },
   setup() {
     const store = useStore();
@@ -271,7 +281,9 @@ export default defineComponent({
 
     const state = reactive({
       loading: false,
+      uploadingPfp: false,
       addingFile: false,
+      avatarEditorDialog: false,
       messages: [],
       files: [],
       elapsedRecordingSeconds: 0,
@@ -437,6 +449,33 @@ export default defineComponent({
       await ChatService.deleteMessage(state.chatDetails.id, id);
     };
 
+    const uploadGroupPfp = async (imgFile) => {
+      try {
+        state.uploadingPfp = true;
+        const url = await ChatService.changeGroupProfilePicture(imgFile, state.chatDetails.id);
+        await store.dispatch("chats/updateChatAvatar", {
+          chatId: state.chatDetails.id,
+          url
+        });
+        state.chatDetails.avatar = url;
+        Notify.create({
+          message: "Successfully updated group profile picture",
+          position: "top",
+          color: "dark",
+          textColor: "orange"
+        });
+      } catch (e) {
+        Notify.create({
+          message: "Failed to update group profile picture",
+          position: "top",
+          color: "dark",
+          textColor: "orange"
+        });
+      } finally {
+        state.uploadingPfp = false;
+      }
+    };
+
     onMounted(async () => {
       try {
         state.loading = true;
@@ -478,7 +517,8 @@ export default defineComponent({
       sendFiles,
       deleteMsg,
       CHAT_TYPE,
-      messageSelectMode
+      messageSelectMode,
+      uploadGroupPfp
     };
   }
 });

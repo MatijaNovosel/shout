@@ -128,6 +128,16 @@ class ChatService {
     });
     await firebase.storage().ref(guid).put(audioFile);
   }
+
+  async changeGroupProfilePicture(file, groupId) {
+    const guid = generateGuid();
+    const retVal = await firebase.storage().ref(guid).put(file);
+    const url = await retVal.ref.getDownloadURL();
+    await this.chatsCollection.doc(groupId).update({
+      avatar: url
+    });
+    return url;
+  }
 }
 
 export default new ChatService();
