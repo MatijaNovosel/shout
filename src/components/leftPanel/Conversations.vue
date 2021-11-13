@@ -154,7 +154,7 @@ export default defineComponent({
           color: "dark",
           textColor: "orange"
         });
-        await store.dispatch("user/fetchUser", null);
+        await store.dispatch("user/logOut");
         router.push({
           name: ROUTE_NAMES.LOGIN
         });

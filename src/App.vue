@@ -14,8 +14,10 @@ export default defineComponent({
     const store = useStore();
 
     firebase.auth().onAuthStateChanged(async (auth) => {
-      const userDetails = await UserService.getDetails(auth.uid);
-      await store.dispatch("user/fetchUser", { id: auth.uid, ...userDetails });
+      if (auth) {
+        const userDetails = await UserService.getDetails(auth.uid);
+        await store.dispatch("user/fetchUser", { id: auth.uid, ...userDetails });
+      }
     });
 
     return {};

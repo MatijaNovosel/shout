@@ -5,5 +5,8 @@ export default {
     } else {
       commit("SET_USER", null);
     }
+  },
+  logOut({ commit }) {
+    commit("LOG_OUT");
   }
 };

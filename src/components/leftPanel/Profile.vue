@@ -1,5 +1,5 @@
 <template>
-  <div class="column items-center full-height bg">
+  <div class="column items-center full-height bg" v-if="user">
     <div class="self-start row items-center q-pa-md back-button-container full-width">
       <q-btn
         @click="$emit('set-left-panel', 'conversations')"
