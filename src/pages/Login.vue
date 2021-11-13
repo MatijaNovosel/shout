@@ -68,10 +68,14 @@ import { useRouter } from "vue-router";
 import { ROUTE_NAMES } from "src/router/routeNames";
 import { useForm } from "vee-validate";
 import * as yup from "yup";
+import { useStore } from "vuex";
+import UserService from "src/services/users";
 
 export default defineComponent({
   name: "Login",
   setup() {
+    const store = useStore();
+
     const schema = yup.object({
       email: yup.string().required().email().nullable().label("Email"),
       password: yup.string().required().nullable().label("Password")
@@ -90,7 +94,11 @@ export default defineComponent({
     const onSubmit = handleSubmit(async () => {
       try {
         state.loading = true;
-        await firebase.auth().signInWithEmailAndPassword(values.email, values.password);
+        const data = await firebase
+          .auth()
+          .signInWithEmailAndPassword(values.email, values.password);
+        const userDetails = await UserService.getDetails(data.user.uid);
+        await store.dispatch("user/fetchUser", { id: data.user.uid, ...userDetails });
         Notify.create({
           message: "You have successfully signed in",
           position: "top",
