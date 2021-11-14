@@ -242,7 +242,7 @@
 </template>
 
 <script>
-import { provide, defineComponent, reactive, onMounted, computed, ref } from "vue";
+import { provide, defineComponent, reactive, onMounted, computed, ref, onUnmounted } from "vue";
 import { downloadURI, secondsToElapsedTime } from "src/utils/helpers";
 import { MSG_TYPE, GROUP_CHAT_RIGHT_PANEL, CHAT_TYPE } from "src/utils/constants";
 import { format } from "date-fns";
@@ -380,7 +380,7 @@ export default defineComponent({
 
     const sendTxtMsg = async () => {
       if (state.msgText !== null && state.msgText !== "" && state.msgText.length > 4) {
-        await ChatService.sendMessage({
+        const msgId = await ChatService.sendMessage({
           userId: store.getters["user/user"].id,
           type: MSG_TYPE.TXT,
           txt: state.msgText,
@@ -391,7 +391,8 @@ export default defineComponent({
           sent: true,
           type: MSG_TYPE.TXT,
           txt: state.msgText,
-          sentAt: new Date()
+          sentAt: new Date(),
+          id: msgId
         });
         state.msgText = null;
         scrollToEndOfMsgContainer();
@@ -476,7 +477,15 @@ export default defineComponent({
       }
     };
 
+    const handleEnter = (e) => {
+      if (e.keyCode === 13) {
+        sendTxtMsg();
+      }
+    };
+
     onMounted(async () => {
+      document.addEventListener("keyup", handleEnter);
+
       try {
         state.loading = true;
         const uid = route.params.id;
@@ -498,6 +507,10 @@ export default defineComponent({
       } finally {
         state.loading = false;
       }
+    });
+
+    onUnmounted(() => {
+      document.removeEventListener("keyup", handleEnter);
     });
 
     return {

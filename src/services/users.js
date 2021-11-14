@@ -31,7 +31,9 @@ class UserService {
     await this.userCollection.doc(id).set({
       username,
       email,
-      shorthandId: range(6).map(() => sample(range(6)).toString())
+      shorthandId: range(6)
+        .map(() => sample(range(6)).toString())
+        .join()
     });
   }
 

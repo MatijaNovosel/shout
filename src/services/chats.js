@@ -93,12 +93,13 @@ class ChatService {
   async sendMessage(msg) {
     const chatsRef = this.chatsCollection.doc(msg.chatId);
     const messages = chatsRef.collection("messages");
-    await messages.add({
+    const data = await messages.add({
       userId: msg.userId,
       type: MSG_TYPE.TXT,
       sentAt: new Date(),
       txt: msg.txt
     });
+    return data.id;
   }
 
   async deleteMessage(chatId, msgId) {
