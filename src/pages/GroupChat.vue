@@ -245,7 +245,7 @@
 import { provide, defineComponent, reactive, onMounted, computed, ref, onUnmounted } from "vue";
 import { downloadURI, secondsToElapsedTime } from "src/utils/helpers";
 import { MSG_TYPE, GROUP_CHAT_RIGHT_PANEL, CHAT_TYPE } from "src/utils/constants";
-import { format } from "date-fns";
+import { format, isAfter } from "date-fns";
 import { ROUTE_NAMES } from "src/router/routeNames";
 import MessagePanel from "src/components/chat/MessagePanel.vue";
 import GroupDetails from "src/components/chat/rightPanel/GroupDetails.vue";
@@ -257,6 +257,7 @@ import ChatService from "src/services/chats";
 import { useStore } from "vuex";
 import { Notify } from "quasar";
 import AvatarEditorDialog from "src/components/avatarEditor/AvatarEditorDialog.vue";
+import { firebase } from "src/boot/firebase";
 
 export default defineComponent({
   name: "ChatDetails",
@@ -280,6 +281,7 @@ export default defineComponent({
     provide("messageSelectMode", messageSelectMode);
 
     const state = reactive({
+      loadedAt: new Date(),
       loading: false,
       uploadingPfp: false,
       addingFile: false,
@@ -507,6 +509,20 @@ export default defineComponent({
       } finally {
         state.loading = false;
       }
+
+      // Message socket
+      firebase
+        .firestore()
+        .collection("/chats")
+        .doc(state.chatDetails.id)
+        .collection("/messages")
+        .onSnapshot({ includeMetadataChanges: false }, (querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            if (isAfter(new Date(doc.data().sentAt.seconds * 1000), state.loadedAt)) {
+              console.log(doc.data());
+            }
+          });
+        });
     });
 
     onUnmounted(() => {

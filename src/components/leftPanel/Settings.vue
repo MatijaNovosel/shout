@@ -10,15 +10,6 @@
       />
       <span class="text-white text-h6 q-ml-sm"> Settings </span>
     </div>
-    <div class="row items-center align-center q-ml-lg">
-      <q-avatar size="70px" class="q-my-md">
-        <img src="../../assets/me.jpg" />
-      </q-avatar>
-      <div class="column q-ml-md">
-        <span class="text-grey"> Matija Novosel </span>
-        <span class="text-grey-4"> Some text </span>
-      </div>
-    </div>
     <q-list dark>
       <q-item clickable v-close-popup>
         <q-item-section avatar>

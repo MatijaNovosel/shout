@@ -2,7 +2,7 @@
   <q-item clickable v-ripple @click="$router.push(getRoute())">
     <q-item-section avatar>
       <q-avatar>
-        <img src="https://cdn.quasar.dev/img/avatar2.jpg" />
+        <img :src="conversation.avatar" />
       </q-avatar>
     </q-item-section>
     <q-item-section>
