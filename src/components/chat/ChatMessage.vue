@@ -14,7 +14,8 @@
         class="col-12 text-white full-width"
         :class="{
           'text-center': type === MSG_TYPE.AUDIO,
-          'bg-teal-10 rounded-borders': type === MSG_TYPE.FILE
+          'bg-teal-10 rounded-borders': type === MSG_TYPE.FILE && sent,
+          'bg-blue-grey-10 rounded-borders': type === MSG_TYPE.FILE && !sent
         }"
       >
         <span v-if="type === MSG_TYPE.TXT">
