@@ -1,6 +1,6 @@
 <template>
   <q-page
-    v-if="state.appLoading"
+    v-show="state.appLoading"
     class="bg-grey-10 window-height window-width row justify-center items-center"
   >
     <div class="row justify-center" style="width: 400px">
@@ -8,7 +8,7 @@
       <q-linear-progress color="teal" indeterminate />
     </div>
   </q-page>
-  <q-page v-else class="flex flex-center">
+  <q-page v-show="!state.appLoading" class="flex flex-center">
     <div class="row main-container" :style="{ width: `${state.width - 300}px` }">
       <div class="col-3 full-height">
         <keep-alive>

@@ -516,7 +516,7 @@ export default defineComponent({
         .collection("/chats")
         .doc(state.chatDetails.id)
         .collection("/messages")
-        .onSnapshot({ includeMetadataChanges: false }, (querySnapshot) => {
+        .onSnapshot((querySnapshot) => {
           querySnapshot.forEach((doc) => {
             if (isAfter(new Date(doc.data().sentAt.seconds * 1000), state.loadedAt)) {
               console.log(doc.data());

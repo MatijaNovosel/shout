@@ -35,14 +35,12 @@ class ChatService {
     const refGet = await ref.get();
     const data = refGet.data();
 
-    const messages = ref.collection("messages");
-    const messagesGet = await messages.orderBy("sentAt", "asc").get();
-
+    const messages = await ref.collection("messages").orderBy("sentAt", "asc").get();
     const files = ref.collection("files");
 
     const msgCol = [];
 
-    messagesGet.forEach((m) => {
+    messages.forEach((m) => {
       const msgData = m.data();
       msgData.sentAt = new Date(msgData.sentAt.seconds * 1000);
       msgData.id = m.id;
@@ -91,8 +89,7 @@ class ChatService {
   }
 
   async sendMessage(msg) {
-    const chatsRef = this.chatsCollection.doc(msg.chatId);
-    const messages = chatsRef.collection("messages");
+    const messages = this.chatsCollection.doc(msg.chatId).collection("messages");
     const data = await messages.add({
       userId: msg.userId,
       type: MSG_TYPE.TXT,
