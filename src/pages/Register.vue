@@ -11,6 +11,7 @@
                 square
                 filled
                 clearable
+                name="email"
                 type="email"
                 label="Email"
                 v-model="values.email"
@@ -24,6 +25,8 @@
                 square
                 filled
                 clearable
+                class="q-my-md"
+                name="username"
                 label="Username"
                 v-model="values.username"
                 :error="submitCount > 0 && errors.username !== undefined"
@@ -36,10 +39,10 @@
                 square
                 filled
                 clearable
+                name="password"
                 type="password"
                 label="Password"
                 v-model="values.password"
-                class="q-mt-md"
                 :error="submitCount > 0 && errors.password !== undefined"
                 :error-message="errors.password"
                 :hide-bottom-space="submitCount == 0 || errors.password === undefined"
@@ -84,11 +87,11 @@ export default defineComponent({
   setup() {
     const schema = yup.object({
       email: yup.string().required().email().nullable().label("Email"),
-      username: yup.string().required().email().nullable().label("Username"),
-      password: yup.string().required().nullable().label("Password")
+      username: yup.string().required().min(4).nullable().label("Username"),
+      password: yup.string().required().min(6).nullable().label("Password")
     });
 
-    const { handleSubmit, errors, values, submitCount } = useForm({
+    const { handleSubmit, errors, values, submitCount, resetForm } = useForm({
       validationSchema: schema
     });
 
@@ -112,6 +115,13 @@ export default defineComponent({
           position: "top",
           color: "dark",
           textColor: "orange"
+        });
+        resetForm({
+          values: {
+            email: null,
+            password: null,
+            username: null
+          }
         });
       } catch (e) {
         Notify.create({
