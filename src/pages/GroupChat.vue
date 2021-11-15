@@ -346,14 +346,6 @@ export default defineComponent({
           state.chatDetails.id,
           store.getters["user/user"].id
         );
-        state.messages.push({
-          userId: store.getters["user/user"].id,
-          sent: true,
-          sentAt: new Date(),
-          type: MSG_TYPE.AUDIO,
-          fileContent: URL.createObjectURL(new Blob(state.recordedChunks))
-        });
-        scrollToEndOfMsgContainer();
       }
     };
 
@@ -389,7 +381,6 @@ export default defineComponent({
           chatId: state.chatDetails.id
         });
         state.msgText = null;
-        scrollToEndOfMsgContainer();
       }
     };
 
@@ -430,12 +421,6 @@ export default defineComponent({
           state.chatDetails.id,
           store.getters["user/user"].id
         );
-        state.messages.push({
-          userId: store.getters["user/user"].id,
-          sent: true,
-          type: MSG_TYPE.FILE,
-          fileContent: state.files[i]
-        });
       }
     };
 
@@ -476,6 +461,49 @@ export default defineComponent({
       }
     };
 
+    const processMessages = async (messages) => {
+      const userId = store.getters["user/user"].id;
+
+      for (let i = 0; i < messages.length; i++) {
+        const sent = userId === messages[i].userId;
+        const sentAt = new Date(messages[i].sentAt.seconds * 1000);
+        const files = firebase
+          .firestore()
+          .collection("/chats")
+          .doc(state.chatDetails.id)
+          .collection("files");
+
+        if (messages[i].type === MSG_TYPE.FILE || messages[i].type === MSG_TYPE.AUDIO) {
+          const file = firebase.storage().ref(messages[i].fileId);
+          const url = await file.getDownloadURL();
+          const fileData = files.doc(messages[i].fileId);
+          const fileDataGet = await fileData.get();
+          const fileContent = await getFileFromUrl(url, fileDataGet.data().name);
+          state.messages.push({
+            id: messages[i].id,
+            userId,
+            sent,
+            sentAt,
+            type: messages[i].type,
+            fileContent
+          });
+        } else {
+          state.messages.push({
+            id: messages[i].id,
+            userId,
+            sent,
+            sentAt,
+            type: messages[i].type,
+            txt: messages[i].txt
+          });
+        }
+
+        if (sent) {
+          scrollToEndOfMsgContainer();
+        }
+      }
+    };
+
     onMounted(async () => {
       document.addEventListener("keyup", handleEnter);
 
@@ -509,7 +537,6 @@ export default defineComponent({
         .collection("/messages")
         .onSnapshot(async (querySnapshot) => {
           const messages = [];
-          const userId = store.getters["user/user"].id;
 
           querySnapshot.forEach(async (doc) => {
             if (
@@ -520,43 +547,8 @@ export default defineComponent({
             }
           });
 
-          for (let i = 0; i < messages.length; i++) {
-            const sent = userId === messages[i].userId;
-            const sentAt = new Date(messages[i].sentAt.seconds * 1000);
-            const files = firebase
-              .firestore()
-              .collection("/chats")
-              .doc(state.chatDetails.id)
-              .collection("files");
-
-            if (messages[i].type === MSG_TYPE.FILE || messages[i].type === MSG_TYPE.AUDIO) {
-              const file = firebase.storage().ref(messages[i].fileId);
-              const url = await file.getDownloadURL();
-              const fileData = files.doc(messages[i].fileId);
-              const fileDataGet = await fileData.get();
-              const fileContent = await getFileFromUrl(url, fileDataGet.data().name);
-              state.messages.push({
-                id: messages[i].id,
-                userId,
-                sent,
-                sentAt,
-                type: messages[i].type,
-                fileContent
-              });
-            } else {
-              state.messages.push({
-                id: messages[i].id,
-                userId,
-                sent,
-                sentAt,
-                type: messages[i].type,
-                txt: messages[i].txt
-              });
-            }
-
-            if (sent) {
-              scrollToEndOfMsgContainer();
-            }
+          if (messages.length !== 0) {
+            processMessages(messages);
           }
         });
     });

@@ -1,5 +1,5 @@
 import { firebase } from "src/boot/firebase";
-import { generateGuid, getFileFromUrl, blobToFile } from "src/utils/helpers";
+import { generateGuid, getFileFromUrl, blobToFile, uploadTaskPromise } from "src/utils/helpers";
 import { MSG_TYPE } from "src/utils/constants";
 
 class ChatService {
@@ -74,6 +74,11 @@ class ChatService {
     const guid = generateGuid();
     const chatsRef = this.chatsCollection.doc(chatId);
     const messages = chatsRef.collection("messages");
+    const chatFiles = chatsRef.collection("files");
+    chatFiles.doc(guid).set({
+      name: file.name
+    });
+    await uploadTaskPromise(guid, file);
     await messages.add({
       userId: userId,
       sent: true,
@@ -81,11 +86,6 @@ class ChatService {
       sentAt: new Date(),
       fileId: guid
     });
-    const chatFiles = chatsRef.collection("files");
-    chatFiles.doc(guid).set({
-      name: file.name
-    });
-    await firebase.storage().ref(guid).put(file);
   }
 
   async sendMessage(msg) {
@@ -103,8 +103,14 @@ class ChatService {
     const chatsRef = this.chatsCollection.doc(chatId);
     const messages = chatsRef.collection("messages");
     const doc = await messages.where(firebase.firestore.FieldPath.documentId(), "==", msgId).get();
-    doc.forEach((e) => {
-      e.ref.delete();
+    doc.forEach((doc) => {
+      const data = doc.data();
+
+      if (data.type === MSG_TYPE.FILE || data.type === MSG_TYPE.AUDIO) {
+        // Delete related file
+      }
+
+      doc.ref.delete();
     });
   }
 
@@ -112,6 +118,12 @@ class ChatService {
     const guid = generateGuid();
     const chatsRef = this.chatsCollection.doc(chatId);
     const messages = chatsRef.collection("messages");
+    const audioFile = blobToFile(audioBlob, `${guid}.wav`);
+    const chatFiles = chatsRef.collection("files");
+    chatFiles.doc(guid).set({
+      name: `${guid}.wav`
+    });
+    await uploadTaskPromise(guid, audioFile);
     await messages.add({
       userId: userId,
       sent: true,
@@ -119,12 +131,6 @@ class ChatService {
       sentAt: new Date(),
       fileId: guid
     });
-    const audioFile = blobToFile(audioBlob, `${guid}.wav`);
-    const chatFiles = chatsRef.collection("files");
-    chatFiles.doc(guid).set({
-      name: `${guid}.wav`
-    });
-    await firebase.storage().ref(guid).put(audioFile);
   }
 
   async changeGroupProfilePicture(file, groupId) {

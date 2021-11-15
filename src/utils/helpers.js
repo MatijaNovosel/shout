@@ -168,3 +168,22 @@ export const dataURLtoFile = (dataurl, filename) => {
   }
   return new File([u8arr], filename, { type: mime });
 };
+
+export const uploadTaskPromise = async (fileGuid, file) => {
+  return new Promise(function (resolve, reject) {
+    const storageRef = firebase.storage().ref(fileGuid);
+    const uploadTask = storageRef.put(file);
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      },
+      (err) => reject(err),
+      () => {
+        uploadTask.snapshot.ref.getDownloadURL().then(function (downloadURL) {
+          resolve(downloadURL);
+        });
+      }
+    );
+  });
+};

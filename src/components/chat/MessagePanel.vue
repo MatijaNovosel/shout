@@ -146,7 +146,10 @@ export default defineComponent({
     };
 
     const formatSentAt = (msg) => {
-      return format(msg.sentAt, "dd.MM.yyyy. HH:mm");
+      if (msg.sentAt) {
+        return format(msg.sentAt, "dd.MM.yyyy. HH:mm");
+      }
+      return "";
     };
 
     watch(
