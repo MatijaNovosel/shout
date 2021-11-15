@@ -49,7 +49,11 @@
           :bg-color="message.sent ? 'teal-9' : 'blue-grey-9'"
           :type="message.type"
           :sent="message.sent"
-          :file-content="message.fileContent"
+          :file-url="message.fileUrl"
+          :file-id="message.fileId"
+          :file-size="message.fileSize"
+          :file-name="message.fileName"
+          :chat-id="message.chatId"
           text-color="white"
           class="pos-rel"
           :style="{
@@ -146,10 +150,7 @@ export default defineComponent({
     };
 
     const formatSentAt = (msg) => {
-      if (msg.sentAt) {
-        return format(msg.sentAt, "dd.MM.yyyy. HH:mm");
-      }
-      return "";
+      return format(msg.sentAt, "dd.MM.yyyy. HH:mm");
     };
 
     watch(

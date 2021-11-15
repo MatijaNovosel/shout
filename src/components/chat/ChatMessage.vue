@@ -22,17 +22,17 @@
           {{ txt }}
         </span>
         <div v-else-if="type === MSG_TYPE.AUDIO">
-          <audio controls v-if="fileContent">
-            <source :src="state.getAudioContent" type="audio/webm" />
+          <audio controls>
+            <source :src="fileUrl" type="audio/webm" />
             Your browser does not support the audio element.
           </audio>
         </div>
         <div v-else-if="type === MSG_TYPE.FILE" class="row justify-between q-pa-sm items-center">
           <div>
             <div class="text-white">
-              <q-icon color="white" size="30px" :name="getFileIcon(fileContent.name)" />
+              <q-icon color="white" size="30px" :name="getFileIcon(fileName)" />
               <span class="q-ml-sm">
-                {{ fileContent.name }}
+                {{ fileName }}
               </span>
             </div>
           </div>
@@ -51,7 +51,7 @@
         :class="{ 'justify-between q-mt-sm': type === MSG_TYPE.FILE }"
       >
         <span v-if="type === MSG_TYPE.FILE">
-          {{ `${getFileExtension(fileContent.name)} • ${bytesToSize(fileContent.size)}` }}
+          {{ `${getFileExtension(fileName)} • ${bytesToSize(fileSize)}` }}
         </span>
         <div>
           <span class="q-mr-sm">
@@ -82,9 +82,16 @@
 </template>
 
 <script>
-import { defineComponent, reactive, inject, computed } from "vue";
+import { defineComponent, reactive, inject } from "vue";
 import { MSG_TYPE } from "src/utils/constants";
-import { getFileIcon, getFileExtension, bytesToSize, downloadFile } from "src/utils/helpers";
+import {
+  getFileIcon,
+  getFileExtension,
+  bytesToSize,
+  downloadFile,
+  getFileFromUrl
+} from "src/utils/helpers";
+import { firebase } from "src/boot/firebase";
 
 export default defineComponent({
   name: "chat-message",
@@ -118,17 +125,30 @@ export default defineComponent({
       type: Boolean,
       required: true
     },
-    fileContent: {
-      type: Object,
+    fileUrl: {
+      type: String,
+      required: false
+    },
+    fileId: {
+      type: String,
+      required: false
+    },
+    chatId: {
+      type: String,
+      required: false
+    },
+    fileName: {
+      type: String,
+      required: false
+    },
+    fileSize: {
+      type: Number,
       required: false
     }
   },
   setup(props, { emit }) {
     const state = reactive({
-      selected: false,
-      getAudioContent: computed(() => {
-        return URL.createObjectURL(props.fileContent);
-      })
+      selected: false
     });
 
     const messageSelectMode = inject("messageSelectMode");
@@ -137,8 +157,11 @@ export default defineComponent({
       emit("selected");
     };
 
-    const download = () => {
-      downloadFile(props.fileContent);
+    const download = async () => {
+      const files = firebase.firestore().collection("/chats").doc(props.chatId).collection("files");
+      const fileData = await files.doc(props.fileId).get();
+      const fileContent = await getFileFromUrl(props.fileUrl, fileData.data().name);
+      downloadFile(fileContent);
     };
 
     const deleteMsg = () => {

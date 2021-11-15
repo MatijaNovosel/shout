@@ -475,17 +475,21 @@ export default defineComponent({
 
         if (messages[i].type === MSG_TYPE.FILE || messages[i].type === MSG_TYPE.AUDIO) {
           const file = firebase.storage().ref(messages[i].fileId);
-          const url = await file.getDownloadURL();
-          const fileData = files.doc(messages[i].fileId);
-          const fileDataGet = await fileData.get();
-          const fileContent = await getFileFromUrl(url, fileDataGet.data().name);
+          const fileUrl = await file.getDownloadURL();
+
+          const fileInfo = await files.doc(messages[i].fileId).get();
+
           state.messages.push({
             id: messages[i].id,
             userId,
             sent,
             sentAt,
             type: messages[i].type,
-            fileContent
+            fileUrl,
+            chatId: state.chatDetails.id,
+            fileId: messages[i].fileId,
+            fileName: fileInfo.data().name,
+            fileSize: fileInfo.data().size
           });
         } else {
           state.messages.push({

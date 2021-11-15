@@ -34,16 +34,14 @@ class ChatService {
     const ref = this.chatsCollection.doc(uid);
     const refGet = await ref.get();
     const data = refGet.data();
-
     const messages = await ref.collection("messages").orderBy("sentAt", "asc").get();
-    const files = ref.collection("files");
-
     const msgCol = [];
 
     messages.forEach((m) => {
       const msgData = m.data();
       msgData.sentAt = new Date(msgData.sentAt.seconds * 1000);
       msgData.id = m.id;
+      msgData.chatId = uid;
       msgCol.push(msgData);
     });
 
@@ -51,10 +49,10 @@ class ChatService {
       if (msgCol[i].type === MSG_TYPE.FILE || msgCol[i].type === MSG_TYPE.AUDIO) {
         const file = firebase.storage().ref(msgCol[i].fileId);
         const url = await file.getDownloadURL();
-        const fileData = files.doc(msgCol[i].fileId);
-        const fileDataGet = await fileData.get();
-        const fileContent = await getFileFromUrl(url, fileDataGet.data().name);
-        msgCol[i].fileContent = fileContent;
+        const fileInfo = await ref.collection("files").doc(msgCol[i].fileId).get();
+        msgCol[i].fileUrl = url;
+        msgCol[i].fileName = fileInfo.data().name;
+        msgCol[i].fileSize = fileInfo.data().size;
       }
     }
 
@@ -76,7 +74,8 @@ class ChatService {
     const messages = chatsRef.collection("messages");
     const chatFiles = chatsRef.collection("files");
     chatFiles.doc(guid).set({
-      name: file.name
+      name: file.name,
+      size: file.size
     });
     await uploadTaskPromise(guid, file);
     await messages.add({
