@@ -243,7 +243,7 @@
 
 <script>
 import { provide, defineComponent, reactive, onMounted, computed, ref, onUnmounted } from "vue";
-import { downloadURI, secondsToElapsedTime } from "src/utils/helpers";
+import { downloadURI, secondsToElapsedTime, getFileFromUrl } from "src/utils/helpers";
 import { MSG_TYPE, GROUP_CHAT_RIGHT_PANEL, CHAT_TYPE } from "src/utils/constants";
 import { format, isAfter } from "date-fns";
 import { ROUTE_NAMES } from "src/router/routeNames";
@@ -381,20 +381,12 @@ export default defineComponent({
     };
 
     const sendTxtMsg = async () => {
-      if (state.msgText !== null && state.msgText !== "" && state.msgText.length > 4) {
-        const msgId = await ChatService.sendMessage({
+      if (state.msgText !== null && state.msgText !== "" && state.msgText.length > 2) {
+        await ChatService.sendMessage({
           userId: store.getters["user/user"].id,
           type: MSG_TYPE.TXT,
           txt: state.msgText,
           chatId: state.chatDetails.id
-        });
-        state.messages.push({
-          userId: store.getters["user/user"].id,
-          sent: true,
-          type: MSG_TYPE.TXT,
-          txt: state.msgText,
-          sentAt: new Date(),
-          id: msgId
         });
         state.msgText = null;
         scrollToEndOfMsgContainer();
@@ -445,7 +437,6 @@ export default defineComponent({
           fileContent: state.files[i]
         });
       }
-      scrollToEndOfMsgContainer();
     };
 
     const deleteMsg = async (id) => {
@@ -516,12 +507,57 @@ export default defineComponent({
         .collection("/chats")
         .doc(state.chatDetails.id)
         .collection("/messages")
-        .onSnapshot((querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            if (isAfter(new Date(doc.data().sentAt.seconds * 1000), state.loadedAt)) {
-              console.log(doc.data());
+        .onSnapshot(async (querySnapshot) => {
+          const messages = [];
+          const userId = store.getters["user/user"].id;
+
+          querySnapshot.forEach(async (doc) => {
+            if (
+              isAfter(new Date(doc.data().sentAt.seconds * 1000), state.loadedAt) &&
+              state.messages.filter((msg) => msg.id === doc.id).length === 0
+            ) {
+              messages.push({ id: doc.id, ...doc.data() });
             }
           });
+
+          for (let i = 0; i < messages.length; i++) {
+            const sent = userId === messages[i].userId;
+            const sentAt = new Date(messages[i].sentAt.seconds * 1000);
+            const files = firebase
+              .firestore()
+              .collection("/chats")
+              .doc(state.chatDetails.id)
+              .collection("files");
+
+            if (messages[i].type === MSG_TYPE.FILE || messages[i].type === MSG_TYPE.AUDIO) {
+              const file = firebase.storage().ref(messages[i].fileId);
+              const url = await file.getDownloadURL();
+              const fileData = files.doc(messages[i].fileId);
+              const fileDataGet = await fileData.get();
+              const fileContent = await getFileFromUrl(url, fileDataGet.data().name);
+              state.messages.push({
+                id: messages[i].id,
+                userId,
+                sent,
+                sentAt,
+                type: messages[i].type,
+                fileContent
+              });
+            } else {
+              state.messages.push({
+                id: messages[i].id,
+                userId,
+                sent,
+                sentAt,
+                type: messages[i].type,
+                txt: messages[i].txt
+              });
+            }
+
+            if (sent) {
+              scrollToEndOfMsgContainer();
+            }
+          }
         });
     });
 
