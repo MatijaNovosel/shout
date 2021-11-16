@@ -95,3 +95,11 @@ export const MIME_TYPE_ICONS = {
   "text/plain": "mdi-text-box",
   "video/mp4": "mdi-file-video"
 };
+
+export const CHAT_PRIVILEGES = {
+  ALL: 1,
+  CAN_SEND_MESSAGES: 2,
+  CAN_SEND_TXT_MESSAGES: 3,
+  CAN_SEND_FILE_MESSAGES: 4,
+  CAN_SEND_AUDIO_MESSAGES: 5
+};

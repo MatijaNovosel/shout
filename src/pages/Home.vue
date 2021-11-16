@@ -67,7 +67,7 @@ export default defineComponent({
     onMounted(async () => {
       await store.dispatch("app/setLoading", true);
 
-      const chats = await ChatService.getAll();
+      const chats = await ChatService.getAll(store.getters["user/user"].id);
       await store.dispatch("chats/setChats", chats);
 
       setTimeout(async () => {

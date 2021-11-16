@@ -1,5 +1,5 @@
 import { firebase } from "src/boot/firebase";
-import { generateGuid, getFileFromUrl, blobToFile, uploadTaskPromise } from "src/utils/helpers";
+import { generateGuid, blobToFile, uploadTaskPromise } from "src/utils/helpers";
 import { MSG_TYPE } from "src/utils/constants";
 
 class ChatService {
@@ -7,8 +7,8 @@ class ChatService {
     this.chatsCollection = firebase.firestore().collection("/chats");
   }
 
-  async getAll() {
-    const chats = await this.chatsCollection.get();
+  async getAll(userId) {
+    const chats = await this.chatsCollection.where("userIds", "array-contains", userId).get();
     const retVal = [];
     chats.forEach((snapshot) => {
       const data = snapshot.data();

@@ -108,7 +108,6 @@ export default defineComponent({
     const msgContainer = ref(null);
 
     const state = reactive({
-      shouldShowScrollToBottom: false,
       msgContainerStyle: computed(() => {
         if (props.emojiPanelOpen === true) {
           return {
@@ -133,7 +132,7 @@ export default defineComponent({
     const msgContainerScrollChanged = (e) => {
       emit(
         "should-show-scroll-to-bottom",
-        e.verticalPercentage !== 0 && e.verticalPercentage < 0.3
+        e.verticalPercentage !== 0 && e.verticalPercentage <= 0.8
       );
     };
 

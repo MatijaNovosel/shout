@@ -67,7 +67,7 @@
         <q-item clickable v-for="(user, i) in groupDetails.users" :key="i">
           <q-item-section top avatar>
             <q-avatar>
-              <img src="../../../assets/me.jpg" />
+              <img :src="user.avatarUrl" />
             </q-avatar>
           </q-item-section>
           <q-item-section>
@@ -75,7 +75,7 @@
               {{ user.username }}
             </q-item-label>
             <q-item-label caption class="text-grey">
-              {{ user.status }}
+              {{ user.about }}
             </q-item-label>
           </q-item-section>
         </q-item>
