@@ -1,5 +1,27 @@
 <template>
-  <div class="row q-py-sm q-px-md msg q-my-xs" :class="`bg-${bgColor} text-${textColor}`">
+  <div
+    class="q-py-sm q-px-md msg q-my-xs"
+    :class="`bg-${bgColor} text-${textColor}`"
+    :style="{
+      maxWidth: '85%'
+    }"
+    v-if="type === MSG_TYPE.INFO"
+  >
+    <div class="row col-12">
+      <span>
+        {{ txt }}
+      </span>
+    </div>
+  </div>
+  <div
+    class="row q-py-sm q-px-md msg q-my-xs"
+    :class="`bg-${bgColor} text-${textColor}`"
+    :style="{
+      maxWidth: '85%',
+      width: type === MSG_TYPE.AUDIO && '33%'
+    }"
+    v-else
+  >
     <div class="row col-2 d-flex justify-center items-center align-center" v-if="messageSelectMode">
       <q-checkbox size="xs" @change="messageSelected" v-model="state.selected" />
     </div>
@@ -99,11 +121,11 @@ export default defineComponent({
   props: {
     id: {
       type: String,
-      required: true
+      required: false
     },
     type: {
       type: Number,
-      required: true
+      required: false
     },
     txt: {
       type: String,
@@ -111,19 +133,19 @@ export default defineComponent({
     },
     sentAt: {
       type: String,
-      required: true
+      required: false
     },
     textColor: {
       type: String,
-      required: true
+      required: false
     },
     bgColor: {
       type: String,
-      required: true
+      required: false
     },
     sent: {
       type: Boolean,
-      required: true
+      required: false
     },
     fileUrl: {
       type: String,

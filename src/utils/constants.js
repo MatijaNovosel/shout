@@ -8,7 +8,8 @@ export const MSG_TYPE = {
   IMG: 4,
   VID: 5,
   GIF: 6,
-  FILE: 7
+  FILE: 7,
+  INFO: 8
 };
 
 export const CHAT_TYPE = {

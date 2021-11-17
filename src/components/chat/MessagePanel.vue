@@ -37,7 +37,8 @@
         :key="message.id"
         class="col-12 row pos-rel"
         :class="{
-          'justify-end': message.sent
+          'justify-end': message.sent,
+          'justify-center q-my-sm': message.type === MSG_TYPE.INFO
         }"
       >
         <chat-message
@@ -46,7 +47,7 @@
           :id="message.id"
           :txt="message.txt"
           :sent-at="formatSentAt(message)"
-          :bg-color="message.sent ? 'teal-9' : 'blue-grey-9'"
+          :bg-color="formatBgColor(message)"
           :type="message.type"
           :sent="message.sent"
           :file-url="message.fileUrl"
@@ -56,10 +57,6 @@
           :chat-id="message.chatId"
           text-color="white"
           class="pos-rel"
-          :style="{
-            maxWidth: '85%',
-            width: message.type === MSG_TYPE.AUDIO && '33%'
-          }"
         />
       </div>
     </q-scroll-area>
@@ -152,6 +149,13 @@ export default defineComponent({
       return format(msg.sentAt, "dd.MM.yyyy. HH:mm");
     };
 
+    const formatBgColor = (msg) => {
+      if (msg.type === MSG_TYPE.INFO) {
+        return "blue-grey-9";
+      }
+      return msg.sent ? "teal-9" : "blue-grey-9";
+    };
+
     watch(
       () => props.scrollToBottomTrigger,
       () => scrollToEndOfMsgContainer()
@@ -166,7 +170,8 @@ export default defineComponent({
       messageSelected,
       deleteMsg,
       formatSentAt,
-      CHAT_TYPE
+      CHAT_TYPE,
+      formatBgColor
     };
   }
 });

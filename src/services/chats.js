@@ -141,6 +141,17 @@ class ChatService {
     });
     return url;
   }
+
+  async sendInfoMessage(msg) {
+    const messages = this.chatsCollection.doc(msg.chatId).collection("messages");
+    const data = await messages.add({
+      userId: msg.userId,
+      type: MSG_TYPE.INFO,
+      sentAt: new Date(),
+      txt: msg.txt
+    });
+    return data.id;
+  }
 }
 
 export default new ChatService();

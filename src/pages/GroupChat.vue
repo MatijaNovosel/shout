@@ -432,6 +432,12 @@ export default defineComponent({
       try {
         state.uploadingPfp = true;
         const url = await ChatService.changeGroupProfilePicture(imgFile, state.chatDetails.id);
+        await ChatService.sendInfoMessage({
+          userId: store.getters["user/user"].id,
+          type: MSG_TYPE.INFO,
+          txt: "The group profile picture was changed",
+          chatId: state.chatDetails.id
+        });
         await store.dispatch("chats/updateChatAvatar", {
           chatId: state.chatDetails.id,
           url
