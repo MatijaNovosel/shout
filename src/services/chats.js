@@ -9,11 +9,11 @@ class ChatService {
   }
 
   async getAll(userId) {
-    const chats = await this.chatsCollection.where("userIds", "array-contains", userId).get();
-    const retVal = [];
-    chats.forEach((snapshot) => {
+    const chatsData = await this.chatsCollection.where("userIds", "array-contains", userId).get();
+    const chats = [];
+    chatsData.forEach((snapshot) => {
       const data = snapshot.data();
-      retVal.push({
+      chats.push({
         id: snapshot.id,
         createdAt: new Date(data.createdAt.seconds * 1000),
         name: data.name,
@@ -28,7 +28,7 @@ class ChatService {
         }
       });
     });
-    return retVal;
+    return chats;
   }
 
   async getDetails(uid) {

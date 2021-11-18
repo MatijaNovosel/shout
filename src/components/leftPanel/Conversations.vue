@@ -88,17 +88,18 @@
   </div>
   <q-separator />
   <q-list
+    v-if="chats"
     dark
     class="rounded-borders user-list-container"
     :class="{
-      'q-pa-md': conversations.length === 0
+      'q-pa-md': chats.length === 0
     }"
     :style="state.userListContainerStyle"
   >
-    <template v-if="conversations.length !== 0">
-      <div v-for="(conversation, i) in conversations" :key="conversation.id">
-        <conversation-list-item :conversation="conversation" />
-        <q-separator dark inset="item" v-if="i !== conversations.length - 1" />
+    <template v-if="chats.length !== 0">
+      <div v-for="(chat, i) in chats" :key="chat.id">
+        <conversation-list-item :conversation="chat" />
+        <q-separator dark inset="item" v-if="i !== chats.length - 1" />
       </div>
     </template>
     <q-item v-else>
@@ -246,7 +247,7 @@ export default defineComponent({
       openuserSearchDialog,
       copyUsernameToClipboard,
       user: computed(() => store.getters["user/user"]),
-      conversations: computed(() => store.getters["chats/chats"]),
+      chats: computed(() => store.getters["chats/chats"]),
       respondToGroupInvite
     };
   }

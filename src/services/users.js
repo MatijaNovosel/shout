@@ -13,7 +13,7 @@ class UserService {
   }
 
   async getAll() {
-    const users = await this.chatsCollection.get();
+    const users = await this.userCollection.get();
     const retVal = [];
     users.forEach((snapshot) => {
       const data = snapshot.data();
@@ -49,7 +49,7 @@ class UserService {
     return { invites: invitesMapped, ...user.data() };
   }
 
-  async searchByUsername(users, searchQuery) {
+  async searchByUsername(existingUsers, searchQuery) {
     if (checkUsernamePattern(searchQuery)) {
       const username = searchQuery.split("#")[0];
       const shorthandId = searchQuery.split("#")[1];
@@ -66,8 +66,8 @@ class UserService {
       res.forEach((r) => {
         const data = r.data();
 
-        if (!users.some((u) => u === `${data.username}#${data.shorthandId}`)) {
-          users.push(r.data());
+        if (!existingUsers.some((u) => u === `${data.username}#${data.shorthandId}`)) {
+          users.push({ id: r.id, ...r.data() });
         }
       });
 

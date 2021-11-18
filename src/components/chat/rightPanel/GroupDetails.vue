@@ -107,6 +107,7 @@ import { useStore } from "vuex";
 import { format } from "date-fns";
 import UserSearchDialog from "src/components/UserSearchDialog.vue";
 import ChatService from "src/services/chats";
+import { Notify } from "quasar";
 
 export default defineComponent({
   name: "group-details",
@@ -137,7 +138,22 @@ export default defineComponent({
     };
 
     const userSelected = async (user) => {
-      await ChatService.sendGroupInvite(user.id, props.groupDetails.id, props.groupDetails.name);
+      try {
+        await ChatService.sendGroupInvite(user.id, props.groupDetails.id, props.groupDetails.name);
+        Notify.create({
+          message: "Successfully sent the group invite",
+          position: "top",
+          color: "dark",
+          textColor: "orange"
+        });
+      } catch (e) {
+        Notify.create({
+          message: "Failed to send the group invite",
+          position: "top",
+          color: "dark",
+          textColor: "orange"
+        });
+      }
     };
 
     return {
