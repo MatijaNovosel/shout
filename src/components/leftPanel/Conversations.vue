@@ -87,11 +87,26 @@
     </q-input>
   </div>
   <q-separator />
-  <q-list dark class="rounded-borders user-list-container" :style="state.userListContainerStyle">
-    <div v-for="(conversation, i) in conversations" :key="conversation.id">
-      <conversation-list-item :conversation="conversation" />
-      <q-separator dark inset="item" v-if="i !== conversations.length - 1" />
-    </div>
+  <q-list
+    dark
+    class="rounded-borders user-list-container"
+    :class="{
+      'q-pa-md': conversations.length === 0
+    }"
+    :style="state.userListContainerStyle"
+  >
+    <template v-if="conversations.length !== 0">
+      <div v-for="(conversation, i) in conversations" :key="conversation.id">
+        <conversation-list-item :conversation="conversation" />
+        <q-separator dark inset="item" v-if="i !== conversations.length - 1" />
+      </div>
+    </template>
+    <q-item v-else>
+      <q-item-section>
+        <q-item-label lines="1"> No chats found. </q-item-label>
+        <q-item-label caption lines="1"> Start a conversation or join a group. </q-item-label>
+      </q-item-section>
+    </q-item>
   </q-list>
   <user-search-dialog v-model="state.userSearchDialog" />
 </template>

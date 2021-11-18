@@ -106,6 +106,7 @@ import { defineComponent, reactive } from "vue";
 import { useStore } from "vuex";
 import { format } from "date-fns";
 import UserSearchDialog from "src/components/UserSearchDialog.vue";
+import ChatService from "src/services/chats";
 
 export default defineComponent({
   name: "group-details",
@@ -135,8 +136,8 @@ export default defineComponent({
       emit("open-avatar-editor");
     };
 
-    const userSelected = (user) => {
-      console.log(user);
+    const userSelected = async (user) => {
+      await ChatService.sendGroupInvite(user.id, props.groupDetails.id, props.groupDetails.name);
     };
 
     return {

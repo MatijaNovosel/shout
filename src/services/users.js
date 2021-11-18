@@ -32,8 +32,9 @@ class UserService {
       email,
       shorthandId: range(6)
         .map(() => sample(range(6)).toString())
-        .join()
+        .join("")
     });
+    await this.userCollection.doc(id).collection("/invites").add({});
   }
 
   async getDetails(uid) {

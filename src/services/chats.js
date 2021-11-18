@@ -179,9 +179,28 @@ class ChatService {
         chatId
       });
     }
-    await this.userCollection.doc(user.id).collection("/invites").doc(inviteId).update({
-      confirmed: true
-    });
+    await firebase
+      .firestore()
+      .collection("/users")
+      .doc(user.id)
+      .collection("/invites")
+      .doc(inviteId)
+      .update({
+        confirmed: true
+      });
+  }
+
+  async sendGroupInvite(userId, chatId, chatName) {
+    await firebase
+      .firestore()
+      .collection("/users")
+      .doc(userId)
+      .collection("/invites")
+      .add({
+        chatId,
+        txt: `You have been invited to join <b>${chatName}</b>`,
+        confirmed: false
+      });
   }
 }
 
