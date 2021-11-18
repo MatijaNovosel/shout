@@ -35,7 +35,9 @@
         <q-icon size="xs" name="mdi-pencil" />
       </template>
     </q-input>
-    <span class="text-grey self-start q-mt-sm q-ml-lg"> Created {{ groupDetails.createdAt }} </span>
+    <span class="text-grey self-start q-mt-sm q-ml-lg">
+      Created {{ format(groupDetails.createdAt, "dd.MM.yyyy. HH:mm") }}
+    </span>
     <q-input
       dark
       label="Description"
@@ -61,7 +63,17 @@
     <div class="column self-start q-px-sm full-width q-mt-sm">
       <div class="row text-teal justify-between q-pl-md">
         <span> {{ groupDetails.users.length }} users </span>
-        <q-btn color="grey" flat round size="sm" icon="mdi-magnify" />
+        <div>
+          <q-btn color="grey" flat round size="sm" icon="mdi-magnify" />
+          <q-btn
+            color="grey"
+            flat
+            round
+            size="sm"
+            icon="mdi-plus"
+            @click="state.userSearchDialog = true"
+          />
+        </div>
       </div>
       <q-list dark>
         <q-item clickable v-for="(user, i) in groupDetails.users" :key="i">
@@ -82,15 +94,25 @@
       </q-list>
     </div>
   </div>
+  <user-search-dialog
+    :users="groupDetails.users.map((u) => `${u.username}#${u.shorthandId}`)"
+    v-model="state.userSearchDialog"
+    @user-selected="userSelected"
+  />
 </template>
 
 <script>
 import { defineComponent, reactive } from "vue";
 import { useStore } from "vuex";
+import { format } from "date-fns";
+import UserSearchDialog from "src/components/UserSearchDialog.vue";
 
 export default defineComponent({
   name: "group-details",
   emits: ["close", "open-avatar-editor"],
+  components: {
+    UserSearchDialog
+  },
   props: {
     groupDetails: {
       type: Object,
@@ -105,16 +127,23 @@ export default defineComponent({
 
     const state = reactive({
       muteNotifications: false,
-      avatarEditorDialog: false
+      avatarEditorDialog: false,
+      userSearchDialog: false
     });
 
     const openAvatarEditorDialog = () => {
       emit("open-avatar-editor");
     };
 
+    const userSelected = (user) => {
+      console.log(user);
+    };
+
     return {
       state,
-      openAvatarEditorDialog
+      openAvatarEditorDialog,
+      format,
+      userSelected
     };
   }
 });

@@ -42,17 +42,9 @@ class UserService {
     return user.data();
   }
 
-  async searchByUsername(searchQuery) {
+  async searchByUsername(users, searchQuery) {
     if (checkUsernamePattern(searchQuery)) {
       const username = searchQuery.split("#")[0];
-
-      const storeRef = await store();
-      const currentUser = storeRef.getters["user/user"];
-
-      if (username === currentUser.data.username) {
-        return [];
-      }
-
       const shorthandId = searchQuery.split("#")[1];
 
       const res = await readDocuments("users", {
@@ -65,7 +57,11 @@ class UserService {
       const users = [];
 
       res.forEach((r) => {
-        users.push(r.data());
+        const data = r.data();
+
+        if (!users.some((u) => u === `${data.username}#${data.shorthandId}`)) {
+          users.push(r.data());
+        }
       });
 
       return users;

@@ -2,7 +2,7 @@
   <q-dialog :model-value="modelValue" persistent>
     <q-card dark class="new-chat-dialog">
       <q-bar>
-        <span> New chat </span>
+        <span> Search users </span>
         <q-space />
         <q-btn dense flat icon="close" @click="close">
           <q-tooltip>Close</q-tooltip>
@@ -29,7 +29,13 @@
       <q-card-section>
         <q-list dense dark>
           <template v-if="state.filteredUsers.length != 0">
-            <q-item clickable v-ripple v-for="(user, i) in state.filteredUsers" :key="i">
+            <q-item
+              clickable
+              v-ripple
+              v-for="(user, i) in state.filteredUsers"
+              :key="i"
+              @click="selectUser(user)"
+            >
               <q-item-section avatar>
                 <q-avatar>
                   <img src="https://cdn.quasar.dev/img/avatar2.jpg" />
@@ -41,7 +47,7 @@
               </q-item-section>
             </q-item>
           </template>
-          <q-item clickable v-ripple v-else>
+          <q-item v-else>
             <q-item-section avatar>
               <q-avatar>
                 <img src="../assets/unknown.jpg" />
@@ -65,13 +71,16 @@ import { debounce } from "debounce";
 import UserService from "src/services/users";
 
 export default defineComponent({
-  name: "new-chat-dialog",
+  name: "user-search-dialog",
   props: {
     modelValue: {
       type: Boolean
+    },
+    users: {
+      type: Array
     }
   },
-  emits: ["update:modelValue"],
+  emits: ["update:modelValue", "user-selected"],
   setup(props, { emit }) {
     const store = useStore();
 
@@ -88,7 +97,7 @@ export default defineComponent({
 
     const findUser = async () => {
       state.searching = true;
-      state.filteredUsers = await UserService.searchByUsername(state.searchQuery);
+      state.filteredUsers = await UserService.searchByUsername(props.users, state.searchQuery);
       setTimeout(() => {
         state.searching = false;
       }, 400);
@@ -96,10 +105,15 @@ export default defineComponent({
 
     const search = debounce(findUser, 750);
 
+    const selectUser = (user) => {
+      emit("user-selected", user);
+    };
+
     return {
       state,
       close,
-      search
+      search,
+      selectUser
     };
   }
 });

@@ -14,8 +14,25 @@
       </template>
     </div>
     <div class="row">
-      <q-btn flat round color="white" icon="mdi-circle-outline" />
-      <q-btn flat round color="white" icon="mdi-message-text" @click="openNewChatDialog" />
+      <q-btn flat round color="white" icon="mdi-tooltip-plus">
+        <q-badge color="teal" label="1" floating />
+        <q-menu dark right :offset="[-15, -5]">
+          <q-list dense style="min-width: 100px">
+            <q-item clickable v-close-popup>
+              <q-item-section>New group</q-item-section>
+            </q-item>
+            <q-separator dark />
+            <q-item clickable v-close-popup @click="$emit('set-left-panel', 'settings')">
+              <q-item-section>Settings</q-item-section>
+            </q-item>
+            <q-separator dark />
+            <q-item clickable v-close-popup @click="logOut">
+              <q-item-section>Log out</q-item-section>
+            </q-item>
+          </q-list>
+        </q-menu>
+      </q-btn>
+      <q-btn flat round color="white" icon="mdi-message-text" @click="openuserSearchDialog" />
       <q-btn flat round color="white" icon="mdi-dots-vertical">
         <q-menu dark right :offset="[-15, -5]">
           <q-list dense style="min-width: 100px">
@@ -48,14 +65,7 @@
     </div>
   </div>
   <div class="search-bar-container q-pa-md">
-    <q-input
-      bg-color="blue-grey-10"
-      dark
-      dense
-      rounded
-      standout
-      placeholder="Search or start a new chat"
-    >
+    <q-input bg-color="blue-grey-10" dark dense rounded standout placeholder="Search for a chat">
       <template #prepend>
         <q-icon name="mdi-magnify" />
       </template>
@@ -68,7 +78,7 @@
       <q-separator dark inset="item" v-if="i !== conversations.length - 1" />
     </div>
   </q-list>
-  <new-chat-dialog v-model="state.newChatDialog" />
+  <user-search-dialog v-model="state.userSearchDialog" />
 </template>
 
 <script>
@@ -78,7 +88,7 @@ import { Notify } from "quasar";
 import { ROUTE_NAMES } from "src/router/routeNames";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
-import NewChatDialog from "src/components/NewChatDialog.vue";
+import UserSearchDialog from "src/components/UserSearchDialog.vue";
 import { copyToClipboard } from "src/utils/helpers";
 
 export default defineComponent({
@@ -86,7 +96,7 @@ export default defineComponent({
   emits: ["set-left-panel"],
   components: {
     ConversationListItem,
-    NewChatDialog
+    UserSearchDialog
   },
   setup() {
     const store = useStore();
@@ -108,7 +118,7 @@ export default defineComponent({
       }),
       notificationsEnabled: false,
       notificationsEnablePanelActive: true,
-      newChatDialog: false
+      userSearchDialog: false
     });
 
     const checkNotificationPromise = () => {
@@ -168,8 +178,8 @@ export default defineComponent({
       }
     };
 
-    const openNewChatDialog = () => {
-      state.newChatDialog = true;
+    const openuserSearchDialog = () => {
+      state.userSearchDialog = true;
     };
 
     const copyUsernameToClipboard = () => {
@@ -188,7 +198,7 @@ export default defineComponent({
       state,
       askNotificationPermission,
       logOut,
-      openNewChatDialog,
+      openuserSearchDialog,
       copyUsernameToClipboard,
       user: computed(() => store.getters["user/user"]),
       conversations: computed(() => store.getters["chats/chats"])

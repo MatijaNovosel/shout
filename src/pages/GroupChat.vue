@@ -29,7 +29,9 @@
               <template v-else>
                 <template v-if="state.chatDetails">
                   <span> {{ state.chatDetails.name }} </span>
-                  <span> {{ state.chatDetails.users.map((u) => u.username).join(", ") }} </span>
+                  <span class="text-grey-6">
+                    {{ state.chatDetails.users.map((u) => u.username).join(", ") }}
+                  </span>
                 </template>
               </template>
             </div>
@@ -444,7 +446,10 @@ export default defineComponent({
         });
         state.chatDetails.avatar = url;
         Notify.create({
-          message: "Successfully updated group profile picture",
+          message: `[${format(
+            new Date(),
+            "dd.MM.yyyy. hh:mm"
+          )}] Successfully updated group profile picture`,
           position: "top",
           color: "dark",
           textColor: "orange"
