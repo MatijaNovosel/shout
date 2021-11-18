@@ -15,19 +15,25 @@
     </div>
     <div class="row">
       <q-btn flat round color="white" icon="mdi-tooltip-plus">
-        <q-badge color="teal" label="1" floating />
+        <q-badge
+          v-if="user.invites.length !== 0"
+          color="teal"
+          :label="user.invites.length"
+          floating
+        />
         <q-menu dark right :offset="[-15, -5]">
-          <q-list dense style="min-width: 100px">
-            <q-item clickable v-close-popup>
-              <q-item-section>New group</q-item-section>
-            </q-item>
-            <q-separator dark />
-            <q-item clickable v-close-popup @click="$emit('set-left-panel', 'settings')">
-              <q-item-section>Settings</q-item-section>
-            </q-item>
-            <q-separator dark />
-            <q-item clickable v-close-popup @click="logOut">
-              <q-item-section>Log out</q-item-section>
+          <q-list dense>
+            <template v-if="user.invites.length !== 0">
+              <q-item v-for="(invite, i) in user.invites" :key="i">
+                <q-item-section v-html="invite.txt" />
+                <q-item-section side top class="q-py-sm">
+                  <q-btn size="sm" color="teal"> Accept </q-btn>
+                  <q-btn size="sm" color="" class="q-mt-sm"> Decline </q-btn>
+                </q-item-section>
+              </q-item>
+            </template>
+            <q-item v-else>
+              <q-item-section> No invites found. </q-item-section>
             </q-item>
           </q-list>
         </q-menu>

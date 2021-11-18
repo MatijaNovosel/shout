@@ -6,7 +6,6 @@ import {
   checkUsernamePattern,
   generateGuid
 } from "src/utils/helpers";
-import store from "src/store/index";
 
 class UserService {
   constructor() {
@@ -39,7 +38,14 @@ class UserService {
 
   async getDetails(uid) {
     const user = await this.userCollection.doc(uid).get();
-    return user.data();
+    const invites = await this.userCollection.doc(uid).collection("/invites").get();
+
+    const invitesMapped = [];
+    invites.forEach((i) => {
+      invitesMapped.push(i.data());
+    });
+
+    return { invites: invitesMapped, ...user.data() };
   }
 
   async searchByUsername(users, searchQuery) {
