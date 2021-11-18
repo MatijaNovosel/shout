@@ -34,7 +34,6 @@ class UserService {
         .map(() => sample(range(6)).toString())
         .join("")
     });
-    await this.userCollection.doc(id).collection("/invites").add({});
   }
 
   async getDetails(uid) {
@@ -43,7 +42,9 @@ class UserService {
 
     const invitesMapped = [];
     invites.forEach((i) => {
-      invitesMapped.push({ id: i.id, ...i.data() });
+      if (!i.data().confirmed) {
+        invitesMapped.push({ id: i.id, ...i.data() });
+      }
     });
 
     return { invites: invitesMapped, ...user.data() };

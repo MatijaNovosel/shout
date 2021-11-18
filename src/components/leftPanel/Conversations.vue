@@ -22,7 +22,7 @@
           floating
         />
         <q-menu dark right :offset="[-15, -5]">
-          <q-list dense v-if="user.invites">
+          <q-list dense v-if="user">
             <template v-if="user.invites.length !== 0">
               <q-item v-for="(invite, i) in user.invites" :key="i">
                 <q-item-section v-html="invite.txt" />
@@ -238,6 +238,7 @@ export default defineComponent({
         },
         invite.chatId
       );
+      store.dispatch("user/respondToInvite", invite.id);
     };
 
     return {

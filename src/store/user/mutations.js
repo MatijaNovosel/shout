@@ -15,5 +15,8 @@ export default {
     StorageService.removeSavedState("user");
     state.user = null;
     await firebase.auth().signOut();
+  },
+  RESPOND_TO_INVITE(state, inviteId) {
+    state.user.invites = state.user.invites.filter((inv) => inv.id !== inviteId);
   }
 };

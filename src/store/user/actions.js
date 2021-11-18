@@ -8,5 +8,8 @@ export default {
   },
   logOut({ commit }) {
     commit("LOG_OUT");
+  },
+  respondToInvite({ commit }, inviteId) {
+    commit("RESPOND_TO_INVITE", inviteId);
   }
 };
