@@ -42,7 +42,7 @@ class UserService {
 
     const invitesMapped = [];
     invites.forEach((i) => {
-      invitesMapped.push(i.data());
+      invitesMapped.push({ id: i.id, ...i.data() });
     });
 
     return { invites: invitesMapped, ...user.data() };

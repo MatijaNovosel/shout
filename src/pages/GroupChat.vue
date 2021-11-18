@@ -437,7 +437,7 @@ export default defineComponent({
         await ChatService.sendInfoMessage({
           userId: store.getters["user/user"].id,
           type: MSG_TYPE.INFO,
-          txt: "The group profile picture was changed",
+          txt: `[${format(new Date(), "dd.MM.yyyy. hh:mm")}] Group profile picture was updated`,
           chatId: state.chatDetails.id
         });
         await store.dispatch("chats/updateChatAvatar", {
@@ -446,10 +446,7 @@ export default defineComponent({
         });
         state.chatDetails.avatar = url;
         Notify.create({
-          message: `[${format(
-            new Date(),
-            "dd.MM.yyyy. hh:mm"
-          )}] Successfully updated group profile picture`,
+          message: "Successfully updated group profile picture",
           position: "top",
           color: "dark",
           textColor: "orange"

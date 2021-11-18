@@ -1,6 +1,7 @@
 import { firebase } from "src/boot/firebase";
 import { generateGuid, blobToFile, uploadTaskPromise } from "src/utils/helpers";
-import { MSG_TYPE } from "src/utils/constants";
+import { CHAT_PRIVILEGES, MSG_TYPE } from "src/utils/constants";
+import { format } from "date-fns";
 
 class ChatService {
   constructor() {
@@ -151,6 +152,36 @@ class ChatService {
       txt: msg.txt
     });
     return data.id;
+  }
+
+  async sendGroupInviteResponse(response, inviteId, user, chatId) {
+    if (response) {
+      const chatDetails = await this.chatsCollection.doc(chatId).get();
+      const chatData = chatDetails.data();
+      const users = chatData.users;
+      const userIds = chatData.userIds;
+      users.push({
+        id: user.id,
+        about: user.about,
+        avatarUrl: user.avatarUrl,
+        privileges: [CHAT_PRIVILEGES.ALL],
+        username: user.username
+      });
+      userIds.push(user.id);
+      await this.chatsCollection.doc(chatId).update({
+        users,
+        userIds
+      });
+      await this.sendInfoMessage({
+        userId: user.id,
+        type: MSG_TYPE.INFO,
+        txt: `[${format(new Date(), "dd.MM.yyyy. hh:mm")}] ${user.username} has joined the chat`,
+        chatId
+      });
+    }
+    await this.userCollection.doc(user.id).collection("/invites").doc(inviteId).update({
+      confirmed: true
+    });
   }
 }
 

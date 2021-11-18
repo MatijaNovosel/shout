@@ -22,13 +22,22 @@
           floating
         />
         <q-menu dark right :offset="[-15, -5]">
-          <q-list dense>
+          <q-list dense v-if="user.invites">
             <template v-if="user.invites.length !== 0">
               <q-item v-for="(invite, i) in user.invites" :key="i">
                 <q-item-section v-html="invite.txt" />
                 <q-item-section side top class="q-py-sm">
-                  <q-btn size="sm" color="teal"> Accept </q-btn>
-                  <q-btn size="sm" color="" class="q-mt-sm"> Decline </q-btn>
+                  <q-btn size="sm" color="teal" @click="respondToGroupInvite(true, invite)">
+                    Accept
+                  </q-btn>
+                  <q-btn
+                    size="sm"
+                    color=""
+                    class="q-mt-sm"
+                    @click="respondToGroupInvite(false, invite)"
+                  >
+                    Decline
+                  </q-btn>
                 </q-item-section>
               </q-item>
             </template>
@@ -96,6 +105,7 @@ import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import UserSearchDialog from "src/components/UserSearchDialog.vue";
 import { copyToClipboard } from "src/utils/helpers";
+import ChatService from "src/services/chats";
 
 export default defineComponent({
   name: "conversations",
@@ -200,6 +210,20 @@ export default defineComponent({
       });
     };
 
+    const respondToGroupInvite = async (response, invite) => {
+      await ChatService.sendGroupInviteResponse(
+        response,
+        invite.id,
+        {
+          id: store.getters["user/user"].id,
+          about: "About",
+          avatarUrl: store.getters["user/user"].avatarUrl,
+          username: `${store.getters["user/user"].username}#${store.getters["user/user"].shorthandId}`
+        },
+        invite.chatId
+      );
+    };
+
     return {
       state,
       askNotificationPermission,
@@ -207,7 +231,8 @@ export default defineComponent({
       openuserSearchDialog,
       copyUsernameToClipboard,
       user: computed(() => store.getters["user/user"]),
-      conversations: computed(() => store.getters["chats/chats"])
+      conversations: computed(() => store.getters["chats/chats"]),
+      respondToGroupInvite
     };
   }
 });
