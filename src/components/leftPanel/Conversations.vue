@@ -125,7 +125,7 @@ import ChatService from "src/services/chats";
 
 export default defineComponent({
   name: "conversations",
-  emits: ["set-left-panel"],
+  emits: ["set-left-panel", "reload-conversations"],
   components: {
     ConversationListItem,
     UserSearchDialog

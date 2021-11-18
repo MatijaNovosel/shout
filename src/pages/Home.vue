@@ -19,13 +19,14 @@
         </keep-alive>
         <keep-alive>
           <conversations
+            @reload-conversations="getConversations"
             @set-left-panel="setLeftPanel"
             v-if="state.leftPaneComponent === 'conversations'"
           />
         </keep-alive>
       </div>
       <div class="col-9 full-height right-panel">
-        <router-view></router-view>
+        <router-view />
       </div>
     </div>
     <q-resize-observer @resize="changeMainContainerWidth" />
@@ -64,7 +65,7 @@ export default defineComponent({
       state.leftPaneComponent = name;
     };
 
-    onMounted(async () => {
+    const getConversations = async () => {
       await store.dispatch("app/setLoading", true);
 
       const chats = await ChatService.getAll(store.getters["user/user"].id);
@@ -73,12 +74,17 @@ export default defineComponent({
       setTimeout(async () => {
         await store.dispatch("app/setLoading", false);
       }, 750);
+    };
+
+    onMounted(async () => {
+      await getConversations();
     });
 
     return {
       changeMainContainerWidth,
       state,
-      setLeftPanel
+      setLeftPanel,
+      getConversations
     };
   }
 });
