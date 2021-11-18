@@ -437,7 +437,7 @@ export default defineComponent({
         await ChatService.sendInfoMessage({
           userId: store.getters["user/user"].id,
           type: MSG_TYPE.INFO,
-          txt: `[${format(new Date(), "dd.MM.yyyy. hh:mm")}] Group profile picture was updated`,
+          txt: `[${format(new Date(), "dd.MM.yyyy. HH:mm")}] Group profile picture was updated`,
           chatId: state.chatDetails.id
         });
         await store.dispatch("chats/updateChatAvatar", {

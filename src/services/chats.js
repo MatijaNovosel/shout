@@ -175,7 +175,7 @@ class ChatService {
       await this.sendInfoMessage({
         userId: user.id,
         type: MSG_TYPE.INFO,
-        txt: `[${format(new Date(), "dd.MM.yyyy. hh:mm")}] ${user.username} has joined the chat`,
+        txt: `[${format(new Date(), "dd.MM.yyyy. HH:mm")}] ${user.username} has joined the chat`,
         chatId
       });
     }
