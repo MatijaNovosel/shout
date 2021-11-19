@@ -17,22 +17,24 @@
             color="secondary"
             class="chat-top-loading-bar"
           />
-          <div
-            class="row text-white cursor-pointer q-pl-md"
-            @click="openRightPanel(GROUP_CHAT_RIGHT_PANEL.DETAILS)"
-          >
-            <q-avatar size="40px" v-if="state.chatDetails">
+          <div class="row text-white q-pl-md">
+            <q-avatar
+              class="cursor-pointer"
+              size="40px"
+              v-if="state.chatDetails"
+              @click="openRightPanel(GROUP_CHAT_RIGHT_PANEL.DETAILS)"
+            >
               <img :src="state.chatDetails.avatar" />
             </q-avatar>
-            <div class="column q-ml-md justify-center">
-              <span v-if="state.loading"> Loading ... </span>
-              <template v-else>
-                <template v-if="state.chatDetails">
-                  <span> {{ state.chatDetails.name }} </span>
-                  <span class="text-grey-6">
-                    {{ state.chatDetails.users.map((u) => u.username).join(", ") }}
-                  </span>
-                </template>
+            <div class="column q-ml-md justify-center" v-if="state.loading">
+              <span> Loading ... </span>
+            </div>
+            <div class="column q-ml-md justify-center" v-else>
+              <template v-if="state.chatDetails">
+                <span> {{ state.chatDetails.name }} </span>
+                <span class="text-grey-6">
+                  {{ state.chatDetails.users.map((u) => u.username).join(", ") }}
+                </span>
               </template>
             </div>
           </div>

@@ -222,8 +222,21 @@ class ChatService {
     });
   }
 
-  async leaveGroup(userId, chatId) {
-    //
+  async leaveGroup(user, chatId) {
+    const chatDetails = await this.chatsCollection.doc(chatId).get();
+    const chatData = chatDetails.data();
+    const users = chatData.users.filter((u) => u.id !== user.id);
+    const userIds = chatData.userIds.filter((u) => u !== user.id);
+    await this.chatsCollection.doc(chatId).update({
+      users,
+      userIds
+    });
+    await this.sendInfoMessage({
+      userId: user.id,
+      type: MSG_TYPE.INFO,
+      txt: `[${format(new Date(), "dd.MM.yyyy. HH:mm")}] ${user.username} has left the chat`,
+      chatId
+    });
   }
 }
 

@@ -8,7 +8,7 @@
         <span class="text-white q-ml-sm"> Group details </span>
       </div>
       <div class="q-mr-md">
-        <q-btn flat round color="red-5" icon="mdi-exit-to-app" />
+        <q-btn flat round color="red-5" icon="mdi-exit-to-app" @click="leaveGroup" />
       </div>
     </div>
     <q-avatar size="200px" class="q-my-lg">
@@ -90,7 +90,7 @@
               {{ user.about }}
             </q-item-label>
           </q-item-section>
-          <q-item-section side v-if="user.id !== user.id">
+          <q-item-section side v-if="userComputed.id !== user.id">
             <q-btn color="grey" flat round icon="mdi-dots-vertical">
               <q-menu dark right :offset="[-15, -5]">
                 <q-list dense style="min-width: 100px">
@@ -122,6 +122,8 @@ import { format } from "date-fns";
 import UserSearchDialog from "src/components/UserSearchDialog.vue";
 import ChatService from "src/services/chats";
 import { Notify } from "quasar";
+import { useRouter } from "vue-router";
+import { ROUTE_NAMES } from "src/router/routeNames";
 
 export default defineComponent({
   name: "group-details",
@@ -140,6 +142,7 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const store = useStore();
+    const router = useRouter();
 
     const state = reactive({
       muteNotifications: false,
@@ -193,13 +196,42 @@ export default defineComponent({
       }
     };
 
+    const leaveGroup = async () => {
+      try {
+        await ChatService.leaveGroup(
+          {
+            id: store.getters["user/user"].id,
+            username: `${store.getters["user/user"].username}#${store.getters["user/user"].shorthandId}`
+          },
+          props.groupDetails.id
+        );
+        Notify.create({
+          message: "You have left the group",
+          position: "top",
+          color: "dark",
+          textColor: "orange"
+        });
+        router.push({
+          name: ROUTE_NAMES.HOME
+        });
+      } catch (e) {
+        Notify.create({
+          message: "Failed to leave group",
+          position: "top",
+          color: "dark",
+          textColor: "orange"
+        });
+      }
+    };
+
     return {
       state,
       openAvatarEditorDialog,
       format,
       userSelected,
-      user: computed(() => store.getters["user/user"]),
-      removeFromGroup
+      userComputed: computed(() => store.getters["user/user"]),
+      removeFromGroup,
+      leaveGroup
     };
   }
 });
