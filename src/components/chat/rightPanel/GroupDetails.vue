@@ -97,7 +97,7 @@
                   <q-item clickable v-close-popup @click="removeFromGroup(user)">
                     <q-item-section>Remove member</q-item-section>
                   </q-item>
-                  <q-item clickable v-close-popup>
+                  <q-item clickable v-close-popup @click="openEditPrivilegeDialog(user)">
                     <q-item-section>Edit privileges</q-item-section>
                   </q-item>
                 </q-list>
@@ -113,6 +113,7 @@
     v-model="state.userSearchDialog"
     @user-selected="userSelected"
   />
+  <edit-privileges-dialog :privileges="state.userPrivileges" v-model="state.editPrivilegesDialog" />
 </template>
 
 <script>
@@ -120,6 +121,7 @@ import { defineComponent, reactive, computed } from "vue";
 import { useStore } from "vuex";
 import { format } from "date-fns";
 import UserSearchDialog from "src/components/UserSearchDialog.vue";
+import EditPrivilegesDialog from "src/components/EditPrivilegesDialog.vue";
 import ChatService from "src/services/chats";
 import { Notify } from "quasar";
 import { useRouter } from "vue-router";
@@ -129,7 +131,8 @@ export default defineComponent({
   name: "group-details",
   emits: ["close", "open-avatar-editor"],
   components: {
-    UserSearchDialog
+    UserSearchDialog,
+    EditPrivilegesDialog
   },
   props: {
     groupDetails: {
@@ -147,7 +150,9 @@ export default defineComponent({
     const state = reactive({
       muteNotifications: false,
       avatarEditorDialog: false,
-      userSearchDialog: false
+      userSearchDialog: false,
+      editPrivilegesDialog: false,
+      userPrivileges: []
     });
 
     const openAvatarEditorDialog = () => {
@@ -224,6 +229,11 @@ export default defineComponent({
       }
     };
 
+    const openEditPrivilegeDialog = (user) => {
+      state.userPrivileges = [...user.privileges];
+      state.editPrivilegesDialog = true;
+    };
+
     return {
       state,
       openAvatarEditorDialog,
@@ -231,7 +241,8 @@ export default defineComponent({
       userSelected,
       userComputed: computed(() => store.getters["user/user"]),
       removeFromGroup,
-      leaveGroup
+      leaveGroup,
+      openEditPrivilegeDialog
     };
   }
 });

@@ -67,7 +67,11 @@ class UserService {
       res.forEach((r) => {
         const data = r.data();
 
-        if (!existingUsers.some((u) => u === `${data.username}#${data.shorthandId}`)) {
+        if (existingUsers) {
+          if (!existingUsers.some((u) => u === `${data.username}#${data.shorthandId}`)) {
+            users.push({ id: r.id, ...r.data() });
+          }
+        } else {
           users.push({ id: r.id, ...r.data() });
         }
       });

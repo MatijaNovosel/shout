@@ -115,13 +115,7 @@
                   <q-item clickable v-close-popup>
                     <q-item-section>Mute notifications</q-item-section>
                   </q-item>
-                  <q-item clickable v-close-popup>
-                    <q-item-section>Clear messages</q-item-section>
-                  </q-item>
-                  <q-item clickable v-close-popup>
-                    <q-item-section>Downloads</q-item-section>
-                  </q-item>
-                  <q-item clickable v-close-popup>
+                  <q-item clickable v-close-popup @click="leaveGroup">
                     <q-item-section>Exit group</q-item-section>
                   </q-item>
                 </q-list>
@@ -256,7 +250,7 @@ import GroupDetails from "src/components/chat/rightPanel/GroupDetails.vue";
 import GroupChatSearch from "src/components/chat/rightPanel/GroupChatSearch.vue";
 import EmojiPicker from "src/components/chat/EmojiPicker.vue";
 import AddFilePanel from "src/components/AddFilePanel.vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import ChatService from "src/services/chats";
 import { useStore } from "vuex";
 import { Notify } from "quasar";
@@ -276,6 +270,7 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const route = useRoute();
+    const router = useRouter();
 
     // Plugins (provides and injects)
     const filePickerTrigger = ref(false);
@@ -518,6 +513,34 @@ export default defineComponent({
       }
     };
 
+    const leaveGroup = async () => {
+      try {
+        await ChatService.leaveGroup(
+          {
+            id: store.getters["user/user"].id,
+            username: `${store.getters["user/user"].username}#${store.getters["user/user"].shorthandId}`
+          },
+          state.chatDetails.id
+        );
+        Notify.create({
+          message: "You have left the group",
+          position: "top",
+          color: "dark",
+          textColor: "orange"
+        });
+        router.push({
+          name: ROUTE_NAMES.HOME
+        });
+      } catch (e) {
+        Notify.create({
+          message: "Failed to leave group",
+          position: "top",
+          color: "dark",
+          textColor: "orange"
+        });
+      }
+    };
+
     onMounted(async () => {
       document.addEventListener("keyup", handleEnter);
 
@@ -589,7 +612,8 @@ export default defineComponent({
       deleteMsg,
       CHAT_TYPE,
       messageSelectMode,
-      uploadGroupPfp
+      uploadGroupPfp,
+      leaveGroup
     };
   }
 });
