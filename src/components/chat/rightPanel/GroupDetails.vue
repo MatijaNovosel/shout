@@ -76,7 +76,7 @@
         </div>
       </div>
       <q-list dark>
-        <q-item clickable v-for="(user, i) in groupDetails.users" :key="i">
+        <q-item v-for="(user, i) in groupDetails.users" :key="i">
           <q-item-section top avatar>
             <q-avatar>
               <img :src="user.avatarUrl" />
@@ -90,6 +90,20 @@
               {{ user.about }}
             </q-item-label>
           </q-item-section>
+          <q-item-section side v-if="user.id !== user.id">
+            <q-btn color="grey" flat round icon="mdi-dots-vertical">
+              <q-menu dark right :offset="[-15, -5]">
+                <q-list dense style="min-width: 100px">
+                  <q-item clickable v-close-popup @click="removeFromGroup(user)">
+                    <q-item-section>Remove member</q-item-section>
+                  </q-item>
+                  <q-item clickable v-close-popup>
+                    <q-item-section>Edit privileges</q-item-section>
+                  </q-item>
+                </q-list>
+              </q-menu>
+            </q-btn>
+          </q-item-section>
         </q-item>
       </q-list>
     </div>
@@ -102,7 +116,7 @@
 </template>
 
 <script>
-import { defineComponent, reactive } from "vue";
+import { defineComponent, reactive, computed } from "vue";
 import { useStore } from "vuex";
 import { format } from "date-fns";
 import UserSearchDialog from "src/components/UserSearchDialog.vue";
@@ -156,11 +170,36 @@ export default defineComponent({
       }
     };
 
+    const removeFromGroup = async (user) => {
+      try {
+        await ChatService.removeFromGroup(
+          store.getters["user/user"].id,
+          { id: user.id, username: `${user.username}#${user.shorthandId}` },
+          props.groupDetails.id
+        );
+        Notify.create({
+          message: `Successfully removed ${user.username}#${user.shorthandId}`,
+          position: "top",
+          color: "dark",
+          textColor: "orange"
+        });
+      } catch (e) {
+        Notify.create({
+          message: "Failed to remove user",
+          position: "top",
+          color: "dark",
+          textColor: "orange"
+        });
+      }
+    };
+
     return {
       state,
       openAvatarEditorDialog,
       format,
-      userSelected
+      userSelected,
+      user: computed(() => store.getters["user/user"]),
+      removeFromGroup
     };
   }
 });

@@ -202,6 +202,29 @@ class ChatService {
         confirmed: false
       });
   }
+
+  async removeFromGroup(userInitiatorId, user, chatId) {
+    const chatDetails = await this.chatsCollection.doc(chatId).get();
+    const chatData = chatDetails.data();
+    const users = chatData.users.filter((u) => u.id !== user.id);
+    const userIds = chatData.userIds.filter((u) => u !== user.id);
+    await this.chatsCollection.doc(chatId).update({
+      users,
+      userIds
+    });
+    await this.sendInfoMessage({
+      userId: userInitiatorId,
+      type: MSG_TYPE.INFO,
+      txt: `[${format(new Date(), "dd.MM.yyyy. HH:mm")}] ${
+        user.username
+      } has been removed from the chat`,
+      chatId
+    });
+  }
+
+  async leaveGroup(userId, chatId) {
+    //
+  }
 }
 
 export default new ChatService();
