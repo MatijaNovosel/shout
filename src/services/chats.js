@@ -103,15 +103,23 @@ class ChatService {
     const chatsRef = this.chatsCollection.doc(chatId);
     const messages = chatsRef.collection("messages");
     const doc = await messages.where(firebase.firestore.FieldPath.documentId(), "==", msgId).get();
+
+    const fileIds = [];
+
     doc.forEach((doc) => {
       const data = doc.data();
 
       if (data.type === MSG_TYPE.FILE || data.type === MSG_TYPE.AUDIO) {
-        // Delete related file
+        fileIds.push(data.fileId);
       }
 
       doc.ref.delete();
     });
+
+    for (let i = 0; i < fileIds.length; i++) {
+      const storageRef = firebase.storage().ref(fileIds[i]);
+      await storageRef.delete(storageRef);
+    }
   }
 
   async sendAudioMessage(audioBlob, chatId, userId) {
@@ -237,6 +245,14 @@ class ChatService {
       txt: `[${format(new Date(), "dd.MM.yyyy. HH:mm")}] ${user.username} has left the chat`,
       chatId
     });
+  }
+
+  async createGroup(invitedUsers) {
+    //
+  }
+
+  async disbandGroup(initiatorUserId, chatId) {
+    //
   }
 }
 

@@ -373,13 +373,23 @@ export default defineComponent({
 
     const sendTxtMsg = async () => {
       if (state.msgText !== null && state.msgText !== "" && state.msgText.length > 2) {
-        await ChatService.sendMessage({
-          userId: store.getters["user/user"].id,
-          type: MSG_TYPE.TXT,
-          txt: state.msgText,
-          chatId: state.chatDetails.id
-        });
-        state.msgText = null;
+        try {
+          await ChatService.sendMessage({
+            userId: store.getters["user/user"].id,
+            type: MSG_TYPE.TXT,
+            txt: state.msgText,
+            chatId: state.chatDetails.id
+          });
+        } catch (e) {
+          Notify.create({
+            message: e.message,
+            position: "top",
+            color: "dark",
+            textColor: "orange"
+          });
+        } finally {
+          state.msgText = null;
+        }
       }
     };
 
@@ -414,17 +424,41 @@ export default defineComponent({
     };
 
     const sendFiles = async () => {
-      for (let i = 0; i < state.files.length; i++) {
-        await ChatService.uploadFile(
-          state.files[i],
-          state.chatDetails.id,
-          store.getters["user/user"].id
-        );
+      try {
+        for (let i = 0; i < state.files.length; i++) {
+          await ChatService.uploadFile(
+            state.files[i],
+            state.chatDetails.id,
+            store.getters["user/user"].id
+          );
+        }
+      } catch (e) {
+        Notify.create({
+          message: e.message,
+          position: "top",
+          color: "dark",
+          textColor: "orange"
+        });
       }
     };
 
     const deleteMsg = async (id) => {
-      await ChatService.deleteMessage(state.chatDetails.id, id);
+      try {
+        await ChatService.deleteMessage(state.chatDetails.id, id);
+        Notify.create({
+          message: "Successfully deleted message",
+          position: "top",
+          color: "dark",
+          textColor: "orange"
+        });
+      } catch (e) {
+        Notify.create({
+          message: "Failed to delete message",
+          position: "top",
+          color: "dark",
+          textColor: "orange"
+        });
+      }
     };
 
     const uploadGroupPfp = async (imgFile) => {

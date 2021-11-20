@@ -90,6 +90,10 @@ class UserService {
     });
     return url;
   }
+
+  async updatePrivileges(newPrivileges, userId, chatId) {
+    //
+  }
 }
 
 export default new UserService();

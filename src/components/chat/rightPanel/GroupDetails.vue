@@ -113,7 +113,12 @@
     v-model="state.userSearchDialog"
     @user-selected="userSelected"
   />
-  <edit-privileges-dialog :privileges="state.userPrivileges" v-model="state.editPrivilegesDialog" />
+  <edit-privileges-dialog
+    :chat-id="groupDetails.id"
+    :user-id="state.selectedUserId"
+    :privileges="state.userPrivileges"
+    v-model="state.editPrivilegesDialog"
+  />
 </template>
 
 <script>
@@ -152,7 +157,8 @@ export default defineComponent({
       avatarEditorDialog: false,
       userSearchDialog: false,
       editPrivilegesDialog: false,
-      userPrivileges: []
+      userPrivileges: [],
+      selectedUserId: null
     });
 
     const openAvatarEditorDialog = () => {
@@ -231,6 +237,7 @@ export default defineComponent({
 
     const openEditPrivilegeDialog = (user) => {
       state.userPrivileges = [...user.privileges];
+      state.selectedUserId = user.id;
       state.editPrivilegesDialog = true;
     };
 
