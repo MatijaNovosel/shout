@@ -45,13 +45,30 @@
     <q-input
       dark
       label="Description"
-      :model-value="groupDetails.description"
+      v-model="state.newGroupDescription"
       label-color="orange"
       class="full-width q-px-lg q-mt-md"
-      readonly
+      :readonly="!state.editingGroupDescription"
     >
       <template #after>
-        <q-btn color="orange" flat round icon="mdi-pencil" />
+        <div v-if="state.editingGroupDescription">
+          <q-btn color="orange" @click="confirmGroupDescriptionEdit" flat round icon="mdi-check" />
+          <q-btn
+            color="red"
+            @click="cancelGroupDescriptionEdit"
+            flat
+            round
+            icon="mdi-close-circle"
+          />
+        </div>
+        <q-btn
+          v-else
+          @click="startEditingGroupDescription"
+          color="orange"
+          flat
+          round
+          icon="mdi-pencil"
+        />
       </template>
     </q-input>
     <div class="column self-start q-pl-sm full-width">
@@ -162,9 +179,11 @@ export default defineComponent({
       userSearchDialog: false,
       editPrivilegesDialog: false,
       editingGroupName: false,
+      editingGroupDescription: false,
       userPrivileges: [],
       selectedUserId: null,
-      newGroupName: null
+      newGroupName: null,
+      newGroupDescription: null
     });
 
     const openAvatarEditorDialog = () => {
@@ -276,11 +295,45 @@ export default defineComponent({
       }
     };
 
+    const confirmGroupDescriptionEdit = async () => {
+      state.editingGroupDescription = false;
+      try {
+        await ChatService.changeGroupDescription(
+          state.newGroupDescription,
+          props.groupDetails.id,
+          store.getters
+        );
+        Notify.create({
+          message: "Successfully changed group description",
+          position: "top",
+          color: "dark",
+          textColor: "orange"
+        });
+      } catch (e) {
+        Notify.create({
+          message: "Failed to change group description",
+          position: "top",
+          color: "dark",
+          textColor: "orange"
+        });
+      }
+    };
+
+    const cancelGroupDescriptionEdit = () => {
+      state.newGroupDescription = props.groupDetails.description;
+      state.editingGroupDescription = false;
+    };
+
+    const startEditingGroupDescription = () => {
+      state.editingGroupDescription = true;
+    };
+
     watch(
       () => props.groupDetails,
       (val) => {
         if (val) {
           state.newGroupName = val.name;
+          state.newGroupDescription = val.description;
         }
       },
       {
@@ -300,7 +353,10 @@ export default defineComponent({
       openEditPrivilegeDialog,
       startEditingGroupName,
       cancelGroupNameEdit,
-      confirmGroupNameEdit
+      confirmGroupNameEdit,
+      confirmGroupDescriptionEdit,
+      cancelGroupDescriptionEdit,
+      startEditingGroupDescription
     };
   }
 });

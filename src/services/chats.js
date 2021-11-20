@@ -273,6 +273,21 @@ class ChatService {
       chatId
     });
   }
+
+  async changeGroupDescription(newGroupDescription, chatId, initiatorUserId) {
+    await this.chatsCollection.doc(chatId).update({
+      description: newGroupDescription
+    });
+    await this.sendInfoMessage({
+      userId: initiatorUserId,
+      type: MSG_TYPE.INFO,
+      txt: `<span class="info-date">[${format(
+        new Date(),
+        "dd.MM.yyyy. HH:mm"
+      )}]</span> Group description was changed to ${newGroupDescription}`,
+      chatId
+    });
+  }
 }
 
 export default new ChatService();
