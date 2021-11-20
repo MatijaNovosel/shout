@@ -33,7 +33,7 @@
               <template v-if="state.chatDetails">
                 <span> {{ state.chatDetails.name }} </span>
                 <span class="text-grey-6">
-                  {{ state.chatDetails.users.map((u) => u.username).join(", ") }}
+                  {{ state.formatGroupSubtitle }}
                 </span>
               </template>
             </div>
@@ -152,7 +152,7 @@
             <q-btn
               flat
               round
-              :color="state.emojiPanelOpen ? 'teal' : 'white'"
+              :color="state.emojiPanelOpen ? 'orange' : 'white'"
               icon="mdi-emoticon"
               @click="openEmojiPanel"
             />
@@ -314,6 +314,16 @@ export default defineComponent({
             bottom: "85px"
           };
         }
+      }),
+      formatGroupSubtitle: computed(() => {
+        if (state.chatDetails) {
+          let txt = state.chatDetails.users.map((u) => u.username).join(", ");
+          if (state.chatDetails.users.length > 3) {
+            txt += " and others";
+          }
+          return txt;
+        }
+        return "";
       })
     });
 
@@ -468,7 +478,10 @@ export default defineComponent({
         await ChatService.sendInfoMessage({
           userId: store.getters["user/user"].id,
           type: MSG_TYPE.INFO,
-          txt: `[${format(new Date(), "dd.MM.yyyy. HH:mm")}] Group profile picture was updated`,
+          txt: `<span class="info-date">[${format(
+            new Date(),
+            "dd.MM.yyyy. HH:mm"
+          )}]</span> Group profile picture was updated`,
           chatId: state.chatDetails.id
         });
         await store.dispatch("chats/updateChatAvatar", {

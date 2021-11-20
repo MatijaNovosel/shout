@@ -29,9 +29,6 @@
     >
       <q-list dense style="min-width: 100px">
         <q-item clickable v-close-popup>
-          <q-item-section>Archive chat</q-item-section>
-        </q-item>
-        <q-item clickable v-close-popup>
           <q-item-section>Mute notifications</q-item-section>
         </q-item>
         <q-item clickable v-close-popup v-if="conversation.type === CHAT_TYPE.PRIVATE">

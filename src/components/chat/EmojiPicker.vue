@@ -4,8 +4,8 @@
       v-model="state.tab"
       dense
       class="text-grey"
-      active-color="teal"
-      indicator-color="teal"
+      active-color="orange"
+      indicator-color="orange"
       align="left"
     >
       <q-tab
@@ -64,7 +64,6 @@ export default defineComponent({
   props: {
     search: {
       type: String,
-      required: false,
       default: ""
     }
   },

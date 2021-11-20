@@ -183,7 +183,9 @@ class ChatService {
       await this.sendInfoMessage({
         userId: user.id,
         type: MSG_TYPE.INFO,
-        txt: `[${format(new Date(), "dd.MM.yyyy. HH:mm")}] ${user.username} has joined the chat`,
+        txt: `<span class="info-date">[${format(new Date(), "dd.MM.yyyy. HH:mm")}]</span> ${
+          user.username
+        } has joined the chat`,
         chatId
       });
     }
@@ -223,7 +225,7 @@ class ChatService {
     await this.sendInfoMessage({
       userId: userInitiatorId,
       type: MSG_TYPE.INFO,
-      txt: `[${format(new Date(), "dd.MM.yyyy. HH:mm")}] ${
+      txt: `<span class="info-date">[${format(new Date(), "dd.MM.yyyy. HH:mm")}]</span> ${
         user.username
       } has been removed from the chat`,
       chatId
@@ -242,7 +244,9 @@ class ChatService {
     await this.sendInfoMessage({
       userId: user.id,
       type: MSG_TYPE.INFO,
-      txt: `[${format(new Date(), "dd.MM.yyyy. HH:mm")}] ${user.username} has left the chat`,
+      txt: `<span class="info-date">[${format(new Date(), "dd.MM.yyyy. HH:mm")}]</span> ${
+        user.username
+      } has left the chat`,
       chatId
     });
   }
@@ -253,6 +257,21 @@ class ChatService {
 
   async disbandGroup(initiatorUserId, chatId) {
     //
+  }
+
+  async changeGroupName(newGroupName, chatId, initiatorUserId) {
+    await this.chatsCollection.doc(chatId).update({
+      name: newGroupName
+    });
+    await this.sendInfoMessage({
+      userId: initiatorUserId,
+      type: MSG_TYPE.INFO,
+      txt: `<span class="info-date">[${format(
+        new Date(),
+        "dd.MM.yyyy. HH:mm"
+      )}]</span> Group name was changed to ${newGroupName}`,
+      chatId
+    });
   }
 }
 

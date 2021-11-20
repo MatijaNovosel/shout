@@ -55,7 +55,7 @@
               <p class="text-grey-6">
                 Have an account?
                 <span
-                  class="text-teal text-bold cursor-pointer"
+                  class="text-orange text-bold cursor-pointer"
                   @click="
                     $router.push({
                       name: loginRoute

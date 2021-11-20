@@ -89,12 +89,10 @@ export default defineComponent({
       required: true
     },
     emojiPanelOpen: {
-      type: Boolean,
-      required: false
+      type: Boolean
     },
     chatType: {
-      type: Number,
-      required: false
+      type: Number
     }
   },
   components: {
@@ -153,7 +151,7 @@ export default defineComponent({
       if (msg.type === MSG_TYPE.INFO) {
         return "blue-grey-9";
       }
-      return msg.sent ? "teal-9" : "blue-grey-9";
+      return msg.sent ? "orange-10" : "blue-grey-9";
     };
 
     watch(

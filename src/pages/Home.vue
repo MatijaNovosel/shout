@@ -5,7 +5,7 @@
   >
     <div class="row justify-center" style="width: 400px">
       <span class="text-white text-h6 q-mb-md"> Loading ... </span>
-      <q-linear-progress color="teal" indeterminate />
+      <q-linear-progress color="orange" indeterminate />
     </div>
   </q-page>
   <q-page v-show="!state.appLoading" class="flex flex-center">

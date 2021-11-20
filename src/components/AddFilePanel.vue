@@ -75,7 +75,7 @@
           "
           @click="triggerFilePickerManually"
         >
-          <q-icon color="teal" size="40px" name="mdi-plus" />
+          <q-icon color="orange" size="40px" name="mdi-plus" />
         </div>
       </div>
     </div>

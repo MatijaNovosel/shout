@@ -12,11 +12,11 @@
       </div>
     </div>
     <q-avatar size="200px" class="q-my-lg">
-      <q-spinner size="md" color="teal" v-if="uploadingPfp" />
+      <q-spinner size="md" color="orange" v-if="uploadingPfp" />
       <img :src="groupDetails.avatar" v-else />
       <q-btn
         padding="sm"
-        color="teal"
+        color="orange"
         icon="mdi-pencil"
         fab
         class="change-pfp-btn"
@@ -26,13 +26,17 @@
     <q-input
       dark
       label="Group name"
-      :model-value="groupDetails.name"
-      label-color="teal"
+      label-color="orange"
       class="full-width q-px-lg"
-      readonly
+      :readonly="!state.editingGroupName"
+      v-model="state.newGroupName"
     >
-      <template #append>
-        <q-icon size="xs" name="mdi-pencil" />
+      <template #after>
+        <div v-if="state.editingGroupName">
+          <q-btn color="orange" @click="confirmGroupNameEdit" flat round icon="mdi-check" />
+          <q-btn color="red" @click="cancelGroupNameEdit" flat round icon="mdi-close-circle" />
+        </div>
+        <q-btn v-else @click="startEditingGroupName" color="orange" flat round icon="mdi-pencil" />
       </template>
     </q-input>
     <span class="text-grey self-start q-mt-sm q-ml-lg">
@@ -42,12 +46,12 @@
       dark
       label="Description"
       :model-value="groupDetails.description"
-      label-color="teal"
+      label-color="orange"
       class="full-width q-px-lg q-mt-md"
       readonly
     >
-      <template #append>
-        <q-icon size="xs" name="mdi-pencil" />
+      <template #after>
+        <q-btn color="orange" flat round icon="mdi-pencil" />
       </template>
     </q-input>
     <div class="column self-start q-pl-sm full-width">
@@ -61,7 +65,7 @@
       </q-list>
     </div>
     <div class="column self-start q-px-sm full-width q-mt-sm">
-      <div class="row text-teal justify-between q-pl-md">
+      <div class="row text-orange justify-between q-pl-md">
         <span> {{ groupDetails.users.length }} users </span>
         <div>
           <q-btn color="grey" flat round size="sm" icon="mdi-magnify" />
@@ -122,7 +126,7 @@
 </template>
 
 <script>
-import { defineComponent, reactive, computed } from "vue";
+import { defineComponent, reactive, computed, watch } from "vue";
 import { useStore } from "vuex";
 import { format } from "date-fns";
 import UserSearchDialog from "src/components/UserSearchDialog.vue";
@@ -157,8 +161,10 @@ export default defineComponent({
       avatarEditorDialog: false,
       userSearchDialog: false,
       editPrivilegesDialog: false,
+      editingGroupName: false,
       userPrivileges: [],
-      selectedUserId: null
+      selectedUserId: null,
+      newGroupName: null
     });
 
     const openAvatarEditorDialog = () => {
@@ -235,11 +241,53 @@ export default defineComponent({
       }
     };
 
+    const startEditingGroupName = () => {
+      state.editingGroupName = true;
+    };
+
+    const cancelGroupNameEdit = () => {
+      state.newGroupName = props.groupDetails.name;
+      state.editingGroupName = false;
+    };
+
     const openEditPrivilegeDialog = (user) => {
       state.userPrivileges = [...user.privileges];
       state.selectedUserId = user.id;
       state.editPrivilegesDialog = true;
     };
+
+    const confirmGroupNameEdit = async () => {
+      state.editingGroupName = false;
+      try {
+        await ChatService.changeGroupName(state.newGroupName, props.groupDetails.id, store.getters);
+        Notify.create({
+          message: "Successfully changed group name",
+          position: "top",
+          color: "dark",
+          textColor: "orange"
+        });
+      } catch (e) {
+        Notify.create({
+          message: "Failed to change group name",
+          position: "top",
+          color: "dark",
+          textColor: "orange"
+        });
+      }
+    };
+
+    watch(
+      () => props.groupDetails,
+      (val) => {
+        if (val) {
+          state.newGroupName = val.name;
+        }
+      },
+      {
+        deep: true,
+        immediate: true
+      }
+    );
 
     return {
       state,
@@ -249,7 +297,10 @@ export default defineComponent({
       userComputed: computed(() => store.getters["user/user"]),
       removeFromGroup,
       leaveGroup,
-      openEditPrivilegeDialog
+      openEditPrivilegeDialog,
+      startEditingGroupName,
+      cancelGroupNameEdit,
+      confirmGroupNameEdit
     };
   }
 });

@@ -8,9 +8,7 @@
     v-if="type === MSG_TYPE.INFO"
   >
     <div class="row col-12">
-      <span>
-        {{ txt }}
-      </span>
+      <span v-html="txt" />
     </div>
   </div>
   <div
@@ -36,8 +34,9 @@
         class="col-12 text-white full-width"
         :class="{
           'text-center': type === MSG_TYPE.AUDIO,
-          'bg-teal-10 rounded-borders': type === MSG_TYPE.FILE && sent,
-          'bg-blue-grey-10 rounded-borders': type === MSG_TYPE.FILE && !sent
+          'bg-dark-orange-10 rounded-borders': sent && type !== MSG_TYPE.AUDIO,
+          'bg-blue-grey-10 rounded-borders': !sent && type !== MSG_TYPE.AUDIO,
+          'q-pa-sm': type === MSG_TYPE.TXT
         }"
       >
         <span v-if="type === MSG_TYPE.TXT">
@@ -69,7 +68,7 @@
         </div>
       </div>
       <div
-        class="col-12 text-grey q-mt-xs row"
+        class="col-12 text-white q-mt-xs row"
         :class="{ 'justify-between q-mt-sm': type === MSG_TYPE.FILE }"
       >
         <span v-if="type === MSG_TYPE.FILE">
@@ -120,52 +119,40 @@ export default defineComponent({
   emits: ["selected", "delete-msg"],
   props: {
     id: {
-      type: String,
-      required: false
+      type: String
     },
     type: {
-      type: Number,
-      required: false
+      type: Number
     },
     txt: {
-      type: String,
-      required: false
+      type: String
     },
     sentAt: {
-      type: String,
-      required: false
+      type: String
     },
     textColor: {
-      type: String,
-      required: false
+      type: String
     },
     bgColor: {
-      type: String,
-      required: false
+      type: String
     },
     sent: {
-      type: Boolean,
-      required: false
+      type: Boolean
     },
     fileUrl: {
-      type: String,
-      required: false
+      type: String
     },
     fileId: {
-      type: String,
-      required: false
+      type: String
     },
     chatId: {
-      type: String,
-      required: false
+      type: String
     },
     fileName: {
-      type: String,
-      required: false
+      type: String
     },
     fileSize: {
-      type: Number,
-      required: false
+      type: Number
     }
   },
   setup(props, { emit }) {

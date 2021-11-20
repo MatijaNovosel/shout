@@ -12,7 +12,7 @@
         <q-option-group
           v-model="state.selectedPrivileges"
           :options="privilegesEnum"
-          color="teal"
+          color="orange"
           type="checkbox"
           @update:model-value="privilegesChanged"
         />
@@ -27,6 +27,7 @@ import { useStore } from "vuex";
 import { CHAT_PRIVILEGES } from "src/utils/constants";
 import { useI18n } from "vue-i18n";
 import UserService from "src/services/users";
+import { Notify } from "quasar";
 
 export default defineComponent({
   name: "edit-privileges-dialog",
@@ -68,7 +69,22 @@ export default defineComponent({
 
     const privilegesChanged = async () => {
       const newPrivileges = [...state.selectedPrivileges];
-      await UserService.updatePrivileges(newPrivileges, props.userId, props.chatId);
+      try {
+        await UserService.updatePrivileges(newPrivileges, props.userId, props.chatId);
+        Notify.create({
+          message: "Successfully changed privileges",
+          position: "top",
+          color: "dark",
+          textColor: "orange"
+        });
+      } catch (e) {
+        Notify.create({
+          message: "Failed to change privileges",
+          position: "top",
+          color: "dark",
+          textColor: "orange"
+        });
+      }
     };
 
     watch(

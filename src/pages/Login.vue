@@ -42,7 +42,7 @@
               <p class="text-grey-6">
                 Not registered?
                 <span
-                  class="text-teal text-bold cursor-pointer"
+                  class="text-orange text-bold cursor-pointer"
                   @click="
                     $router.push({
                       name: registerRoute

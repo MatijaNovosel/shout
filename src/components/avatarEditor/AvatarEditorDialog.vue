@@ -26,7 +26,7 @@
           v-model:scale="state.avatarEditorScale"
         />
         <br />
-        <q-btn color="teal" @click="save"> Save </q-btn>
+        <q-btn color="orange" @click="save"> Save </q-btn>
       </q-card-section>
     </q-card>
   </q-dialog>

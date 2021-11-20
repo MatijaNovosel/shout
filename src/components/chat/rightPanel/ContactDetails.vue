@@ -15,7 +15,7 @@
       dark
       label="Username"
       :model-value="contactDetails.name"
-      label-color="teal"
+      label-color="orange"
       class="full-width q-px-lg"
       readonly
     >
@@ -27,7 +27,7 @@
       dark
       label="Status"
       :model-value="contactDetails.status"
-      label-color="teal"
+      label-color="orange"
       class="full-width q-px-lg q-mt-md"
       readonly
     >

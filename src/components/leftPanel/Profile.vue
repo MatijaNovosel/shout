@@ -11,11 +11,11 @@
       <span class="text-white text-h6 q-ml-sm"> Profile </span>
     </div>
     <q-avatar size="200px" class="q-my-lg">
-      <q-spinner size="md" color="teal" v-if="state.uploadingPfp" />
+      <q-spinner size="md" color="orange" v-if="state.uploadingPfp" />
       <img :src="user.avatarUrl" v-else />
       <q-btn
         padding="sm"
-        color="teal"
+        color="orange"
         icon="mdi-pencil"
         fab
         class="change-pfp-btn"
@@ -26,7 +26,7 @@
       dark
       label="Username"
       :model-value="`${user.username}#${user.shorthandId}`"
-      label-color="teal"
+      label-color="orange"
       class="full-width q-px-lg"
       readonly
     />
@@ -35,7 +35,7 @@
       label="Status"
       autogrow
       model-value="I will not go, prefer a feast of friends to the giant family"
-      label-color="teal"
+      label-color="orange"
       class="full-width q-px-lg q-mt-md"
       readonly
     />

@@ -17,7 +17,7 @@
       <q-btn flat round color="white" icon="mdi-tooltip-plus">
         <q-badge
           v-if="user.invites.length !== 0"
-          color="teal"
+          color="orange"
           :label="user.invites.length"
           floating
         />
@@ -27,7 +27,7 @@
               <q-item v-for="(invite, i) in user.invites" :key="i">
                 <q-item-section v-html="invite.txt" />
                 <q-item-section side top class="q-py-sm">
-                  <q-btn size="sm" color="teal" @click="respondToGroupInvite(true, invite)">
+                  <q-btn size="sm" color="orange" @click="respondToGroupInvite(true, invite)">
                     Accept
                   </q-btn>
                   <q-btn
