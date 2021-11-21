@@ -1,6 +1,6 @@
 import { firebase } from "src/boot/firebase";
 import { generateGuid, blobToFile, uploadTaskPromise } from "src/utils/helpers";
-import { CHAT_PRIVILEGES, MSG_TYPE } from "src/utils/constants";
+import { CHAT_PRIVILEGES, MSG_TYPE, GROUP_CHANGE_TYPE } from "src/utils/constants";
 import { format } from "date-fns";
 
 class ChatService {
@@ -146,7 +146,9 @@ class ChatService {
     const retVal = await firebase.storage().ref(guid).put(file);
     const url = await retVal.ref.getDownloadURL();
     await this.chatsCollection.doc(groupId).update({
-      avatar: url
+      avatar: url,
+      lastChangedAt: new Date(),
+      changeType: GROUP_CHANGE_TYPE.AVATAR
     });
     return url;
   }
@@ -261,7 +263,9 @@ class ChatService {
 
   async changeGroupName(newGroupName, chatId, initiatorUserId) {
     await this.chatsCollection.doc(chatId).update({
-      name: newGroupName
+      name: newGroupName,
+      lastChangedAt: new Date(),
+      changeType: GROUP_CHANGE_TYPE.NAME
     });
     await this.sendInfoMessage({
       userId: initiatorUserId,
@@ -276,7 +280,9 @@ class ChatService {
 
   async changeGroupDescription(newGroupDescription, chatId, initiatorUserId) {
     await this.chatsCollection.doc(chatId).update({
-      description: newGroupDescription
+      description: newGroupDescription,
+      lastChangedAt: new Date(),
+      changeType: GROUP_CHANGE_TYPE.DESCRIPTION
     });
     await this.sendInfoMessage({
       userId: initiatorUserId,

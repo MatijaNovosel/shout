@@ -109,3 +109,9 @@ export const CHAT_PRIVILEGES = {
   CAN_EDIT_GROUP_AVATAR: 9,
   CAN_KICK_MEMBERS: 10
 };
+
+export const GROUP_CHANGE_TYPE = {
+  AVATAR: 1,
+  NAME: 2,
+  DESCRIPTION: 3
+};

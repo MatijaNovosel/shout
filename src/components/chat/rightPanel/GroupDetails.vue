@@ -33,7 +33,7 @@
     >
       <template #after>
         <div v-if="state.editingGroupName">
-          <q-btn color="orange" @click="confirmGroupNameEdit" flat round icon="mdi-check" />
+          <q-btn color="teal" @click="confirmGroupNameEdit" flat round icon="mdi-check" />
           <q-btn color="red" @click="cancelGroupNameEdit" flat round icon="mdi-close-circle" />
         </div>
         <q-btn v-else @click="startEditingGroupName" color="orange" flat round icon="mdi-pencil" />
@@ -52,7 +52,7 @@
     >
       <template #after>
         <div v-if="state.editingGroupDescription">
-          <q-btn color="orange" @click="confirmGroupDescriptionEdit" flat round icon="mdi-check" />
+          <q-btn color="teal" @click="confirmGroupDescriptionEdit" flat round icon="mdi-check" />
           <q-btn
             color="red"
             @click="cancelGroupDescriptionEdit"

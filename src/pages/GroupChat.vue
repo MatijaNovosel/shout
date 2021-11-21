@@ -242,7 +242,12 @@
 <script>
 import { provide, defineComponent, reactive, onMounted, computed, ref, onUnmounted } from "vue";
 import { downloadURI, secondsToElapsedTime, getFileFromUrl } from "src/utils/helpers";
-import { MSG_TYPE, GROUP_CHAT_RIGHT_PANEL, CHAT_TYPE } from "src/utils/constants";
+import {
+  MSG_TYPE,
+  GROUP_CHAT_RIGHT_PANEL,
+  CHAT_TYPE,
+  GROUP_CHANGE_TYPE
+} from "src/utils/constants";
 import { format, isAfter } from "date-fns";
 import { ROUTE_NAMES } from "src/router/routeNames";
 import MessagePanel from "src/components/chat/MessagePanel.vue";
@@ -633,6 +638,30 @@ export default defineComponent({
 
           if (messages.length !== 0) {
             processMessages(messages);
+          }
+        });
+
+      // Group changes socket
+      firebase
+        .firestore()
+        .collection("/chats")
+        .doc(state.chatDetails.id)
+        .onSnapshot(async (querySnapshot) => {
+          const data = querySnapshot.data();
+          if (isAfter(new Date(data.lastChangedAt.seconds * 1000), state.loadedAt)) {
+            if (data.changeType) {
+              switch (data.changeType) {
+                case GROUP_CHANGE_TYPE.AVATAR:
+                  state.chatDetails.avatar = data.avatar;
+                  break;
+                case GROUP_CHANGE_TYPE.DESCRIPTION:
+                  state.chatDetails.description = data.description;
+                  break;
+                case GROUP_CHANGE_TYPE.NAME:
+                  state.chatDetails.name = data.name;
+                  break;
+              }
+            }
           }
         });
     });
