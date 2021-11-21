@@ -3,14 +3,7 @@
     <div class="full-width overlay-indicator" v-show="state.draggingOver" @dragleave="dragleave">
       <h2 class="pointer-events-none text-grey text-h6">Drag file here</h2>
     </div>
-    <input
-      type="file"
-      multiple
-      hidden
-      @change="onChange"
-      ref="filePicker"
-      accept=".pdf,.jpg,.jpeg,.png"
-    />
+    <input type="file" multiple hidden @change="onChange" ref="filePicker" />
     <slot />
   </div>
 </template>
@@ -78,6 +71,17 @@ export default defineComponent({
       if ([...e.dataTransfer.files].length > 5) {
         Notify.create({
           message: "You can upload a maximum of 5 files!",
+          position: "top",
+          color: "dark",
+          textColor: "orange"
+        });
+        return;
+      }
+
+      // Under 2MB
+      if ([...e.dataTransfer.files].some((f) => f.size >= 2097152)) {
+        Notify.create({
+          message: "Maximum upload size is 2MB!",
           position: "top",
           color: "dark",
           textColor: "orange"
