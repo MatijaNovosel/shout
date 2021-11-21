@@ -25,6 +25,7 @@
               @click="openRightPanel(GROUP_CHAT_RIGHT_PANEL.DETAILS)"
             >
               <img :src="state.chatDetails.avatar" />
+              <q-tooltip> Group details </q-tooltip>
             </q-avatar>
             <div class="column q-ml-md justify-center" v-if="state.loading">
               <span> Loading ... </span>
@@ -52,7 +53,9 @@
               round
               color="white"
               icon="mdi-magnify"
-            />
+            >
+              <q-tooltip> Search messages </q-tooltip>
+            </q-btn>
             <q-btn flat round color="white" icon="mdi-pin">
               <q-menu dark anchor="bottom left" self="top left">
                 <q-list style="min-width: 200px">
@@ -85,6 +88,7 @@
                   </q-item>
                 </q-list>
               </q-menu>
+              <q-tooltip> Pinned messages </q-tooltip>
             </q-btn>
             <q-btn flat round color="white" icon="mdi-comment-text-multiple">
               <q-menu dark left>
@@ -98,6 +102,7 @@
                   </q-item>
                 </q-list>
               </q-menu>
+              <q-tooltip> Text channels </q-tooltip>
             </q-btn>
             <q-btn flat round color="white" icon="mdi-dots-vertical">
               <q-menu dark left>
@@ -155,7 +160,9 @@
               :color="state.emojiPanelOpen ? 'orange' : 'white'"
               icon="mdi-emoticon"
               @click="openEmojiPanel"
-            />
+            >
+              <q-tooltip top> Emoji picker </q-tooltip>
+            </q-btn>
           </div>
           <div class="bottom-bar-center">
             <q-input
@@ -179,15 +186,13 @@
                 icon="mdi-microphone"
                 @click="record"
                 v-if="!state.recording"
-              />
+              >
+                <q-tooltip top> Record audio message </q-tooltip>
+              </q-btn>
               <template v-else>
-                <q-btn
-                  flat
-                  round
-                  color="red"
-                  icon="mdi-close-circle"
-                  @click="stopRecording(true)"
-                />
+                <q-btn flat round color="red" icon="mdi-close-circle" @click="stopRecording(true)">
+                  <q-tooltip top> Cancel recording </q-tooltip>
+                </q-btn>
                 <span class="text-white">
                   {{ state.elapsedRecordingSecondsFormatted }}
                 </span>
@@ -197,7 +202,9 @@
                   color="green"
                   icon="mdi-check-circle-outline"
                   @click="stopRecording(false)"
-                />
+                >
+                  <q-tooltip top> Stop recording </q-tooltip>
+                </q-btn>
               </template>
             </template>
           </div>

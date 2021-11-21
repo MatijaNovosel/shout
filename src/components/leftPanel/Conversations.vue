@@ -4,17 +4,20 @@
       <template v-if="user">
         <q-avatar class="cursor-pointer" @click="$emit('set-left-panel', 'profile')" size="40px">
           <img :src="user.avatarUrl" />
+          <q-tooltip> Profile </q-tooltip>
         </q-avatar>
         <span
           class="q-ml-md text-grey-6 text-weight-bold cursor-pointer"
           @click="copyUsernameToClipboard"
         >
           {{ `${user.username}#${user.shorthandId}` }}
+          <q-tooltip> Click to copy username </q-tooltip>
         </span>
       </template>
     </div>
     <div class="row">
       <q-btn flat round color="white" icon="mdi-tooltip-plus">
+        <q-tooltip> Invitations </q-tooltip>
         <q-badge
           v-if="user.invites.length !== 0"
           color="orange"
@@ -47,7 +50,9 @@
           </q-list>
         </q-menu>
       </q-btn>
-      <q-btn flat round color="white" icon="mdi-message-text" @click="openuserSearchDialog" />
+      <q-btn flat round color="white" icon="mdi-message-text" @click="openuserSearchDialog">
+        <q-tooltip> Start new chat </q-tooltip>
+      </q-btn>
       <q-btn flat round color="white" icon="mdi-dots-vertical">
         <q-menu dark right :offset="[-15, -5]">
           <q-list dense style="min-width: 100px">

@@ -331,6 +331,14 @@ class ChatService {
       chatId
     });
   }
+
+  async pinMessage(messageId, chatId) {
+    //
+  }
+
+  async unpinMessage(messageId, chatId) {
+    //
+  }
 }
 
 export default new ChatService();
