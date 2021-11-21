@@ -1,12 +1,5 @@
 <template>
-  <div
-    v-if="type !== MSG_TYPE.INFO"
-    class="text-orange col-12 message-author"
-    :class="{
-      'text-right': sent,
-      'text-left': !sent
-    }"
-  >
+  <div v-if="type !== MSG_TYPE.INFO && !sent" class="text-orange col-12 message-author text-left">
     {{ username }}
   </div>
   <div
