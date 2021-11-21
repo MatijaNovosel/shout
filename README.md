@@ -2,7 +2,7 @@
 
 A chat app for the web, based on WhatsApp.
 
-![image](https://user-images.githubusercontent.com/36193643/138844293-e785ddc0-cc25-4578-96d0-d190970efb00.png)
+![image](https://user-images.githubusercontent.com/36193643/142782529-7e069ac5-619b-4082-b376-f36f0f9c0e7e.png)
 
 ## Install the dependencies
 ```bash
