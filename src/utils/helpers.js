@@ -1,5 +1,6 @@
 import { MIME_TYPES, MIME_TYPE_ICONS } from "./constants";
 import { firebase } from "src/boot/firebase";
+import axios from "axios";
 
 export const range = (start, stop, step) => {
   if (typeof stop === "undefined") {
@@ -191,4 +192,10 @@ export const uploadTaskPromise = async (fileGuid, file) => {
 export const stripHtml = (html) => {
   const doc = new DOMParser().parseFromString(html, "text/html");
   return doc.body.textContent || "";
+};
+
+export const getYoutubeUrlMetadata = async (url) => {
+  const metadataUrl = `https://www.youtube.com/oembed?url=${url}&format=json`;
+  const { data } = await axios.get(metadataUrl);
+  return data;
 };

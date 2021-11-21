@@ -241,7 +241,7 @@
 
 <script>
 import { provide, defineComponent, reactive, onMounted, computed, ref, onUnmounted } from "vue";
-import { downloadURI, secondsToElapsedTime, getFileFromUrl } from "src/utils/helpers";
+import { downloadURI, secondsToElapsedTime, getYoutubeUrlMetadata } from "src/utils/helpers";
 import {
   MSG_TYPE,
   GROUP_CHAT_RIGHT_PANEL,
@@ -533,14 +533,14 @@ export default defineComponent({
         let username = "";
 
         if (messages[i].userId === userId) {
-          username = store.getters["user/user"].username;
+          username = `${store.getters["user/user"].username}#${store.getters["user/user"].shorthandId}`;
         } else {
           const user = await firebase
             .firestore()
             .collection("/users")
             .doc(messages[i].userId)
             .get();
-          username = user.data().username;
+          username = `${user.data().username}#${user.data().shorthandId}`;
         }
 
         if (messages[i].type === MSG_TYPE.FILE || messages[i].type === MSG_TYPE.AUDIO) {

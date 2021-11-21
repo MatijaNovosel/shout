@@ -79,7 +79,7 @@ class ChatService {
 
     for (let i = 0; i < userIdEntries.length; i++) {
       const user = await firebase.firestore().collection("/users").doc(userIdEntries[i]).get();
-      userIds[userIdEntries[i]] = user.data().username;
+      userIds[userIdEntries[i]] = `${user.data().username}#${user.data().shorthandId}`;
     }
 
     for (let i = 0; i < msgCol.length; i++) {
