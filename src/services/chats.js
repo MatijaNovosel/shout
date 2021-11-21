@@ -1,5 +1,5 @@
 import { firebase } from "src/boot/firebase";
-import { generateGuid, blobToFile, uploadTaskPromise } from "src/utils/helpers";
+import { generateGuid, blobToFile, uploadTaskPromise, stripHtml } from "src/utils/helpers";
 import { CHAT_PRIVILEGES, MSG_TYPE, GROUP_CHANGE_TYPE } from "src/utils/constants";
 import { format } from "date-fns";
 
@@ -11,24 +11,46 @@ class ChatService {
   async getAll(userId) {
     const chatsData = await this.chatsCollection.where("userIds", "array-contains", userId).get();
     const chats = [];
+    const retVal = [];
+
     chatsData.forEach((snapshot) => {
-      const data = snapshot.data();
-      chats.push({
-        id: snapshot.id,
-        createdAt: new Date(data.createdAt.seconds * 1000),
-        name: data.name,
-        avatar: data.avatar,
-        type: data.type,
-        lastMsg: {
-          txt: data.lastMsg.txt,
-          you: data.lastMsg.you,
-          username: data.lastMsg.username,
-          sentAt: new Date(data.lastMsg.sentAt.seconds * 1000),
-          type: data.lastMsg.type
-        }
-      });
+      chats.push({ id: snapshot.id, ...snapshot.data() });
     });
-    return chats;
+
+    for (let i = 0; i < chats.length; i++) {
+      let lastMsg = {};
+
+      const lastMsgData = await this.chatsCollection
+        .doc(chats[i].id)
+        .collection("/messages")
+        .where("type", "not-in", [MSG_TYPE.INFO])
+        .orderBy("type")
+        .orderBy("sentAt", "desc")
+        .limit(1)
+        .get();
+
+      lastMsgData.forEach((doc) => {
+        const d = doc.data();
+        lastMsg = {
+          txt: stripHtml(d.txt),
+          you: false,
+          username: "Someone",
+          sentAt: new Date(d.sentAt.seconds * 1000),
+          type: d.type
+        };
+      });
+
+      retVal.push({
+        id: chats[i].id,
+        createdAt: new Date(chats[i].createdAt.seconds * 1000),
+        name: chats[i].name,
+        avatar: chats[i].avatar,
+        type: chats[i].type,
+        lastMsg
+      });
+    }
+
+    return retVal;
   }
 
   async getDetails(uid) {
