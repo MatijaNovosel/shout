@@ -1,5 +1,15 @@
 <template>
   <div
+    v-if="type !== MSG_TYPE.INFO"
+    class="text-orange col-12 message-author"
+    :class="{
+      'text-right': sent,
+      'text-left': !sent
+    }"
+  >
+    {{ username }}
+  </div>
+  <div
     class="q-py-sm q-px-md msg q-my-xs"
     :class="`bg-${bgColor} text-${textColor}`"
     :style="{
@@ -7,9 +17,7 @@
     }"
     v-if="type === MSG_TYPE.INFO"
   >
-    <div class="row col-12">
-      <span v-html="txt" />
-    </div>
+    <span v-html="txt" />
   </div>
   <div
     class="row q-py-sm q-px-md msg q-my-xs"
@@ -153,6 +161,9 @@ export default defineComponent({
     },
     fileSize: {
       type: Number
+    },
+    username: {
+      type: String
     }
   },
   setup(props, { emit }) {
@@ -202,5 +213,9 @@ audio {
   width: 100%;
   margin-top: 5px;
   margin-bottom: 5px;
+}
+
+.message-author {
+  font-size: 12px;
 }
 </style>

@@ -530,6 +530,19 @@ export default defineComponent({
           .doc(state.chatDetails.id)
           .collection("files");
 
+        let username = "";
+
+        if (messages[i].userId === userId) {
+          username = store.getters["user/user"].username;
+        } else {
+          const user = await firebase
+            .firestore()
+            .collection("/users")
+            .doc(messages[i].userId)
+            .get();
+          username = user.data().username;
+        }
+
         if (messages[i].type === MSG_TYPE.FILE || messages[i].type === MSG_TYPE.AUDIO) {
           const file = firebase.storage().ref(messages[i].fileId);
           const fileUrl = await file.getDownloadURL();
@@ -546,7 +559,8 @@ export default defineComponent({
             chatId: state.chatDetails.id,
             fileId: messages[i].fileId,
             fileName: fileInfo.data().name,
-            fileSize: fileInfo.data().size
+            fileSize: fileInfo.data().size,
+            username
           });
         } else {
           state.messages.push({
@@ -555,7 +569,8 @@ export default defineComponent({
             sent,
             sentAt,
             type: messages[i].type,
-            txt: messages[i].txt
+            txt: messages[i].txt,
+            username
           });
         }
 

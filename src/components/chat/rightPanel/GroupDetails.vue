@@ -278,7 +278,11 @@ export default defineComponent({
     const confirmGroupNameEdit = async () => {
       state.editingGroupName = false;
       try {
-        await ChatService.changeGroupName(state.newGroupName, props.groupDetails.id, store.getters);
+        await ChatService.changeGroupName(
+          state.newGroupName,
+          props.groupDetails.id,
+          store.getters["user/user"].id
+        );
         Notify.create({
           message: "Successfully changed group name",
           position: "top",
@@ -301,7 +305,7 @@ export default defineComponent({
         await ChatService.changeGroupDescription(
           state.newGroupDescription,
           props.groupDetails.id,
-          store.getters
+          store.getters["user/user"].id
         );
         Notify.create({
           message: "Successfully changed group description",

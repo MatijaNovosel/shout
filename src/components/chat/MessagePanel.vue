@@ -44,8 +44,6 @@
         <chat-message
           @selected="messageSelected"
           @delete-msg="deleteMsg"
-          :id="message.id"
-          :txt="message.txt"
           :sent-at="formatSentAt(message)"
           :bg-color="formatBgColor(message)"
           :type="message.type"
@@ -55,8 +53,10 @@
           :file-size="message.fileSize"
           :file-name="message.fileName"
           :chat-id="message.chatId"
+          :username="message.username"
+          :id="message.id"
+          :txt="message.txt"
           text-color="white"
-          class="pos-rel"
         />
       </div>
     </q-scroll-area>

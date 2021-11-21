@@ -34,11 +34,14 @@ class ChatService {
         lastMsg = {
           txt: stripHtml(d.txt),
           you: false,
-          username: "Someone",
           sentAt: new Date(d.sentAt.seconds * 1000),
-          type: d.type
+          type: d.type,
+          userId: d.userId
         };
       });
+
+      const user = await firebase.firestore().collection("/users").doc(lastMsg.userId).get();
+      lastMsg.username = user.data().username;
 
       retVal.push({
         id: chats[i].id,
@@ -59,16 +62,28 @@ class ChatService {
     const data = refGet.data();
     const messages = await ref.collection("messages").orderBy("sentAt", "asc").get();
     const msgCol = [];
+    const userIds = {};
 
     messages.forEach((m) => {
       const msgData = m.data();
+      if (!(m.data().userId in userIds)) {
+        userIds[m.data().userId] = null;
+      }
       msgData.sentAt = new Date(msgData.sentAt.seconds * 1000);
       msgData.id = m.id;
       msgData.chatId = uid;
       msgCol.push(msgData);
     });
 
+    const userIdEntries = Object.keys(userIds);
+
+    for (let i = 0; i < userIdEntries.length; i++) {
+      const user = await firebase.firestore().collection("/users").doc(userIdEntries[i]).get();
+      userIds[userIdEntries[i]] = user.data().username;
+    }
+
     for (let i = 0; i < msgCol.length; i++) {
+      msgCol[i].username = userIds[msgCol[i].userId];
       if (msgCol[i].type === MSG_TYPE.FILE || msgCol[i].type === MSG_TYPE.AUDIO) {
         const file = firebase.storage().ref(msgCol[i].fileId);
         const url = await file.getDownloadURL();
