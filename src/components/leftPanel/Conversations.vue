@@ -4,7 +4,6 @@
       <template v-if="user">
         <q-avatar class="cursor-pointer" @click="$emit('set-left-panel', 'profile')" size="40px">
           <img :src="user.avatarUrl" />
-          <q-tooltip> Profile </q-tooltip>
         </q-avatar>
         <span
           class="q-ml-md text-grey-6 text-weight-bold cursor-pointer"

@@ -133,5 +133,6 @@ export default defineComponent({
 <style lang="scss" scoped>
 .login-card {
   width: 700px;
+  border-radius: 8px !important;
 }
 </style>

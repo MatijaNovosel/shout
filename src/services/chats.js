@@ -36,12 +36,13 @@ class ChatService {
           you: false,
           sentAt: new Date(d.sentAt.seconds * 1000),
           type: d.type,
-          userId: d.userId
+          userId: d.userId,
+          pinned: d.pinned
         };
       });
 
       const user = await firebase.firestore().collection("/users").doc(lastMsg.userId).get();
-      lastMsg.username = user.data().username;
+      lastMsg.username = `${user.data().username}#${user.data().shorthandId}`;
 
       retVal.push({
         id: chats[i].id,
@@ -121,7 +122,8 @@ class ChatService {
       sent: true,
       type: MSG_TYPE.FILE,
       sentAt: new Date(),
-      fileId: guid
+      fileId: guid,
+      pinned: false
     });
   }
 
@@ -131,7 +133,8 @@ class ChatService {
       userId: msg.userId,
       type: MSG_TYPE.TXT,
       sentAt: new Date(),
-      txt: msg.txt
+      txt: msg.txt,
+      pinned: false
     });
     return data.id;
   }
@@ -174,7 +177,8 @@ class ChatService {
       sent: true,
       type: MSG_TYPE.AUDIO,
       sentAt: new Date(),
-      fileId: guid
+      fileId: guid,
+      pinned: false
     });
   }
 
@@ -196,7 +200,8 @@ class ChatService {
       userId: msg.userId,
       type: MSG_TYPE.INFO,
       sentAt: new Date(),
-      txt: msg.txt
+      txt: msg.txt,
+      pinned: false
     });
     return data.id;
   }
