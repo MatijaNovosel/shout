@@ -20,13 +20,6 @@
       <q-separator dark />
       <q-item clickable v-close-popup>
         <q-item-section avatar>
-          <q-icon color="grey" size="xs" name="mdi-bell" />
-        </q-item-section>
-        <q-item-section>Notifications</q-item-section>
-      </q-item>
-      <q-separator dark />
-      <q-item clickable v-close-popup>
-        <q-item-section avatar>
           <q-icon color="grey" size="xs" name="mdi-text-box" />
         </q-item-section>
         <q-item-section>Chat wallpaper</q-item-section>
@@ -37,6 +30,13 @@
           <q-icon color="grey" size="xs" name="mdi-close-circle" />
         </q-item-section>
         <q-item-section>Blocked</q-item-section>
+      </q-item>
+      <q-separator dark />
+      <q-item clickable v-close-popup>
+        <q-item-section avatar>
+          <q-icon color="grey" size="xs" name="mdi-flag" />
+        </q-item-section>
+        <q-item-section>Language</q-item-section>
       </q-item>
     </q-list>
   </div>

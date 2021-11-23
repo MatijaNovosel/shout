@@ -50,14 +50,8 @@
         <q-item clickable v-close-popup v-if="conversation.type === CHAT_TYPE.PRIVATE">
           <q-item-section>Delete chat</q-item-section>
         </q-item>
-        <q-item clickable v-close-popup>
-          <q-item-section>Pin chat</q-item-section>
-        </q-item>
         <q-item clickable v-close-popup v-if="conversation.type === CHAT_TYPE.GROUP">
           <q-item-section>Exit group</q-item-section>
-        </q-item>
-        <q-item clickable v-close-popup>
-          <q-item-section>Mark as unread</q-item-section>
         </q-item>
       </q-list>
     </q-menu>

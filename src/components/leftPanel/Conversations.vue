@@ -49,13 +49,13 @@
           </q-list>
         </q-menu>
       </q-btn>
-      <q-btn flat round color="white" icon="mdi-message-text" @click="openuserSearchDialog">
+      <q-btn flat round color="white" icon="mdi-message-text" @click="openUserSearchDialog">
         <q-tooltip> Start new chat </q-tooltip>
       </q-btn>
       <q-btn flat round color="white" icon="mdi-dots-vertical">
         <q-menu dark right :offset="[-15, -5]">
           <q-list dense style="min-width: 100px">
-            <q-item clickable v-close-popup>
+            <q-item clickable v-close-popup @click="openNewGroupDialog">
               <q-item-section>New group</q-item-section>
             </q-item>
             <q-separator dark />
@@ -114,6 +114,7 @@
     </q-item>
   </q-list>
   <user-search-dialog v-model="state.userSearchDialog" />
+  <new-group-dialog v-model="state.newGroupDialog" />
 </template>
 
 <script>
@@ -124,6 +125,7 @@ import { ROUTE_NAMES } from "src/router/routeNames";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import UserSearchDialog from "src/components/UserSearchDialog.vue";
+import NewGroupDialog from "src/components/NewGroupDialog.vue";
 import { copyToClipboard } from "src/utils/helpers";
 import ChatService from "src/services/chats";
 
@@ -132,7 +134,8 @@ export default defineComponent({
   emits: ["set-left-panel", "reload-conversations"],
   components: {
     ConversationListItem,
-    UserSearchDialog
+    UserSearchDialog,
+    NewGroupDialog
   },
   setup() {
     const store = useStore();
@@ -154,7 +157,8 @@ export default defineComponent({
       }),
       notificationsEnabled: false,
       notificationsEnablePanelActive: true,
-      userSearchDialog: false
+      userSearchDialog: false,
+      newGroupDialog: false
     });
 
     const checkNotificationPromise = () => {
@@ -214,8 +218,12 @@ export default defineComponent({
       }
     };
 
-    const openuserSearchDialog = () => {
+    const openUserSearchDialog = () => {
       state.userSearchDialog = true;
+    };
+
+    const openNewGroupDialog = () => {
+      state.newGroupDialog = true;
     };
 
     const copyUsernameToClipboard = () => {
@@ -249,11 +257,12 @@ export default defineComponent({
       state,
       askNotificationPermission,
       logOut,
-      openuserSearchDialog,
+      openUserSearchDialog,
       copyUsernameToClipboard,
       user: computed(() => store.getters["user/user"]),
       chats: computed(() => store.getters["chats/chats"]),
-      respondToGroupInvite
+      respondToGroupInvite,
+      openNewGroupDialog
     };
   }
 });
