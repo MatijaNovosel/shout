@@ -13,7 +13,7 @@
     <span v-html="txt" />
   </div>
   <div
-    class="row q-py-sm q-px-md msg q-my-xs"
+    class="row q-pt-sm q-px-sm msg q-my-xs"
     :class="`bg-${bgColor} text-${textColor}`"
     :style="{
       maxWidth: '85%',

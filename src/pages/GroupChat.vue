@@ -394,7 +394,12 @@ export default defineComponent({
     };
 
     const sendTxtMsg = async () => {
-      if (state.msgText !== null && state.msgText !== "" && state.msgText.length > 2) {
+      if (
+        state.msgText !== null &&
+        state.msgText !== "" &&
+        state.msgText.length > 2 &&
+        state.msgText.length <= 256
+      ) {
         try {
           await ChatService.sendMessage({
             userId: store.getters["user/user"].id,

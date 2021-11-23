@@ -23,8 +23,6 @@ class ChatService {
       const lastMsgData = await this.chatsCollection
         .doc(chats[i].id)
         .collection("/messages")
-        .where("type", "not-in", [MSG_TYPE.INFO])
-        .orderBy("type")
         .orderBy("sentAt", "desc")
         .limit(1)
         .get();
@@ -34,10 +32,10 @@ class ChatService {
         let txt = "";
 
         if (d.type === MSG_TYPE.AUDIO) {
-          txt = "File";
+          txt = "🎵 Audio file";
         } else if (d.type === MSG_TYPE.FILE) {
-          txt = "Audio file";
-        } else {
+          txt = "📁 File";
+        } else if (d.type === MSG_TYPE.INFO || d.type === MSG_TYPE.TXT) {
           txt = stripHtml(d.txt);
         }
 
@@ -51,8 +49,12 @@ class ChatService {
         };
       });
 
-      const user = await firebase.firestore().collection("/users").doc(lastMsg.userId).get();
-      lastMsg.username = `${user.data().username}#${user.data().shorthandId}`;
+      if (lastMsg.type === MSG_TYPE.INFO) {
+        lastMsg.username = "System";
+      } else {
+        const user = await firebase.firestore().collection("/users").doc(lastMsg.userId).get();
+        lastMsg.username = `${user.data().username}#${user.data().shorthandId}`;
+      }
 
       retVal.push({
         id: chats[i].id,
@@ -253,7 +255,6 @@ class ChatService {
       });
       await this.sendInfoMessage({
         userId: user.id,
-        type: MSG_TYPE.INFO,
         txt: `<span class="info-date">[${format(new Date(), "dd.MM.yyyy. HH:mm")}]</span> ${
           user.username
         } has joined the chat`,
@@ -295,7 +296,6 @@ class ChatService {
     });
     await this.sendInfoMessage({
       userId: userInitiatorId,
-      type: MSG_TYPE.INFO,
       txt: `<span class="info-date">[${format(new Date(), "dd.MM.yyyy. HH:mm")}]</span> ${
         user.username
       } has been removed from the chat`,
@@ -314,7 +314,6 @@ class ChatService {
     });
     await this.sendInfoMessage({
       userId: user.id,
-      type: MSG_TYPE.INFO,
       txt: `<span class="info-date">[${format(new Date(), "dd.MM.yyyy. HH:mm")}]</span> ${
         user.username
       } has left the chat`,
@@ -338,7 +337,6 @@ class ChatService {
     });
     await this.sendInfoMessage({
       userId: initiatorUserId,
-      type: MSG_TYPE.INFO,
       txt: `<span class="info-date">[${format(
         new Date(),
         "dd.MM.yyyy. HH:mm"
@@ -355,7 +353,6 @@ class ChatService {
     });
     await this.sendInfoMessage({
       userId: initiatorUserId,
-      type: MSG_TYPE.INFO,
       txt: `<span class="info-date">[${format(
         new Date(),
         "dd.MM.yyyy. HH:mm"
