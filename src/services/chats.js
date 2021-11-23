@@ -31,8 +31,18 @@ class ChatService {
 
       lastMsgData.forEach((doc) => {
         const d = doc.data();
+        let txt = "";
+
+        if (d.type === MSG_TYPE.AUDIO) {
+          txt = "File";
+        } else if (d.type === MSG_TYPE.FILE) {
+          txt = "Audio file";
+        } else {
+          txt = stripHtml(d.txt);
+        }
+
         lastMsg = {
-          txt: stripHtml(d.txt),
+          txt,
           you: false,
           sentAt: new Date(d.sentAt.seconds * 1000),
           type: d.type,
@@ -125,6 +135,10 @@ class ChatService {
       fileId: guid,
       pinned: false
     });
+    await this.chatsCollection.doc(chatId).update({
+      lastChangedAt: new Date(),
+      changeType: GROUP_CHANGE_TYPE.MESSAGE_SENT
+    });
   }
 
   async sendMessage(msg) {
@@ -135,6 +149,10 @@ class ChatService {
       sentAt: new Date(),
       txt: msg.txt,
       pinned: false
+    });
+    await this.chatsCollection.doc(msg.chatId).update({
+      lastChangedAt: new Date(),
+      changeType: GROUP_CHANGE_TYPE.MESSAGE_SENT
     });
     return data.id;
   }
@@ -160,6 +178,11 @@ class ChatService {
       const storageRef = firebase.storage().ref(fileIds[i]);
       await storageRef.delete(storageRef);
     }
+
+    await this.chatsCollection.doc(chatId).update({
+      lastChangedAt: new Date(),
+      changeType: GROUP_CHANGE_TYPE.MESSAGE_SENT
+    });
   }
 
   async sendAudioMessage(audioBlob, chatId, userId) {
@@ -179,6 +202,10 @@ class ChatService {
       sentAt: new Date(),
       fileId: guid,
       pinned: false
+    });
+    await this.chatsCollection.doc(chatId).update({
+      lastChangedAt: new Date(),
+      changeType: GROUP_CHANGE_TYPE.MESSAGE_SENT
     });
   }
 
@@ -315,7 +342,7 @@ class ChatService {
       txt: `<span class="info-date">[${format(
         new Date(),
         "dd.MM.yyyy. HH:mm"
-      )}]</span> Group name was changed to <b>${newGroupName}</b>"`,
+      )}]</span> Group name was changed to <b>${newGroupName}</b>`,
       chatId
     });
   }

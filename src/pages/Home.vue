@@ -91,7 +91,13 @@ export default defineComponent({
         snapshot.forEach((doc) => {
           const data = doc.data();
           if (isAfter(new Date(data.lastChangedAt.seconds * 1000), state.loadedAt)) {
-            if ([GROUP_CHANGE_TYPE.NAME, GROUP_CHANGE_TYPE.NAME].includes(data.changeType)) {
+            if (
+              [
+                GROUP_CHANGE_TYPE.NAME,
+                GROUP_CHANGE_TYPE.AVATAR,
+                GROUP_CHANGE_TYPE.MESSAGE_SENT
+              ].includes(data.changeType)
+            ) {
               changes++;
             }
           }

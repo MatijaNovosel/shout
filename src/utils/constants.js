@@ -113,5 +113,6 @@ export const CHAT_PRIVILEGES = {
 export const GROUP_CHANGE_TYPE = {
   AVATAR: 1,
   NAME: 2,
-  DESCRIPTION: 3
+  DESCRIPTION: 3,
+  MESSAGE_SENT: 4
 };

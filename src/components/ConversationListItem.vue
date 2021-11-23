@@ -1,16 +1,32 @@
 <template>
-  <q-item clickable v-ripple @click="$router.push(getRoute())">
+  <q-item
+    clickable
+    v-ripple
+    @click="$router.push(getRoute())"
+    :style="{ paddingTop: '12px', paddingBottom: '12px' }"
+  >
     <q-item-section avatar>
-      <q-avatar>
+      <q-avatar size="50px">
         <img :src="conversation.avatar" />
       </q-avatar>
     </q-item-section>
     <q-item-section>
-      <q-item-label lines="1">
-        <q-icon :name="getConversationIcon()" class="q-mb-xs" color="grey-6" />
+      <q-item-label
+        lines="1"
+        :style="{
+          fontSize: '16px',
+          marginBottom: '3px'
+        }"
+      >
         {{ conversation.name }}
       </q-item-label>
-      <q-item-label caption lines="1">
+      <q-item-label
+        caption
+        lines="1"
+        :style="{
+          fontSize: '12px'
+        }"
+      >
         {{
           `${conversation.lastMsg.you ? "You: " : `${conversation.lastMsg.username}: `}${
             conversation.lastMsg.txt
@@ -18,8 +34,8 @@
         }}
       </q-item-label>
     </q-item-section>
-    <q-item-section side top>
-      {{ formatDistanceToNow(new Date(conversation.lastMsg.sentAt)) }} ago
+    <q-item-section side>
+      {{ formatMessageDate(conversation.lastMsg.sentAt) }}
     </q-item-section>
     <q-menu
       dark
@@ -51,7 +67,7 @@
 <script>
 import { defineComponent } from "vue";
 import { CHAT_TYPE } from "../utils/constants";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, isSameDay, format } from "date-fns";
 import { ROUTE_NAMES } from "src/router/routeNames";
 
 export default defineComponent({
@@ -101,11 +117,19 @@ export default defineComponent({
       return route;
     };
 
+    const formatMessageDate = (sentAt) => {
+      if (isSameDay(new Date(), new Date(sentAt))) {
+        return format(new Date(sentAt), "HH:mm");
+      }
+      return formatDistanceToNow(new Date(sentAt));
+    };
+
     return {
       formatDistanceToNow,
       CHAT_TYPE,
       getConversationIcon,
-      getRoute
+      getRoute,
+      formatMessageDate
     };
   }
 });
