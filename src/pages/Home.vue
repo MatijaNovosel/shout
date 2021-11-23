@@ -40,6 +40,9 @@ import Profile from "src/components/leftPanel/Profile.vue";
 import Settings from "src/components/leftPanel/Settings.vue";
 import ChatService from "src/services/chats";
 import { useStore } from "vuex";
+import { firebase } from "src/boot/firebase";
+import { isAfter } from "date-fns";
+import { GROUP_CHANGE_TYPE } from "src/utils/constants";
 
 export default defineComponent({
   name: "Home",
@@ -54,7 +57,8 @@ export default defineComponent({
     const state = reactive({
       width: 0,
       leftPaneComponent: "conversations",
-      appLoading: computed(() => store.getters["app/loading"])
+      appLoading: computed(() => store.getters["app/loading"]),
+      loadedAt: new Date()
     });
 
     const changeMainContainerWidth = () => {
@@ -66,19 +70,36 @@ export default defineComponent({
     };
 
     const getConversations = async () => {
-      await store.dispatch("app/setLoading", true);
-
       const chats = await ChatService.getAll(store.getters["user/user"].id);
       await store.dispatch("chats/setChats", chats);
-
-      setTimeout(async () => {
-        await store.dispatch("app/setLoading", false);
-      }, 750);
     };
 
     onMounted(async () => {
+      await store.dispatch("app/setLoading", true);
       await getConversations();
+      setTimeout(async () => {
+        await store.dispatch("app/setLoading", false);
+      }, 750);
     });
+
+    firebase
+      .firestore()
+      .collection("/chats")
+      .where("userIds", "array-contains", store.getters["user/user"].id)
+      .onSnapshot(async (snapshot) => {
+        let changes = 0;
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          if (isAfter(new Date(data.lastChangedAt.seconds * 1000), state.loadedAt)) {
+            if ([GROUP_CHANGE_TYPE.NAME, GROUP_CHANGE_TYPE.NAME].includes(data.changeType)) {
+              changes++;
+            }
+          }
+        });
+        if (changes !== 0) {
+          await getConversations();
+        }
+      });
 
     return {
       changeMainContainerWidth,

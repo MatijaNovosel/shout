@@ -315,7 +315,7 @@ class ChatService {
       txt: `<span class="info-date">[${format(
         new Date(),
         "dd.MM.yyyy. HH:mm"
-      )}]</span> Group name was changed to ${newGroupName}`,
+      )}]</span> Group name was changed to <b>${newGroupName}</b>"`,
       chatId
     });
   }
@@ -332,7 +332,7 @@ class ChatService {
       txt: `<span class="info-date">[${format(
         new Date(),
         "dd.MM.yyyy. HH:mm"
-      )}]</span> Group description was changed to ${newGroupDescription}`,
+      )}]</span> Group description was changed to <b>${newGroupDescription}</b>`,
       chatId
     });
   }
