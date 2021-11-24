@@ -1,11 +1,15 @@
 <template>
   <div class="add-file-container column items-center">
     <div class="self-start justify-between row items-center q-px-md top-bar full-width">
-      <q-btn size="sm" color="grey" icon="mdi-close" round flat @click="close" />
+      <q-btn color="grey" icon="mdi-close" round flat @click="close" />
       <span class="text-white q-ml-sm">
         {{ state.selectedFile !== null ? state.selectedFile.name : "No files found" }}
       </span>
-      <q-btn size="sm" color="grey" icon="mdi-send" round flat @click="sendFiles" />
+      <q-btn color="grey" icon="mdi-send" round flat @click="sendFiles">
+        <q-badge floating v-if="state.files.length > 1">
+          {{ state.files.length }}
+        </q-badge>
+      </q-btn>
     </div>
     <div
       class="row justify-center items-center align-center text-center"
@@ -15,8 +19,8 @@
         class="col-12 q-pt-lg row justify-center items-center align-center text-grey text-center"
       >
         <img
-          class="preview-box"
           :src="state.selectedFile.image"
+          class="preview-box"
           v-if="['jpg', 'png', 'jpeg', 'gif'].includes(getFileExtension(state.selectedFile.name))"
         />
         <div
@@ -53,7 +57,7 @@
             flat
           />
           <q-icon
-            class="cursor-pointer"
+            class="cursor-pointer col-12"
             @click="setActiveFile(file)"
             color="white"
             size="40px"
@@ -224,8 +228,10 @@ export default defineComponent({
 }
 
 .preview-box {
-  height: 300px;
-  width: 300px;
+  height: auto;
+  width: auto;
+  max-height: 500px;
+  max-width: 500px;
   border-radius: 10px;
 }
 

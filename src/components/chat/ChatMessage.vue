@@ -15,10 +15,7 @@
   <div
     class="row q-pt-sm q-px-sm msg q-my-xs"
     :class="`bg-${bgColor} text-${textColor}`"
-    :style="{
-      maxWidth: '85%',
-      width: type === MSG_TYPE.AUDIO && '33%'
-    }"
+    :style="state.messageStyle"
     v-else
   >
     <div class="row col-2 d-flex justify-center items-center align-center" v-if="messageSelectMode">
@@ -50,22 +47,27 @@
           </audio>
         </div>
         <div v-else-if="type === MSG_TYPE.FILE" class="row justify-between q-pa-sm items-center">
-          <div>
-            <div class="text-white">
-              <q-icon color="white" size="30px" :name="getFileIcon(fileName)" />
-              <span class="q-ml-sm">
-                {{ fileName }}
-              </span>
+          <template v-if="getFileExtension(fileName) === 'gif'">
+            <img :src="fileUrl" class="preview-box" />
+          </template>
+          <template v-else>
+            <div>
+              <div class="text-white">
+                <q-icon color="white" size="30px" :name="getFileIcon(fileName)" />
+                <span class="q-ml-sm">
+                  {{ fileName }}
+                </span>
+              </div>
             </div>
-          </div>
-          <q-btn
-            @click="download"
-            color="grey-10"
-            round
-            icon="mdi-download"
-            size="10px"
-            class="q-mr-sm"
-          />
+            <q-btn
+              @click="download"
+              color="grey-10"
+              round
+              icon="mdi-download"
+              size="10px"
+              class="q-mr-sm"
+            />
+          </template>
         </div>
       </div>
       <div
@@ -104,7 +106,7 @@
 </template>
 
 <script>
-import { defineComponent, reactive, inject } from "vue";
+import { defineComponent, reactive, inject, computed } from "vue";
 import { MSG_TYPE } from "src/utils/constants";
 import {
   getFileIcon,
@@ -161,7 +163,26 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const state = reactive({
-      selected: false
+      selected: false,
+      messageStyle: computed(() => {
+        let width = "";
+        let maxWidth = "85%";
+
+        if (props.type === MSG_TYPE.AUDIO) {
+          width = "33%";
+        } else if (props.type === MSG_TYPE.FILE) {
+          if (getFileExtension(props.fileName) !== "gif") {
+            width = "40%";
+          } else {
+            maxWidth = "280px";
+          }
+        }
+
+        return {
+          maxWidth,
+          width
+        };
+      })
     });
 
     const messageSelectMode = inject("messageSelectMode");
@@ -210,5 +231,13 @@ audio {
 
 .message-author {
   font-size: 12px;
+}
+
+.preview-box {
+  height: auto;
+  width: auto;
+  max-height: 250px;
+  max-width: 250px;
+  border-radius: 10px;
 }
 </style>
