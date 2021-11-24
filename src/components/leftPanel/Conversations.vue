@@ -17,37 +17,39 @@
     <div class="row">
       <q-btn flat round color="white" icon="mdi-tooltip-plus">
         <q-tooltip> Invitations </q-tooltip>
-        <q-badge
-          v-if="user.invites.length !== 0"
-          color="orange"
-          :label="user.invites.length"
-          floating
-        />
-        <q-menu dark right :offset="[-15, -5]">
-          <q-list dense v-if="user">
-            <template v-if="user.invites.length !== 0">
-              <q-item v-for="(invite, i) in user.invites" :key="i">
-                <q-item-section v-html="invite.txt" />
-                <q-item-section side top class="q-py-sm">
-                  <q-btn size="sm" color="orange" @click="respondToGroupInvite(true, invite)">
-                    Accept
-                  </q-btn>
-                  <q-btn
-                    size="sm"
-                    color=""
-                    class="q-mt-sm"
-                    @click="respondToGroupInvite(false, invite)"
-                  >
-                    Decline
-                  </q-btn>
-                </q-item-section>
+        <template v-if="user && user.invites">
+          <q-badge
+            v-if="user.invites.length !== 0"
+            color="orange"
+            :label="user.invites.length"
+            floating
+          />
+          <q-menu dark right :offset="[-15, -5]">
+            <q-list dense v-if="user">
+              <template v-if="user.invites.length !== 0">
+                <q-item v-for="(invite, i) in user.invites" :key="i">
+                  <q-item-section v-html="invite.txt" />
+                  <q-item-section side top class="q-py-sm">
+                    <q-btn size="sm" color="orange" @click="respondToGroupInvite(true, invite)">
+                      Accept
+                    </q-btn>
+                    <q-btn
+                      size="sm"
+                      color=""
+                      class="q-mt-sm"
+                      @click="respondToGroupInvite(false, invite)"
+                    >
+                      Decline
+                    </q-btn>
+                  </q-item-section>
+                </q-item>
+              </template>
+              <q-item v-else>
+                <q-item-section> No invites found. </q-item-section>
               </q-item>
-            </template>
-            <q-item v-else>
-              <q-item-section> No invites found. </q-item-section>
-            </q-item>
-          </q-list>
-        </q-menu>
+            </q-list>
+          </q-menu>
+        </template>
       </q-btn>
       <q-btn flat round color="white" icon="mdi-message-text" @click="openUserSearchDialog">
         <q-tooltip> Start new chat </q-tooltip>

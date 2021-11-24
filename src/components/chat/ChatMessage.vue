@@ -93,7 +93,7 @@
                 <q-item clickable v-close-popup>
                   <q-item-section>Pin message</q-item-section>
                 </q-item>
-                <q-item clickable v-close-popup @click="deleteMsg">
+                <q-item clickable v-close-popup @click="deleteMsg" v-if="username === currentUser">
                   <q-item-section>Delete message</q-item-section>
                 </q-item>
               </q-list>
@@ -116,6 +116,8 @@ import {
   getFileFromUrl
 } from "src/utils/helpers";
 import { firebase } from "src/boot/firebase";
+import { store } from "quasar/wrappers";
+import { useStore } from "vuex";
 
 export default defineComponent({
   name: "chat-message",
@@ -162,11 +164,14 @@ export default defineComponent({
     }
   },
   setup(props, { emit }) {
+    const store = useStore();
+
     const state = reactive({
       selected: false,
       messageStyle: computed(() => {
         let width = "";
         let maxWidth = "85%";
+        let height = "";
 
         if (props.type === MSG_TYPE.AUDIO) {
           width = "33%";
@@ -175,12 +180,14 @@ export default defineComponent({
             width = "40%";
           } else {
             maxWidth = "280px";
+            height = "200px";
           }
         }
 
         return {
           maxWidth,
-          width
+          width,
+          height
         };
       })
     });
@@ -211,7 +218,8 @@ export default defineComponent({
       getFileExtension,
       bytesToSize,
       download,
-      deleteMsg
+      deleteMsg,
+      currentUser: `${store.getters["user/user"].username}#${store.getters["user/user"].shorthandId}`
     };
   }
 });
