@@ -50,6 +50,14 @@
           <template v-if="getFileExtension(fileName) === 'gif'">
             <img :src="fileUrl" class="preview-box" />
           </template>
+          <template v-else-if="['mp4', 'webm'].includes(getFileExtension(fileName))">
+            <video :style="{
+              borderRadius: '8px'
+            }" width="260" height="140" controls>
+              <source :src="fileUrl" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </template>
           <template v-else>
             <div>
               <div class="text-white">
@@ -116,7 +124,6 @@ import {
   getFileFromUrl
 } from "src/utils/helpers";
 import { firebase } from "src/boot/firebase";
-import { store } from "quasar/wrappers";
 import { useStore } from "vuex";
 
 export default defineComponent({
@@ -176,11 +183,11 @@ export default defineComponent({
         if (props.type === MSG_TYPE.AUDIO) {
           width = "33%";
         } else if (props.type === MSG_TYPE.FILE) {
-          if (getFileExtension(props.fileName) !== "gif") {
-            width = "40%";
-          } else {
+          if (["gif", "mp4", "webm"].includes(getFileExtension(props.fileName))) {
             maxWidth = "280px";
             height = "200px";
+          } else {
+            width = "40%";
           }
         }
 

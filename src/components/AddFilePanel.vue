@@ -237,6 +237,8 @@ export default defineComponent({
 
 .preview-box-bg {
   @extend .preview-box;
+  height: 300px;
+  width: 300px;
   background-color: $bg-dark-3;
 }
 </style>
