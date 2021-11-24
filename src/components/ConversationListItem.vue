@@ -21,6 +21,7 @@
         {{ conversation.name }}
       </q-item-label>
       <q-item-label
+        v-if="conversation.lastMsg"
         caption
         lines="1"
         :style="{
@@ -34,7 +35,7 @@
         }}
       </q-item-label>
     </q-item-section>
-    <q-item-section side>
+    <q-item-section side v-if="conversation.lastMsg">
       {{ formatMessageDate(conversation.lastMsg.sentAt) }}
     </q-item-section>
     <q-menu

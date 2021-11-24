@@ -18,7 +18,7 @@ class ChatService {
     });
 
     for (let i = 0; i < chats.length; i++) {
-      let lastMsg = {};
+      let lastMsg = null;
 
       const lastMsgData = await this.chatsCollection
         .doc(chats[i].id)
@@ -27,33 +27,36 @@ class ChatService {
         .limit(1)
         .get();
 
-      lastMsgData.forEach((doc) => {
-        const d = doc.data();
-        let txt = "";
+      if (!lastMsgData.empty) {
+        lastMsg = {};
+        lastMsgData.forEach((doc) => {
+          const d = doc.data();
+          let txt = "";
 
-        if (d.type === MSG_TYPE.AUDIO) {
-          txt = "🎵 Audio file";
-        } else if (d.type === MSG_TYPE.FILE) {
-          txt = "📁 File";
-        } else if (d.type === MSG_TYPE.INFO || d.type === MSG_TYPE.TXT) {
-          txt = stripHtml(d.txt);
+          if (d.type === MSG_TYPE.AUDIO) {
+            txt = "🎵 Audio file";
+          } else if (d.type === MSG_TYPE.FILE) {
+            txt = "📁 File";
+          } else if (d.type === MSG_TYPE.INFO || d.type === MSG_TYPE.TXT) {
+            txt = stripHtml(d.txt);
+          }
+
+          lastMsg = {
+            txt,
+            you: false,
+            sentAt: new Date(d.sentAt.seconds * 1000),
+            type: d.type,
+            userId: d.userId,
+            pinned: d.pinned
+          };
+        });
+
+        if (lastMsg.type === MSG_TYPE.INFO) {
+          lastMsg.username = "System";
+        } else {
+          const user = await firebase.firestore().collection("/users").doc(lastMsg.userId).get();
+          lastMsg.username = `${user.data().username}#${user.data().shorthandId}`;
         }
-
-        lastMsg = {
-          txt,
-          you: false,
-          sentAt: new Date(d.sentAt.seconds * 1000),
-          type: d.type,
-          userId: d.userId,
-          pinned: d.pinned
-        };
-      });
-
-      if (lastMsg.type === MSG_TYPE.INFO) {
-        lastMsg.username = "System";
-      } else {
-        const user = await firebase.firestore().collection("/users").doc(lastMsg.userId).get();
-        lastMsg.username = `${user.data().username}#${user.data().shorthandId}`;
       }
 
       retVal.push({
@@ -321,8 +324,31 @@ class ChatService {
     });
   }
 
-  async createGroup(invitedUsers) {
-    //
+  async createGroup(initiator, invitedUsers) {
+    const data = await this.chatsCollection.add({
+      avatar:
+        "https://clipartbarn.com/wp-content/uploads/2017/02/Question-face-face-with-question-mark-clipart-kid-8.jpg",
+      changeType: 1,
+      createdAt: new Date(),
+      description: "Group description",
+      lastChangedAt: new Date(),
+      lastMsg: null,
+      name: "Group name",
+      type: 2,
+      userIds: [initiator.id],
+      users: [
+        {
+          about: "About",
+          avatarUrl: initiator.avatarUrl,
+          id: initiator.id,
+          privileges: [1],
+          username: `${initiator.username}#${initiator.shorthandId}`
+        }
+      ]
+    });
+    for (let i = 0; i < invitedUsers.length; i++) {
+      await this.sendGroupInvite(invitedUsers[i].id, data.id, "Group name");
+    }
   }
 
   async disbandGroup(initiatorUserId, chatId) {

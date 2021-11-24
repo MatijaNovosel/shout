@@ -10,6 +10,7 @@
       </q-bar>
       <q-card-section>
         <q-input
+          clearable
           bg-color="blue-grey-10"
           dark
           dense

@@ -87,7 +87,14 @@
         </div>
       </q-card-section>
       <q-card-section class="row justify-end">
-        <q-btn size="sm" color="orange" @click="createGroup"> Create group </q-btn>
+        <q-btn
+          :disable="state.selectedUsers.length === 0"
+          size="sm"
+          color="orange"
+          @click="createGroup"
+        >
+          Create group
+        </q-btn>
       </q-card-section>
     </q-card>
   </q-dialog>
@@ -98,6 +105,7 @@ import { defineComponent, reactive, computed } from "vue";
 import { useStore } from "vuex";
 import { debounce } from "debounce";
 import UserService from "src/services/users";
+import ChatService from "src/services/chats";
 
 export default defineComponent({
   name: "new-group-dialog",
@@ -119,6 +127,8 @@ export default defineComponent({
     });
 
     const close = () => {
+      state.selectedUsers = [];
+      state.searchQuery = null;
       emit("update:modelValue", false);
     };
 
@@ -138,8 +148,16 @@ export default defineComponent({
       }
     };
 
-    const createGroup = () => {
-      //
+    const createGroup = async () => {
+      await ChatService.createGroup(
+        {
+          id: state.user.id,
+          avatarUrl: state.user.avatarUrl,
+          username: state.user.username,
+          shorthandId: state.user.shorthandId
+        },
+        state.selectedUsers
+      );
     };
 
     const removeSelectedUser = (val) => {

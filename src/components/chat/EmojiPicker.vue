@@ -19,6 +19,7 @@
       dark
       dense
       rounded
+      clearable
       standout
       placeholder="Search emojis"
       class="q-pa-md emoji-search"
