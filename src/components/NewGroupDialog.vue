@@ -12,6 +12,7 @@
         <q-input
           bg-color="blue-grey-10"
           dark
+          clearable
           dense
           rounded
           standout
@@ -61,18 +62,32 @@
       </q-card-section>
       <q-separator dark />
       <q-card-section>
-        <q-chip removable color="teal" text-color="white" v-for="n in 10" :key="n">
-          <q-avatar>
-            <img src="https://cdn.quasar.dev/img/avatar5.jpg" />
-          </q-avatar>
-          <div class="ellipsis">
-            Username
-            <q-tooltip> Username </q-tooltip>
-          </div>
-        </q-chip>
+        <template v-if="state.selectedUsers.length !== 0">
+          <q-chip
+            @remove="removeSelectedUser(user)"
+            removable
+            color="grey-7"
+            text-color="white"
+            v-for="(user, i) in state.selectedUsers"
+            :key="i"
+          >
+            <q-avatar>
+              <img :src="user.avatarUrl" />
+            </q-avatar>
+            <div class="ellipsis">
+              {{ `${user.username}#${user.shorthandId}` }}
+              <q-tooltip> {{ `${user.username}#${user.shorthandId}` }} </q-tooltip>
+            </div>
+          </q-chip>
+        </template>
+        <div class="row justify-center" v-else>
+          <q-chip color="grey-7" text-color="white">
+            No users added, search for possible group members
+          </q-chip>
+        </div>
       </q-card-section>
       <q-card-section class="row justify-end">
-        <q-btn size="sm" color="orange"> Create group </q-btn>
+        <q-btn size="sm" color="orange" @click="createGroup"> Create group </q-btn>
       </q-card-section>
     </q-card>
   </q-dialog>
@@ -99,7 +114,8 @@ export default defineComponent({
       user: computed(() => store.getters["user/user"]),
       filteredUsers: [],
       searchQuery: null,
-      searching: false
+      searching: false,
+      selectedUsers: []
     });
 
     const close = () => {
@@ -117,14 +133,26 @@ export default defineComponent({
     const search = debounce(findUser, 750);
 
     const selectUser = (user) => {
+      if (!state.selectedUsers.some((u) => u.id === user.id)) {
+        state.selectedUsers.push(user);
+      }
+    };
+
+    const createGroup = () => {
       //
+    };
+
+    const removeSelectedUser = (val) => {
+      state.selectedUsers = state.selectedUsers.filter((u) => u.id !== val.id);
     };
 
     return {
       state,
       close,
       search,
-      selectUser
+      selectUser,
+      createGroup,
+      removeSelectedUser
     };
   }
 });
