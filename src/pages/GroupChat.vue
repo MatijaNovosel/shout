@@ -247,8 +247,17 @@
 </template>
 
 <script>
-import { provide, defineComponent, reactive, onMounted, computed, ref, onUnmounted } from "vue";
-import { downloadURI, secondsToElapsedTime, getYoutubeUrlMetadata } from "src/utils/helpers";
+import {
+  provide,
+  defineComponent,
+  reactive,
+  onMounted,
+  computed,
+  ref,
+  onUnmounted,
+  watch
+} from "vue";
+import { downloadURI, secondsToElapsedTime } from "src/utils/helpers";
 import {
   MSG_TYPE,
   GROUP_CHAT_RIGHT_PANEL,
@@ -620,7 +629,7 @@ export default defineComponent({
       }
     };
 
-    onMounted(async () => {
+    const loadMessages = async () => {
       document.addEventListener("keyup", handleEnter);
 
       try {
@@ -643,59 +652,67 @@ export default defineComponent({
         });
       } finally {
         state.loading = false;
-      }
 
-      // Message socket
-      firebase
-        .firestore()
-        .collection("/chats")
-        .doc(state.chatDetails.id)
-        .collection("/messages")
-        .onSnapshot(async (querySnapshot) => {
-          const messages = [];
+        // Message socket
+        firebase
+          .firestore()
+          .collection("/chats")
+          .doc(state.chatDetails.id)
+          .collection("/messages")
+          .onSnapshot(async (querySnapshot) => {
+            const messages = [];
 
-          querySnapshot.forEach(async (doc) => {
-            if (
-              isAfter(new Date(doc.data().sentAt.seconds * 1000), state.loadedAt) &&
-              state.messages.filter((msg) => msg.id === doc.id).length === 0
-            ) {
-              messages.push({ id: doc.id, ...doc.data() });
+            querySnapshot.forEach(async (doc) => {
+              if (
+                isAfter(new Date(doc.data().sentAt.seconds * 1000), state.loadedAt) &&
+                state.messages.filter((msg) => msg.id === doc.id).length === 0
+              ) {
+                messages.push({ id: doc.id, ...doc.data() });
+              }
+            });
+
+            if (messages.length !== 0) {
+              processMessages(messages);
             }
           });
 
-          if (messages.length !== 0) {
-            processMessages(messages);
-          }
-        });
-
-      // Group changes socket
-      firebase
-        .firestore()
-        .collection("/chats")
-        .doc(state.chatDetails.id)
-        .onSnapshot(async (querySnapshot) => {
-          const data = querySnapshot.data();
-          if (isAfter(new Date(data.lastChangedAt.seconds * 1000), state.loadedAt)) {
-            if (data.changeType) {
-              switch (data.changeType) {
-                case GROUP_CHANGE_TYPE.AVATAR:
-                  state.chatDetails.avatar = data.avatar;
-                  break;
-                case GROUP_CHANGE_TYPE.DESCRIPTION:
-                  state.chatDetails.description = data.description;
-                  break;
-                case GROUP_CHANGE_TYPE.NAME:
-                  state.chatDetails.name = data.name;
-                  break;
+        // Group changes socket
+        firebase
+          .firestore()
+          .collection("/chats")
+          .doc(state.chatDetails.id)
+          .onSnapshot(async (querySnapshot) => {
+            const data = querySnapshot.data();
+            if (isAfter(new Date(data.lastChangedAt.seconds * 1000), state.loadedAt)) {
+              if (data.changeType) {
+                switch (data.changeType) {
+                  case GROUP_CHANGE_TYPE.AVATAR:
+                    state.chatDetails.avatar = data.avatar;
+                    break;
+                  case GROUP_CHANGE_TYPE.DESCRIPTION:
+                    state.chatDetails.description = data.description;
+                    break;
+                  case GROUP_CHANGE_TYPE.NAME:
+                    state.chatDetails.name = data.name;
+                    break;
+                }
               }
             }
-          }
-        });
+          });
+      }
+    };
+
+    onMounted(async () => {
+      await loadMessages();
     });
 
-    onUnmounted(() => {
-      document.removeEventListener("keyup", handleEnter);
-    });
+    watch(
+      () => route.params,
+      async () => {
+        await loadMessages();
+        document.removeEventListener("keyup", handleEnter);
+      }
+    );
 
     return {
       state,
