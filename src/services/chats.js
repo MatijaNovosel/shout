@@ -72,13 +72,16 @@ class ChatService {
     return retVal;
   }
 
-  async getDetails(uid) {
+  async getGroupChatMessages(uid, start, end) {
+    console.log({ start, end });
     const ref = this.chatsCollection.doc(uid);
-    const refGet = await ref.get();
-    const data = refGet.data();
-    const messages = await ref.collection("messages").orderBy("sentAt", "asc").get();
-    const msgCol = [];
+    const messages = await ref
+      .collection("messages")
+      .orderBy("sentAt", "asc")
+      .limitToLast(end)
+      .get();
     const userIds = {};
+    const msgCol = [];
 
     messages.forEach((m) => {
       const msgData = m.data();
@@ -110,6 +113,14 @@ class ChatService {
       }
     }
 
+    return msgCol;
+  }
+
+  async getDetails(uid) {
+    const ref = this.chatsCollection.doc(uid);
+    const refGet = await ref.get();
+    const data = refGet.data();
+
     return {
       id: uid,
       createdAt: new Date(data.createdAt.seconds * 1000),
@@ -117,8 +128,7 @@ class ChatService {
       avatar: data.avatar,
       type: data.type,
       users: data.users,
-      description: data.description,
-      messages: msgCol
+      description: data.description
     };
   }
 

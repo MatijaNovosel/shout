@@ -293,6 +293,8 @@ export default defineComponent({
     const route = useRoute();
     const router = useRouter();
 
+    const MSG_LIMIT = 15;
+
     // Plugins (provides and injects)
     const filePickerTrigger = ref(false);
     provide("filePickerTrigger", filePickerTrigger);
@@ -629,19 +631,30 @@ export default defineComponent({
       }
     };
 
-    const loadMessages = async () => {
+    const loadMessages = async (first) => {
       document.addEventListener("keyup", handleEnter);
 
       try {
         state.loading = true;
         const uid = route.params.id;
         state.chatDetails = await ChatService.getDetails(uid);
-        state.messages = [
-          ...state.chatDetails.messages.map((m) => ({
+        const messages = await ChatService.getGroupChatMessages(
+          uid,
+          state.messages.length,
+          state.messages.length + MSG_LIMIT
+        );
+        messages
+          .map((m) => ({
             ...m,
             sent: store.getters["user/user"].id === m.userId
           }))
-        ];
+          .forEach((msg) => {
+            if (first) {
+              state.messages.push(msg);
+            } else {
+              state.messages.unshift(msg);
+            }
+          });
         scrollToEndOfMsgContainer();
       } catch (e) {
         Notify.create({
@@ -703,13 +716,13 @@ export default defineComponent({
     };
 
     onMounted(async () => {
-      await loadMessages();
+      await loadMessages(true);
     });
 
     watch(
       () => route.params,
       async () => {
-        await loadMessages();
+        await loadMessages(false);
         document.removeEventListener("keyup", handleEnter);
       }
     );

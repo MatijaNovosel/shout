@@ -11,6 +11,7 @@
       :style="state.msgContainerStyle"
       ref="msgContainer"
       @scroll="msgContainerScrollChanged"
+      id="scroll-area"
     >
       <q-menu dark touch-position context-menu>
         <q-list dense style="min-width: 100px">
@@ -32,33 +33,40 @@
           </q-item>
         </q-list>
       </q-menu>
-      <div
-        v-for="message in messages"
-        :key="message.id"
-        class="col-12 row pos-rel"
-        :class="{
-          'justify-end': message.sent,
-          'justify-center q-my-sm': message.type === MSG_TYPE.INFO
-        }"
-      >
-        <chat-message
-          @selected="messageSelected"
-          @delete-msg="deleteMsg"
-          :sent-at="formatSentAt(message)"
-          :bg-color="formatBgColor(message)"
-          :type="message.type"
-          :sent="message.sent"
-          :file-url="message.fileUrl"
-          :file-id="message.fileId"
-          :file-size="message.fileSize"
-          :file-name="message.fileName"
-          :chat-id="message.chatId"
-          :username="message.username"
-          :id="message.id"
-          :txt="message.txt"
-          text-color="white"
-        />
-      </div>
+      <q-infinite-scroll @load="onLoad" reverse scroll-target="#scroll-area">
+        <template #loading>
+          <div class="row justify-center q-my-md">
+            <q-spinner color="primary" name="dots" size="40px" />
+          </div>
+        </template>
+        <div
+          v-for="message in messages"
+          :key="message.id"
+          class="col-12 row pos-rel"
+          :class="{
+            'justify-end': message.sent,
+            'justify-center q-my-sm': message.type === MSG_TYPE.INFO
+          }"
+        >
+          <chat-message
+            @selected="messageSelected"
+            @delete-msg="deleteMsg"
+            :sent-at="formatSentAt(message)"
+            :bg-color="formatBgColor(message)"
+            :type="message.type"
+            :sent="message.sent"
+            :file-url="message.fileUrl"
+            :file-id="message.fileId"
+            :file-size="message.fileSize"
+            :file-name="message.fileName"
+            :chat-id="message.chatId"
+            :username="message.username"
+            :id="message.id"
+            :txt="message.txt"
+            text-color="white"
+          />
+        </div>
+      </q-infinite-scroll>
     </q-scroll-area>
   </upload-overlay>
 </template>
@@ -154,6 +162,13 @@ export default defineComponent({
       return msg.sent ? "orange-10" : "blue-grey-9";
     };
 
+    const onLoad = (index, done) => {
+      // index 1 -> N, increments after each intersection is hit
+      setTimeout(() => {
+        done();
+      }, 1000);
+    };
+
     watch(
       () => props.scrollToBottomTrigger,
       () => scrollToEndOfMsgContainer()
@@ -169,7 +184,8 @@ export default defineComponent({
       deleteMsg,
       formatSentAt,
       CHAT_TYPE,
-      formatBgColor
+      formatBgColor,
+      onLoad
     };
   }
 });
