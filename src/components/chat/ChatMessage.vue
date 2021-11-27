@@ -56,7 +56,7 @@
           <template v-if="getFileExtension(message.fileName) === 'gif'">
             <img :src="message.fileUrl" class="preview-box" />
           </template>
-          <template v-else-if="['mp4', 'webm'].includes(getFileExtension(message.fileName))">
+          <template v-else-if="fileIsType(message.fileName, [GENERALIZED_FILE_TYPES.VIDEO])">
             <video
               :style="{
                 borderRadius: '8px'
@@ -131,13 +131,14 @@
 
 <script>
 import { defineComponent, reactive, inject, computed } from "vue";
-import { MSG_TYPE } from "src/utils/constants";
+import { MSG_TYPE, GENERALIZED_FILE_TYPES } from "src/utils/constants";
 import {
   getFileIcon,
   getFileExtension,
   bytesToSize,
   downloadFile,
-  getFileFromUrl
+  getFileFromUrl,
+  fileIsType
 } from "src/utils/helpers";
 import { firebase } from "src/boot/firebase";
 import { useStore } from "vuex";
@@ -173,7 +174,7 @@ export default defineComponent({
           width = "33%";
         } else if (props.message.type === MSG_TYPE.FILE) {
           const isGif = getFileExtension(props.message.fileName) === "gif";
-          const isVideo = ["mp4", "webm"].includes(getFileExtension(props.message.fileName));
+          const isVideo = fileIsType(props.message.fileName, [GENERALIZED_FILE_TYPES.VIDEO]);
           if (isGif || isVideo) {
             if (props.message.portrait) {
               if (isGif) {
@@ -227,7 +228,9 @@ export default defineComponent({
       bytesToSize,
       download,
       deleteMsg,
-      currentUser: `${store.getters["user/user"].username}#${store.getters["user/user"].shorthandId}`
+      currentUser: `${store.getters["user/user"].username}#${store.getters["user/user"].shorthandId}`,
+      fileIsType,
+      GENERALIZED_FILE_TYPES
     };
   }
 });

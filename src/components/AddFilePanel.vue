@@ -19,10 +19,29 @@
         class="col-12 q-pt-lg row justify-center items-center align-center text-grey text-center"
       >
         <img
-          :src="state.selectedFile.image"
+          :src="state.selectedFile.urlContent"
           class="preview-box"
-          v-if="['jpg', 'png', 'jpeg', 'gif'].includes(getFileExtension(state.selectedFile.name))"
+          v-if="fileIsType(state.selectedFile.name, [GENERALIZED_FILE_TYPES.IMAGE])"
         />
+        <video
+          v-else-if="fileIsType(state.selectedFile.name, [GENERALIZED_FILE_TYPES.VIDEO])"
+          :style="{
+            borderRadius: '8px'
+          }"
+          width="400"
+          height="400"
+          controls
+        >
+          <source :src="state.selectedFile.urlContent" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+        <audio
+          controls
+          v-else-if="fileIsType(state.selectedFile.name, [GENERALIZED_FILE_TYPES.AUDIO])"
+        >
+          <source :src="state.selectedFile.urlContent" type="audio/webm" />
+          Your browser does not support the audio element.
+        </audio>
         <div
           class="
             preview-box-bg
@@ -88,7 +107,15 @@
 
 <script>
 import { defineComponent, reactive, onMounted, onUnmounted, watch } from "vue";
-import { getFileIcon, getFileExtension, readUrl } from "src/utils/helpers";
+import {
+  getFileIcon,
+  getFileExtension,
+  readUrl,
+  imageSize,
+  videoSize,
+  fileIsType
+} from "src/utils/helpers";
+import { GENERALIZED_FILE_TYPES } from "src/utils/constants";
 
 export default defineComponent({
   name: "add-file-panel",
@@ -167,8 +194,28 @@ export default defineComponent({
         const files = [...val];
         if (files.length !== 0) {
           for (let i = 0; i < files.length; i++) {
-            const url = await readUrl(files[i]);
-            files[i].image = url;
+            const isImg = fileIsType(files[i].name, [GENERALIZED_FILE_TYPES.IMAGE]);
+            const isVideo = fileIsType(files[i].name, [GENERALIZED_FILE_TYPES.VIDEO]);
+            const isAudio = fileIsType(files[i].name, [GENERALIZED_FILE_TYPES.AUDIO]);
+
+            if (isImg || isVideo || isAudio) {
+              let dimensions = {};
+              const url = await readUrl(files[i]);
+
+              if (isImg) {
+                dimensions = await imageSize(url);
+              } else {
+                dimensions = await videoSize(url);
+              }
+
+              if (dimensions.width > dimensions.height) {
+                files[i].portrait = false;
+              } else {
+                files[i].portrait = true;
+              }
+
+              files[i].urlContent = url;
+            }
             state.files.push(files[i]);
           }
           state.selectedFile = state.files[0];
@@ -187,7 +234,9 @@ export default defineComponent({
       getFileExtension,
       close,
       triggerFilePickerManually,
-      sendFiles
+      sendFiles,
+      fileIsType,
+      GENERALIZED_FILE_TYPES
     };
   }
 });

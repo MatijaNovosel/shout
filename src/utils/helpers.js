@@ -1,4 +1,4 @@
-import { MIME_TYPES, MIME_TYPE_ICONS } from "./constants";
+import { GENERALIZED_FILE_TYPES, MIME_TYPES, MIME_TYPE_ICONS } from "./constants";
 import { firebase } from "src/boot/firebase";
 import axios from "axios";
 
@@ -226,4 +226,20 @@ export const videoSize = (url) => {
   });
   video.src = url;
   return promise;
+};
+
+export const fileIsType = (fileName, types) => {
+  let isType = true;
+
+  types.forEach((type) => {
+    if (type === GENERALIZED_FILE_TYPES.IMAGE) {
+      isType = isType && ["jpg", "png", "gif", "jpeg"].includes(getFileExtension(fileName));
+    } else if (type === GENERALIZED_FILE_TYPES.AUDIO) {
+      isType = isType && ["mp3", "wav"].includes(getFileExtension(fileName));
+    } else if (type === GENERALIZED_FILE_TYPES.VIDEO) {
+      isType = isType && ["mp4", "webm"].includes(getFileExtension(fileName));
+    }
+  });
+
+  return isType;
 };

@@ -116,3 +116,9 @@ export const GROUP_CHANGE_TYPE = {
   DESCRIPTION: 3,
   MESSAGE_SENT: 4
 };
+
+export const GENERALIZED_FILE_TYPES = {
+  IMAGE: 1,
+  VIDEO: 2,
+  AUDIO: 3
+};

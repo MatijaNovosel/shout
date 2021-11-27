@@ -6,9 +6,15 @@ import {
   stripHtml,
   getFileExtension,
   imageSize,
-  videoSize
+  videoSize,
+  fileIsType
 } from "src/utils/helpers";
-import { CHAT_PRIVILEGES, MSG_TYPE, GROUP_CHANGE_TYPE } from "src/utils/constants";
+import {
+  CHAT_PRIVILEGES,
+  MSG_TYPE,
+  GROUP_CHANGE_TYPE,
+  GENERALIZED_FILE_TYPES
+} from "src/utils/constants";
 import { format } from "date-fns";
 
 class ChatService {
@@ -164,19 +170,18 @@ class ChatService {
     await uploadTaskPromise(guid, file);
 
     let portrait = null;
+    let dimensions = {};
 
-    if (["jpg", "png", "jpeg", "gif"].includes(getFileExtension(file.name))) {
-      const imageDimensions = await imageSize(URL.createObjectURL(file));
-      if (imageDimensions.width > imageDimensions.height) {
-        portrait = false;
+    const isImg = fileIsType(file.name, [GENERALIZED_FILE_TYPES.IMAGE]);
+    const isVideo = fileIsType(file.name, [GENERALIZED_FILE_TYPES.VIDEO]);
+
+    if (isImg || isVideo) {
+      if (isImg) {
+        dimensions = await imageSize(URL.createObjectURL(file));
       } else {
-        portrait = true;
+        dimensions = await videoSize(URL.createObjectURL(file));
       }
-    }
-
-    if (["webm", "mp4"].includes(getFileExtension(file.name))) {
-      const videoDimensions = await videoSize(URL.createObjectURL(file));
-      if (videoDimensions.width > videoDimensions.height) {
+      if (dimensions.width > dimensions.height) {
         portrait = false;
       } else {
         portrait = true;
