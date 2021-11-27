@@ -61,8 +61,8 @@
               :style="{
                 borderRadius: '8px'
               }"
-              :width="message.portrait ? 140 : 260"
-              :height="message.portrait ? 220 : 140"
+              :width="message.portrait ? 195 : 260"
+              :height="message.portrait ? 270 : 140"
               controls
             >
               <source :src="message.fileUrl" type="video/mp4" />
@@ -172,9 +172,17 @@ export default defineComponent({
         if (props.message.type === MSG_TYPE.AUDIO) {
           width = "33%";
         } else if (props.message.type === MSG_TYPE.FILE) {
-          if (["gif", "mp4", "webm"].includes(getFileExtension(props.message.fileName))) {
+          const isGif = getFileExtension(props.message.fileName) === "gif";
+          const isVideo = ["mp4", "webm"].includes(getFileExtension(props.message.fileName));
+          if (isGif || isVideo) {
             if (props.message.portrait) {
-              maxWidth = "175px";
+              if (isGif) {
+                maxWidth = "175px";
+                height = "330px";
+              } else {
+                maxWidth = "225px";
+                height = "330px";
+              }
             } else {
               height = "200px";
               maxWidth = "280px";
