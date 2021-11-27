@@ -275,7 +275,7 @@ import AddFilePanel from "src/components/AddFilePanel.vue";
 import { useRoute, useRouter } from "vue-router";
 import ChatService from "src/services/chats";
 import { useStore } from "vuex";
-import { Notify } from "quasar";
+import { Notify, useQuasar } from "quasar";
 import AvatarEditorDialog from "src/components/avatarEditor/AvatarEditorDialog.vue";
 import { firebase } from "src/boot/firebase";
 
@@ -293,6 +293,7 @@ export default defineComponent({
     const store = useStore();
     const route = useRoute();
     const router = useRouter();
+    const $q = useQuasar();
 
     const MSG_LIMIT = 15;
 
@@ -304,6 +305,7 @@ export default defineComponent({
     provide("messageSelectMode", messageSelectMode);
 
     const state = reactive({
+      uploadingFiles: false,
       loadedAt: new Date(),
       loading: false,
       uploadingPfp: false,
@@ -464,6 +466,9 @@ export default defineComponent({
 
     const sendFiles = async () => {
       try {
+        $q.loading.show({
+          message: "Uploading files..."
+        });
         for (let i = 0; i < state.files.length; i++) {
           await ChatService.uploadFile(
             state.files[i],
@@ -478,6 +483,8 @@ export default defineComponent({
           color: "dark",
           textColor: "orange"
         });
+      } finally {
+        $q.loading.hide();
       }
     };
 

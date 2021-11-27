@@ -21,9 +21,10 @@ module.exports = configure(function (ctx) {
     },
     framework: {
       config: {
-        notify: {}
+        notify: {},
+        loading: {}
       },
-      plugins: ["Notify"]
+      plugins: ["Notify", "Loading"]
     },
     animations: [],
     ssr: {
