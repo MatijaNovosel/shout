@@ -1,6 +1,9 @@
 <template>
-  <div v-if="type !== MSG_TYPE.INFO && !sent" class="text-orange col-12 message-author text-left">
-    {{ username }}
+  <div
+    v-if="message.type !== MSG_TYPE.INFO && !message.sent"
+    class="text-orange col-12 message-author text-left"
+  >
+    {{ message.username }}
   </div>
   <div
     class="q-py-sm q-px-md msg q-my-xs"
@@ -8,9 +11,9 @@
     :style="{
       maxWidth: '85%'
     }"
-    v-if="type === MSG_TYPE.INFO"
+    v-if="message.type === MSG_TYPE.INFO"
   >
-    <span v-html="txt" />
+    <span v-html="message.txt" />
   </div>
   <div
     class="row q-pt-sm q-px-sm msg q-my-xs"
@@ -31,39 +34,47 @@
       <div
         class="col-12 text-white full-width"
         :class="{
-          'text-center': type === MSG_TYPE.AUDIO,
-          'bg-dark-orange-10 rounded-borders': sent && type !== MSG_TYPE.AUDIO,
-          'bg-blue-grey-10 rounded-borders': !sent && type !== MSG_TYPE.AUDIO,
-          'q-pa-sm': type === MSG_TYPE.TXT
+          'text-center': message.type === MSG_TYPE.AUDIO,
+          'bg-dark-orange-10 rounded-borders': message.sent && message.type !== MSG_TYPE.AUDIO,
+          'bg-blue-grey-10 rounded-borders': !message.sent && message.type !== MSG_TYPE.AUDIO,
+          'q-pa-sm': message.type === MSG_TYPE.TXT
         }"
       >
-        <span v-if="type === MSG_TYPE.TXT">
-          {{ txt }}
+        <span v-if="message.type === MSG_TYPE.TXT">
+          {{ message.txt }}
         </span>
-        <div v-else-if="type === MSG_TYPE.AUDIO">
+        <div v-else-if="message.type === MSG_TYPE.AUDIO">
           <audio controls>
-            <source :src="fileUrl" type="audio/webm" />
+            <source :src="message.fileUrl" type="audio/webm" />
             Your browser does not support the audio element.
           </audio>
         </div>
-        <div v-else-if="type === MSG_TYPE.FILE" class="row justify-between q-pa-sm items-center">
-          <template v-if="getFileExtension(fileName) === 'gif'">
-            <img :src="fileUrl" class="preview-box" />
+        <div
+          v-else-if="message.type === MSG_TYPE.FILE"
+          class="row justify-between q-pa-sm items-center"
+        >
+          <template v-if="getFileExtension(message.fileName) === 'gif'">
+            <img :src="message.fileUrl" class="preview-box" />
           </template>
-          <template v-else-if="['mp4', 'webm'].includes(getFileExtension(fileName))">
-            <video :style="{
-              borderRadius: '8px'
-            }" width="260" height="140" controls>
-              <source :src="fileUrl" type="video/mp4" />
+          <template v-else-if="['mp4', 'webm'].includes(getFileExtension(message.fileName))">
+            <video
+              :style="{
+                borderRadius: '8px'
+              }"
+              :width="message.portrait ? 140 : 260"
+              :height="message.portrait ? 220 : 140"
+              controls
+            >
+              <source :src="message.fileUrl" type="video/mp4" />
               Your browser does not support the video tag.
             </video>
           </template>
           <template v-else>
             <div>
               <div class="text-white">
-                <q-icon color="white" size="30px" :name="getFileIcon(fileName)" />
+                <q-icon color="white" size="30px" :name="getFileIcon(message.fileName)" />
                 <span class="q-ml-sm">
-                  {{ fileName }}
+                  {{ message.fileName }}
                 </span>
               </div>
             </div>
@@ -80,10 +91,10 @@
       </div>
       <div
         class="col-12 text-white q-mt-xs row"
-        :class="{ 'justify-between q-mt-sm': type === MSG_TYPE.FILE }"
+        :class="{ 'justify-between q-mt-sm': message.type === MSG_TYPE.FILE }"
       >
-        <span v-if="type === MSG_TYPE.FILE">
-          {{ `${getFileExtension(fileName)} • ${bytesToSize(fileSize)}` }}
+        <span v-if="message.type === MSG_TYPE.FILE">
+          {{ `${getFileExtension(message.fileName)} • ${bytesToSize(message.fileSize)}` }}
         </span>
         <div>
           <span class="q-mr-sm">
@@ -92,7 +103,7 @@
           <q-btn size="xs" flat round icon="mdi-chevron-down">
             <q-menu dark left>
               <q-list dense style="min-width: 100px">
-                <q-item clickable v-close-popup v-if="!sent">
+                <q-item clickable v-close-popup v-if="!message.sent">
                   <q-item-section>Reply</q-item-section>
                 </q-item>
                 <q-item clickable v-close-popup>
@@ -101,7 +112,12 @@
                 <q-item clickable v-close-popup>
                   <q-item-section>Pin message</q-item-section>
                 </q-item>
-                <q-item clickable v-close-popup @click="deleteMsg" v-if="username === currentUser">
+                <q-item
+                  clickable
+                  v-close-popup
+                  @click="deleteMsg"
+                  v-if="message.username === currentUser"
+                >
                   <q-item-section>Delete message</q-item-section>
                 </q-item>
               </q-list>
@@ -130,14 +146,8 @@ export default defineComponent({
   name: "chat-message",
   emits: ["selected", "delete-msg"],
   props: {
-    id: {
-      type: String
-    },
-    type: {
-      type: Number
-    },
-    txt: {
-      type: String
+    message: {
+      type: Object
     },
     sentAt: {
       type: String
@@ -146,27 +156,6 @@ export default defineComponent({
       type: String
     },
     bgColor: {
-      type: String
-    },
-    sent: {
-      type: Boolean
-    },
-    fileUrl: {
-      type: String
-    },
-    fileId: {
-      type: String
-    },
-    chatId: {
-      type: String
-    },
-    fileName: {
-      type: String
-    },
-    fileSize: {
-      type: Number
-    },
-    username: {
       type: String
     }
   },
@@ -180,12 +169,16 @@ export default defineComponent({
         let maxWidth = "85%";
         let height = "";
 
-        if (props.type === MSG_TYPE.AUDIO) {
+        if (props.message.type === MSG_TYPE.AUDIO) {
           width = "33%";
-        } else if (props.type === MSG_TYPE.FILE) {
-          if (["gif", "mp4", "webm"].includes(getFileExtension(props.fileName))) {
-            maxWidth = "280px";
-            height = "200px";
+        } else if (props.message.type === MSG_TYPE.FILE) {
+          if (["gif", "mp4", "webm"].includes(getFileExtension(props.message.fileName))) {
+            if (props.message.portrait) {
+              maxWidth = "175px";
+            } else {
+              height = "200px";
+              maxWidth = "280px";
+            }
           } else {
             width = "40%";
           }
@@ -207,13 +200,13 @@ export default defineComponent({
 
     const download = async () => {
       const files = firebase.firestore().collection("/chats").doc(props.chatId).collection("files");
-      const fileData = await files.doc(props.fileId).get();
-      const fileContent = await getFileFromUrl(props.fileUrl, fileData.data().name);
+      const fileData = await files.doc(props.message.fileId).get();
+      const fileContent = await getFileFromUrl(props.message.fileUrl, fileData.data().name);
       downloadFile(fileContent);
     };
 
     const deleteMsg = () => {
-      emit("delete-msg", props.id);
+      emit("delete-msg", props.message.id);
     };
 
     return {

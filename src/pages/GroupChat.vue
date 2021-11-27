@@ -136,6 +136,7 @@
             @delete-msg="deleteMsg"
             @select-messages="messageSelectMode = true"
             @open-details="openRightPanel(GROUP_CHAT_RIGHT_PANEL.DETAILS)"
+            @trigger-pagination="triggerPagination"
             :messages="state.messages"
             :scroll-to-bottom-trigger="state.scrollToBottomTrigger"
             :emoji-panel-open="state.emojiPanelOpen"
@@ -631,6 +632,10 @@ export default defineComponent({
       }
     };
 
+    const triggerPagination = (index) => {
+      //
+    };
+
     const loadMessages = async (first) => {
       document.addEventListener("keyup", handleEnter);
 
@@ -638,7 +643,7 @@ export default defineComponent({
         state.loading = true;
         const uid = route.params.id;
         state.chatDetails = await ChatService.getDetails(uid);
-        const messages = await ChatService.getGroupChatMessages(
+        const { messages } = await ChatService.getGroupChatMessages(
           uid,
           state.messages.length,
           state.messages.length + MSG_LIMIT
@@ -719,10 +724,15 @@ export default defineComponent({
       await loadMessages(true);
     });
 
+    onUnmounted(() => {
+      document.removeEventListener("keyup", handleEnter);
+    });
+
     watch(
       () => route.params,
       async () => {
-        await loadMessages(false);
+        state.messages = [];
+        await loadMessages(true);
         document.removeEventListener("keyup", handleEnter);
       }
     );
@@ -746,7 +756,8 @@ export default defineComponent({
       CHAT_TYPE,
       messageSelectMode,
       uploadGroupPfp,
-      leaveGroup
+      leaveGroup,
+      triggerPagination
     };
   }
 });

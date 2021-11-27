@@ -53,16 +53,7 @@
             @delete-msg="deleteMsg"
             :sent-at="formatSentAt(message)"
             :bg-color="formatBgColor(message)"
-            :type="message.type"
-            :sent="message.sent"
-            :file-url="message.fileUrl"
-            :file-id="message.fileId"
-            :file-size="message.fileSize"
-            :file-name="message.fileName"
-            :chat-id="message.chatId"
-            :username="message.username"
-            :id="message.id"
-            :txt="message.txt"
+            :message="message"
             text-color="white"
           />
         </div>
@@ -85,7 +76,8 @@ export default defineComponent({
     "file-uploaded",
     "delete-msg",
     "select-messages",
-    "open-details"
+    "open-details",
+    "trigger-pagination"
   ],
   props: {
     messages: {
@@ -165,6 +157,7 @@ export default defineComponent({
     const onLoad = (index, done) => {
       // index 1 -> N, increments after each intersection is hit
       setTimeout(() => {
+        emit("trigger-pagination", index);
         done();
       }, 1000);
     };

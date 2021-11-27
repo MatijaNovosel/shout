@@ -1,5 +1,13 @@
 import { firebase } from "src/boot/firebase";
-import { generateGuid, blobToFile, uploadTaskPromise, stripHtml } from "src/utils/helpers";
+import {
+  generateGuid,
+  blobToFile,
+  uploadTaskPromise,
+  stripHtml,
+  getFileExtension,
+  imageSize,
+  videoSize
+} from "src/utils/helpers";
 import { CHAT_PRIVILEGES, MSG_TYPE, GROUP_CHANGE_TYPE } from "src/utils/constants";
 import { format } from "date-fns";
 
@@ -72,16 +80,28 @@ class ChatService {
     return retVal;
   }
 
-  async getGroupChatMessages(uid, start, end) {
+  async getGroupChatMessages(uid, start, end, lastDoc) {
     console.log({ start, end });
     const ref = this.chatsCollection.doc(uid);
-    const messages = await ref
-      .collection("messages")
-      .orderBy("sentAt", "asc")
-      .limitToLast(end)
-      .get();
+
+    let messages = null;
+    const lastDocumentRef = null;
+
+    if (lastDoc) {
+      messages = await ref.collection("messages").orderBy("sentAt", "asc").limitToLast(end).get();
+    } else {
+      messages = await ref.collection("messages").orderBy("sentAt", "asc").limitToLast(end).get();
+    }
+
     const userIds = {};
     const msgCol = [];
+
+    /*
+
+      last - last fetched document ??
+      return ref.orderBy(field).startAfter(last[field]).limit(pageSize);
+
+    */
 
     messages.forEach((m) => {
       const msgData = m.data();
@@ -113,7 +133,7 @@ class ChatService {
       }
     }
 
-    return msgCol;
+    return { messages: msgCol, lastDocument: lastDocumentRef };
   }
 
   async getDetails(uid) {
@@ -142,14 +162,37 @@ class ChatService {
       size: file.size
     });
     await uploadTaskPromise(guid, file);
+
+    let portrait = null;
+
+    if (["jpg", "png", "jpeg", "gif"].includes(getFileExtension(file.name))) {
+      const imageDimensions = await imageSize(URL.createObjectURL(file));
+      if (imageDimensions.width > imageDimensions.height) {
+        portrait = false;
+      } else {
+        portrait = true;
+      }
+    }
+
+    if (["webm", "mp4"].includes(getFileExtension(file.name))) {
+      const videoDimensions = await videoSize(URL.createObjectURL(file));
+      if (videoDimensions.width > videoDimensions.height) {
+        portrait = false;
+      } else {
+        portrait = true;
+      }
+    }
+
     await messages.add({
       userId: userId,
       sent: true,
       type: MSG_TYPE.FILE,
       sentAt: new Date(),
       fileId: guid,
-      pinned: false
+      pinned: false,
+      portrait
     });
+
     await this.chatsCollection.doc(chatId).update({
       lastChangedAt: new Date(),
       changeType: GROUP_CHANGE_TYPE.MESSAGE_SENT

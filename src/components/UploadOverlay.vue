@@ -79,9 +79,9 @@ export default defineComponent({
       }
 
       // Under 2MB
-      if ([...e.dataTransfer.files].some((f) => f.size >= 2097152)) {
+      if ([...e.dataTransfer.files].some((f) => f.size >= 3145728)) {
         Notify.create({
-          message: "Maximum upload size is 2MB!",
+          message: "Maximum upload size is 3MB!",
           position: "top",
           color: "dark",
           textColor: "orange"
