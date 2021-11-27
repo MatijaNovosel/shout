@@ -28,8 +28,8 @@
           :style="{
             borderRadius: '8px'
           }"
-          width="400"
-          height="400"
+          :width="state.selectedFile.portrait ? 300 : 500"
+          :height="state.selectedFile.portrait ? 500 : 300"
           controls
         >
           <source :src="state.selectedFile.urlContent" type="video/mp4" />
