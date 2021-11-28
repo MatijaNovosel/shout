@@ -643,6 +643,10 @@ export default defineComponent({
       //
     };
 
+    const removeMessage = (id) => {
+      state.messages = state.messages.filter((msg) => msg.id !== id);
+    };
+
     const loadMessages = async (first) => {
       document.addEventListener("keyup", handleEnter);
 
@@ -686,6 +690,12 @@ export default defineComponent({
           .collection("/messages")
           .onSnapshot(async (querySnapshot) => {
             const messages = [];
+
+            querySnapshot.docChanges().forEach((doc) => {
+              if (doc.type === "removed") {
+                removeMessage(doc.doc.id);
+              }
+            });
 
             querySnapshot.forEach(async (doc) => {
               if (
