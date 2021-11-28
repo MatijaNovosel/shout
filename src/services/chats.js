@@ -83,7 +83,7 @@ class ChatService {
       });
     }
 
-    return retVal;
+    return retVal.sort((a, b) => b.lastMsg.sentAt - a.lastMsg.sentAt);
   }
 
   async getGroupChatMessages(uid, start, end, lastDoc) {

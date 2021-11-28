@@ -54,7 +54,7 @@
           class="row justify-between q-pa-sm items-center"
         >
           <template v-if="getFileExtension(message.fileName) === 'gif'">
-            <img :src="message.fileUrl" class="preview-box" />
+            <img :src="message.fileUrl" class="gif-container" />
           </template>
           <template v-else-if="fileIsType(message.fileName, [GENERALIZED_FILE_TYPES.VIDEO])">
             <video
@@ -68,6 +68,9 @@
               <source :src="message.fileUrl" type="video/mp4" />
               Your browser does not support the video tag.
             </video>
+          </template>
+          <template v-else-if="fileIsType(message.fileName, [GENERALIZED_FILE_TYPES.IMAGE])">
+            <img :src="message.fileUrl" class="img-container" />
           </template>
           <template v-else>
             <div>
@@ -174,19 +177,31 @@ export default defineComponent({
           width = "33%";
         } else if (props.message.type === MSG_TYPE.FILE) {
           const isGif = getFileExtension(props.message.fileName) === "gif";
+          const isImage = fileIsType(props.message.fileName, [GENERALIZED_FILE_TYPES.IMAGE]);
           const isVideo = fileIsType(props.message.fileName, [GENERALIZED_FILE_TYPES.VIDEO]);
-          if (isGif || isVideo) {
+          if (isGif || isVideo || isImage) {
             if (props.message.portrait) {
               if (isGif) {
                 maxWidth = "175px";
                 height = "330px";
-              } else {
+              } else if (isVideo) {
                 maxWidth = "225px";
                 height = "330px";
+              } else {
+                maxWidth = "255px";
+                height = "310px";
               }
             } else {
-              height = "200px";
-              maxWidth = "280px";
+              if (isGif) {
+                maxWidth = "280px";
+                height = "200px";
+              } else if (isVideo) {
+                maxWidth = "275px";
+                height = "220px";
+              } else {
+                maxWidth = "505px";
+                height = "200px";
+              }
             }
           } else {
             width = "40%";
@@ -252,11 +267,15 @@ audio {
   font-size: 12px;
 }
 
-.preview-box {
-  height: auto;
-  width: auto;
-  max-height: 250px;
-  max-width: 250px;
-  border-radius: 10px;
+.gif-container {
+  width: 100%;
+  object-fit: cover;
+  border-radius: 8px !important;
+}
+
+.img-container {
+  width: 100%;
+  object-fit: cover;
+  border-radius: 8px !important;
 }
 </style>

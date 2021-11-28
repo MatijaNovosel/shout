@@ -591,7 +591,8 @@ export default defineComponent({
             fileId: messages[i].fileId,
             fileName: fileInfo.data().name,
             fileSize: fileInfo.data().size,
-            username
+            username,
+            portrait: messages[i].portrait
           });
         } else {
           state.messages.push({

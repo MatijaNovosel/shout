@@ -229,15 +229,15 @@ export const videoSize = (url) => {
 };
 
 export const fileIsType = (fileName, types) => {
-  let isType = true;
+  let isType = false;
 
   types.forEach((type) => {
     if (type === GENERALIZED_FILE_TYPES.IMAGE) {
-      isType = isType && ["jpg", "png", "gif", "jpeg"].includes(getFileExtension(fileName));
+      isType = isType || ["jpg", "png", "gif", "jpeg"].includes(getFileExtension(fileName));
     } else if (type === GENERALIZED_FILE_TYPES.AUDIO) {
-      isType = isType && ["mp3", "wav"].includes(getFileExtension(fileName));
+      isType = isType || ["mp3", "wav"].includes(getFileExtension(fileName));
     } else if (type === GENERALIZED_FILE_TYPES.VIDEO) {
-      isType = isType && ["mp4", "webm"].includes(getFileExtension(fileName));
+      isType = isType || ["mp4", "webm"].includes(getFileExtension(fileName));
     }
   });
 
