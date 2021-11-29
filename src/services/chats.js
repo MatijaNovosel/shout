@@ -86,28 +86,12 @@ class ChatService {
     return retVal.sort((a, b) => b.lastMsg.sentAt - a.lastMsg.sentAt);
   }
 
-  async getGroupChatMessages(uid, start, end, lastDoc) {
-    console.log({ start, end });
+  async getGroupChatMessages(uid) {
     const ref = this.chatsCollection.doc(uid);
 
-    let messages = null;
-    const lastDocumentRef = null;
-
-    if (lastDoc) {
-      messages = await ref.collection("messages").orderBy("sentAt", "asc").limitToLast(end).get();
-    } else {
-      messages = await ref.collection("messages").orderBy("sentAt", "asc").limitToLast(end).get();
-    }
-
+    const messages = await ref.collection("messages").orderBy("sentAt", "asc").get();
     const userIds = {};
     const msgCol = [];
-
-    /*
-
-      last - last fetched document ??
-      return ref.orderBy(field).startAfter(last[field]).limit(pageSize);
-
-    */
 
     messages.forEach((m) => {
       const msgData = m.data();
@@ -139,7 +123,7 @@ class ChatService {
       }
     }
 
-    return { messages: msgCol, lastDocument: lastDocumentRef };
+    return { messages: msgCol };
   }
 
   async getDetails(uid) {

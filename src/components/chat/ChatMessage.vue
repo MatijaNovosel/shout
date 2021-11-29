@@ -130,7 +130,7 @@
 </template>
 
 <script>
-import { defineComponent, reactive, inject, computed } from "vue";
+import { defineComponent, reactive, inject, computed, watch } from "vue";
 import { MSG_TYPE, GENERALIZED_FILE_TYPES } from "src/utils/constants";
 import {
   getFileIcon,
@@ -229,6 +229,15 @@ export default defineComponent({
     const deleteMsg = () => {
       emit("delete-msg", props.message.id);
     };
+
+    watch(
+      () => messageSelectMode,
+      (val) => {
+        if (val === false) {
+          state.selected = false;
+        }
+      }
+    );
 
     return {
       MSG_TYPE,

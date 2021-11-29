@@ -114,7 +114,7 @@
                   >
                     <q-item-section>Group info</q-item-section>
                   </q-item>
-                  <q-item clickable v-close-popup @click="messageSelectMode = true">
+                  <q-item clickable v-close-popup @click="messageSelectMode = !messageSelectMode">
                     <q-item-section>Select messages</q-item-section>
                   </q-item>
                   <q-item clickable v-close-popup>
@@ -136,7 +136,6 @@
             @delete-msg="deleteMsg"
             @select-messages="messageSelectMode = true"
             @open-details="openRightPanel(GROUP_CHAT_RIGHT_PANEL.DETAILS)"
-            @trigger-pagination="triggerPagination"
             :messages="state.messages"
             :scroll-to-bottom-trigger="state.scrollToBottomTrigger"
             :emoji-panel-open="state.emojiPanelOpen"
@@ -294,8 +293,6 @@ export default defineComponent({
     const route = useRoute();
     const router = useRouter();
     const $q = useQuasar();
-
-    const MSG_LIMIT = 15;
 
     // Plugins (provides and injects)
     const filePickerTrigger = ref(false);
@@ -640,10 +637,6 @@ export default defineComponent({
       }
     };
 
-    const triggerPagination = (index) => {
-      //
-    };
-
     const removeMessage = (id) => {
       state.messages = state.messages.filter((msg) => msg.id !== id);
     };
@@ -655,11 +648,7 @@ export default defineComponent({
         state.loading = true;
         const uid = route.params.id;
         state.chatDetails = await ChatService.getDetails(uid);
-        const { messages } = await ChatService.getGroupChatMessages(
-          uid,
-          state.messages.length,
-          state.messages.length + MSG_LIMIT
-        );
+        const { messages } = await ChatService.getGroupChatMessages(uid);
         messages
           .map((m) => ({
             ...m,
@@ -774,8 +763,7 @@ export default defineComponent({
       CHAT_TYPE,
       messageSelectMode,
       uploadGroupPfp,
-      leaveGroup,
-      triggerPagination
+      leaveGroup
     };
   }
 });
