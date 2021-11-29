@@ -49,7 +49,13 @@
               />
             </q-card-section>
             <q-card-actions class="q-px-md row justify-center">
-              <q-btn type="submit" unelevated color="light-green-7" label="Register" />
+              <q-btn
+                :loading="state.loading"
+                type="submit"
+                unelevated
+                color="light-green-7"
+                label="Register"
+              />
             </q-card-actions>
             <q-card-section class="text-center q-pa-none">
               <p class="text-grey-6">
@@ -140,7 +146,8 @@ export default defineComponent({
       errors,
       submitCount,
       loginRoute: ROUTE_NAMES.LOGIN,
-      values
+      values,
+      state
     };
   }
 });

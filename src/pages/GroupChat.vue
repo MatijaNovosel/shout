@@ -133,6 +133,7 @@
             :scroll-to-bottom-trigger="state.scrollToBottomTrigger"
             :emoji-panel-open="state.emojiPanelOpen"
             :chat-type="CHAT_TYPE.GROUP"
+            ref="messagePanel"
           />
         </keep-alive>
         <add-file-panel
@@ -226,7 +227,9 @@
       <keep-alive>
         <group-chat-search
           v-if="state.activeRightPanel === GROUP_CHAT_RIGHT_PANEL.SEARCH"
+          :messages="state.messages"
           @close="state.rightPanelOpen = false"
+          @scroll-to-message="scrollToMessage"
         />
       </keep-alive>
     </div>
@@ -286,6 +289,8 @@ export default defineComponent({
     const route = useRoute();
     const router = useRouter();
     const $q = useQuasar();
+
+    const messagePanel = ref(null);
 
     // Plugins (provides and injects)
     const filePickerTrigger = ref(false);
@@ -634,6 +639,10 @@ export default defineComponent({
       state.messages = state.messages.filter((msg) => msg.id !== id);
     };
 
+    const scrollToMessage = (msgId) => {
+      messagePanel.value.scrollToMessage(msgId);
+    };
+
     const loadMessages = async (first) => {
       document.addEventListener("keyup", handleEnter);
 
@@ -756,7 +765,9 @@ export default defineComponent({
       CHAT_TYPE,
       messageSelectMode,
       uploadGroupPfp,
-      leaveGroup
+      leaveGroup,
+      scrollToMessage,
+      messagePanel
     };
   }
 });

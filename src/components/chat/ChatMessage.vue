@@ -49,7 +49,10 @@
             Your browser does not support the audio element.
           </audio>
         </div>
-        <div v-else-if="message.type === MSG_TYPE.FILE" class="row q-pa-sm items-center">
+        <div
+          v-else-if="message.type === MSG_TYPE.FILE"
+          class="row q-pa-sm items-center justify-between"
+        >
           <template v-if="getFileExtension(message.fileName) === 'gif'">
             <img
               @click="$emit('open-image-preview-dialog', message.fileUrl)"
@@ -78,13 +81,11 @@
             />
           </template>
           <template v-else>
-            <div>
-              <div class="text-white">
-                <q-icon color="white" size="30px" :name="getFileIcon(message.fileName)" />
-                <span class="q-ml-sm">
-                  {{ message.fileName }}
-                </span>
-              </div>
+            <div class="text-white">
+              <q-icon color="white" size="30px" :name="getFileIcon(message.fileName)" />
+              <span class="q-ml-sm">
+                {{ message.fileName }}
+              </span>
             </div>
             <q-btn
               @click="download"

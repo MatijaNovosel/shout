@@ -34,6 +34,7 @@
         </q-list>
       </q-menu>
       <div
+        :id="message.id"
         v-for="message in messages"
         :key="message.id"
         class="col-12 row pos-rel"
@@ -158,6 +159,11 @@ export default defineComponent({
       state.imagePreviewDialog = true;
     };
 
+    const scrollToMessage = (msgId) => {
+      const el = document.getElementById(msgId);
+      el.scrollIntoView();
+    };
+
     watch(
       () => props.scrollToBottomTrigger,
       () => scrollToEndOfMsgContainer()
@@ -174,7 +180,8 @@ export default defineComponent({
       formatSentAt,
       CHAT_TYPE,
       formatBgColor,
-      openImagePreviewDialog
+      openImagePreviewDialog,
+      scrollToMessage
     };
   }
 });
