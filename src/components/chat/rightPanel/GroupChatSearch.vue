@@ -32,6 +32,7 @@
         </q-item-section>
       </q-item>
       <template v-else>
+        <div class="row justify-center">{{ state.foundMessages.length }} messages found.</div>
         <q-item
           clickable
           @click="selectMessage(msg)"
