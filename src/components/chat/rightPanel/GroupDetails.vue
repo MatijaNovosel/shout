@@ -39,7 +39,7 @@
         <q-btn v-else @click="startEditingGroupName" color="orange" flat round icon="mdi-pencil" />
       </template>
     </q-input>
-    <span class="text-grey self-start q-mt-sm q-ml-lg">
+    <span class="text-grey self-start q-mt-sm q-ml-lg" v-if="groupDetails">
       Created {{ format(groupDetails.createdAt, "dd.MM.yyyy. HH:mm") }}
     </span>
     <q-input
@@ -111,7 +111,7 @@
               {{ user.about }}
             </q-item-label>
           </q-item-section>
-          <q-item-section side v-if="userComputed.id !== user.id">
+          <q-item-section side v-if="userComputed && userComputed.id !== user.id">
             <q-btn color="grey" flat round icon="mdi-dots-vertical">
               <q-menu dark right :offset="[-15, -5]">
                 <q-list dense style="min-width: 100px">
