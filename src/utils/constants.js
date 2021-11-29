@@ -122,3 +122,8 @@ export const GENERALIZED_FILE_TYPES = {
   VIDEO: 2,
   AUDIO: 3
 };
+
+export const LANGUAGES = {
+  ENGLISH: "en",
+  CROATIAN: "hr"
+};

@@ -1,6 +1,8 @@
 export default {
   failed: "Action failed",
   success: "Action was successful",
+  english: "English",
+  croatian: "Croatian",
   privileges: {
     ALL: "All privileges",
     CAN_SEND_MESSAGES: "Can send messages",

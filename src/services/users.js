@@ -32,7 +32,8 @@ class UserService {
       email,
       shorthandId: range(6)
         .map(() => sample(range(6)).toString())
-        .join("")
+        .join(""),
+      lang: "en"
     });
   }
 
@@ -92,7 +93,26 @@ class UserService {
   }
 
   async updatePrivileges(newPrivileges, userId, chatId) {
-    //
+    const chat = await firebase.firestore().collection("/chats").doc(chatId).get();
+    const users = chat.data().users;
+    await firebase
+      .firestore()
+      .collection("/chats")
+      .doc(chatId)
+      .update({
+        users: users.map((user) => {
+          if (user.id === userId) {
+            user.privileges = newPrivileges;
+          }
+          return user;
+        })
+      });
+  }
+
+  async updateLanguage(lang, userId) {
+    await this.userCollection.doc(userId).update({
+      lang
+    });
   }
 }
 

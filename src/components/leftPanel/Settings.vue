@@ -32,24 +32,31 @@
         <q-item-section>Blocked</q-item-section>
       </q-item>
       <q-separator dark />
-      <q-item clickable v-close-popup>
+      <q-item clickable v-close-popup @click="state.languageSelectDialog = true">
         <q-item-section avatar>
           <q-icon color="grey" size="xs" name="mdi-flag" />
         </q-item-section>
         <q-item-section>Language</q-item-section>
       </q-item>
     </q-list>
+    <language-select-dialog v-model="state.languageSelectDialog" />
   </div>
 </template>
 
 <script>
 import { defineComponent, reactive } from "vue";
+import LanguageSelectDialog from "../LanguageSelectDialog.vue";
 
 export default defineComponent({
   name: "settings",
   emits: ["set-left-panel"],
+  components: {
+    LanguageSelectDialog
+  },
   setup() {
-    const state = reactive({});
+    const state = reactive({
+      languageSelectDialog: false
+    });
 
     return {
       state
