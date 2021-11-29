@@ -51,7 +51,11 @@
         </div>
         <div v-else-if="message.type === MSG_TYPE.FILE" class="row q-pa-sm items-center">
           <template v-if="getFileExtension(message.fileName) === 'gif'">
-            <img :src="message.fileUrl" class="gif-container" />
+            <img
+              @click="$emit('open-image-preview-dialog', message.fileUrl)"
+              :src="message.fileUrl"
+              class="gif-container cursor-pointer"
+            />
           </template>
           <template v-else-if="fileIsType(message.fileName, [GENERALIZED_FILE_TYPES.VIDEO])">
             <video
@@ -67,7 +71,11 @@
             </video>
           </template>
           <template v-else-if="fileIsType(message.fileName, [GENERALIZED_FILE_TYPES.IMAGE])">
-            <img :src="message.fileUrl" class="img-container" />
+            <img
+              @click="$emit('open-image-preview-dialog', message.fileUrl)"
+              :src="message.fileUrl"
+              class="img-container cursor-pointer"
+            />
           </template>
           <template v-else>
             <div>
@@ -145,7 +153,7 @@ import { useStore } from "vuex";
 
 export default defineComponent({
   name: "chat-message",
-  emits: ["selected", "delete-msg"],
+  emits: ["selected", "delete-msg", "open-image-preview-dialog"],
   props: {
     message: {
       type: Object

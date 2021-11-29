@@ -45,6 +45,7 @@
         <chat-message
           @selected="messageSelected"
           @delete-msg="deleteMsg"
+          @open-image-preview-dialog="openImagePreviewDialog"
           :sent-at="formatSentAt(message)"
           :bg-color="formatBgColor(message)"
           :message="message"
@@ -52,6 +53,7 @@
         />
       </div>
     </q-scroll-area>
+    <image-preview-dialog :src="state.dialogImageSrc" v-model="state.imagePreviewDialog" />
   </upload-overlay>
 </template>
 
@@ -60,6 +62,7 @@ import { defineComponent, ref, reactive, nextTick, watch, computed } from "vue";
 import { MSG_TYPE, CHAT_TYPE } from "src/utils/constants";
 import ChatMessage from "./ChatMessage.vue";
 import UploadOverlay from "../UploadOverlay.vue";
+import ImagePreviewDialog from "../ImagePreviewDialog.vue";
 import { format } from "date-fns";
 
 export default defineComponent({
@@ -90,12 +93,15 @@ export default defineComponent({
   },
   components: {
     ChatMessage,
-    UploadOverlay
+    UploadOverlay,
+    ImagePreviewDialog
   },
   setup(props, { emit }) {
     const msgContainer = ref(null);
 
     const state = reactive({
+      dialogImageSrc: null,
+      imagePreviewDialog: false,
       msgContainerStyle: computed(() => {
         if (props.emojiPanelOpen === true) {
           return {
@@ -147,6 +153,11 @@ export default defineComponent({
       return msg.sent ? "orange-10" : "blue-grey-9";
     };
 
+    const openImagePreviewDialog = (src) => {
+      state.dialogImageSrc = src;
+      state.imagePreviewDialog = true;
+    };
+
     watch(
       () => props.scrollToBottomTrigger,
       () => scrollToEndOfMsgContainer()
@@ -162,7 +173,8 @@ export default defineComponent({
       deleteMsg,
       formatSentAt,
       CHAT_TYPE,
-      formatBgColor
+      formatBgColor,
+      openImagePreviewDialog
     };
   }
 });
