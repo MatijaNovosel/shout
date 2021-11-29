@@ -49,10 +49,7 @@
             Your browser does not support the audio element.
           </audio>
         </div>
-        <div
-          v-else-if="message.type === MSG_TYPE.FILE"
-          class="row justify-between q-pa-sm items-center"
-        >
+        <div v-else-if="message.type === MSG_TYPE.FILE" class="row q-pa-sm items-center">
           <template v-if="getFileExtension(message.fileName) === 'gif'">
             <img :src="message.fileUrl" class="gif-container" />
           </template>
@@ -61,8 +58,8 @@
               :style="{
                 borderRadius: '8px'
               }"
-              :width="message.portrait ? 195 : 260"
-              :height="message.portrait ? 270 : 140"
+              :width="message.portrait ? 195 : 275"
+              :height="message.portrait ? 270 : 150"
               controls
             >
               <source :src="message.fileUrl" type="video/mp4" />
@@ -189,18 +186,18 @@ export default defineComponent({
                 height = "330px";
               } else {
                 maxWidth = "255px";
-                height = "310px";
+                height = "360px";
               }
             } else {
               if (isGif) {
                 maxWidth = "280px";
                 height = "200px";
               } else if (isVideo) {
-                maxWidth = "275px";
-                height = "220px";
+                maxWidth = "305px";
+                height = "210px";
               } else {
                 maxWidth = "505px";
-                height = "200px";
+                height = "175px";
               }
             }
           } else {
@@ -269,13 +266,11 @@ audio {
 
 .gif-container {
   width: 100%;
-  object-fit: cover;
   border-radius: 8px !important;
 }
 
 .img-container {
   width: 100%;
-  object-fit: cover;
   border-radius: 8px !important;
 }
 </style>
