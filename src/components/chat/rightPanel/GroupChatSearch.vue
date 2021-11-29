@@ -1,5 +1,5 @@
 <template>
-  <div class="column items-center full-height bg">
+  <div class="column full-height bg">
     <div
       class="self-start justify-between row items-center q-pl-sm back-button-container full-width"
     >
@@ -8,27 +8,66 @@
         <span class="text-white q-ml-sm"> Search messages </span>
       </div>
     </div>
-    <q-input dark label="Group name" label-color="orange" class="full-width q-px-lg" readonly>
+    <q-input
+      v-model="state.searchQuery"
+      @update:model-value="search"
+      :loading="state.searching"
+      dark
+      placeholder="Search messages"
+      label-color="orange"
+      class="full-width q-px-lg q-my-md"
+      bg-color="blue-grey-10"
+      dense
+      rounded
+      standout
+    >
       <template #append>
-        <q-icon size="xs" name="mdi-pencil" />
+        <q-icon size="xs" name="mdi-magnify" />
       </template>
     </q-input>
+    <q-list dark class="q-ml-sm">
+      <q-item v-if="state.foundMessages.length === 0">
+        <q-item-section>
+          <q-item-label class="text-red-4"> No messages found. </q-item-label>
+          <q-item-label caption> Try a different search query. </q-item-label>
+        </q-item-section>
+      </q-item>
+    </q-list>
   </div>
 </template>
 
 <script>
 import { defineComponent, reactive } from "vue";
+import { debounce } from "debounce";
 
 export default defineComponent({
   name: "group-chat-search",
   emits: ["close"],
+  props: {
+    messages: {
+      type: Array
+    }
+  },
   setup() {
     const state = reactive({
-      muteNotifications: false
+      searching: false,
+      foundMessages: [],
+      searchQuery: null
     });
 
+    const searchMessages = async () => {
+      state.searching = true;
+      state.foundMessages = [];
+      setTimeout(() => {
+        state.searching = false;
+      }, 400);
+    };
+
+    const search = debounce(searchMessages, 750);
+
     return {
-      state
+      state,
+      search
     };
   }
 });

@@ -64,9 +64,7 @@
                     </q-item-section>
                     <q-item-section>
                       <q-item-label> You </q-item-label>
-                      <q-item-label caption class="text-grey">
-                        Some long message bla bla bla
-                      </q-item-label>
+                      <q-item-label caption class="text-grey"> Message test </q-item-label>
                     </q-item-section>
                   </q-item>
                   <q-separator />
@@ -78,9 +76,7 @@
                     </q-item-section>
                     <q-item-section>
                       <q-item-label> You </q-item-label>
-                      <q-item-label caption class="text-grey">
-                        Other message bla bla bla message bla bla
-                      </q-item-label>
+                      <q-item-label caption class="text-grey"> Message test 2 </q-item-label>
                     </q-item-section>
                   </q-item>
                 </q-list>
