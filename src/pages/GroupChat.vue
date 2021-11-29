@@ -21,16 +21,13 @@
             <q-avatar
               class="cursor-pointer"
               size="40px"
-              v-if="state.chatDetails"
+              v-if="state.chatDetails && !state.loading"
               @click="openRightPanel(GROUP_CHAT_RIGHT_PANEL.DETAILS)"
             >
               <img :src="state.chatDetails.avatar" />
               <q-tooltip> Group details </q-tooltip>
             </q-avatar>
-            <div class="column q-ml-md justify-center" v-if="state.loading">
-              <span> Loading ... </span>
-            </div>
-            <div class="column q-ml-md justify-center" v-else>
+            <div class="column q-ml-md justify-center" v-if="!state.loading">
               <template v-if="state.chatDetails">
                 <span> {{ state.chatDetails.name }} </span>
                 <span class="text-grey-6">

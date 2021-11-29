@@ -1,5 +1,5 @@
 <template>
-  <q-dialog :model-value="modelValue" persistent>
+  <q-dialog :model-value="modelValue" @hide="$emit('update:modelValue', false)">
     <q-card dark class="image-preview-dialog">
       <q-bar>
         <q-space />
