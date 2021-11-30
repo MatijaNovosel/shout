@@ -10,13 +10,15 @@
           @click="copyUsernameToClipboard"
         >
           {{ `${user.username}#${user.shorthandId}` }}
-          <q-tooltip> Click to copy username </q-tooltip>
+          <q-tooltip>
+            {{ $t("clickToCopyUsername") }}
+          </q-tooltip>
         </span>
       </template>
     </div>
     <div class="row">
       <q-btn flat round color="white" icon="mdi-tooltip-plus">
-        <q-tooltip> Invitations </q-tooltip>
+        <q-tooltip> {{ $t("invitations") }} </q-tooltip>
         <template v-if="user && user.invites">
           <q-badge
             v-if="user.invites.length !== 0"
@@ -31,7 +33,7 @@
                   <q-item-section v-html="invite.txt" />
                   <q-item-section side top class="q-py-sm">
                     <q-btn size="sm" color="orange" @click="respondToGroupInvite(true, invite)">
-                      Accept
+                      {{ $t("accept") }}
                     </q-btn>
                     <q-btn
                       size="sm"
@@ -39,34 +41,40 @@
                       class="q-mt-sm"
                       @click="respondToGroupInvite(false, invite)"
                     >
-                      Decline
+                      {{ $t("decline") }}
                     </q-btn>
                   </q-item-section>
                 </q-item>
               </template>
               <q-item v-else>
-                <q-item-section> No invites found. </q-item-section>
+                <q-item-section> {{ $t("noInvitesFound") }}. </q-item-section>
               </q-item>
             </q-list>
           </q-menu>
         </template>
       </q-btn>
       <q-btn flat round color="white" icon="mdi-message-text" @click="openUserSearchDialog">
-        <q-tooltip> Start new chat </q-tooltip>
+        <q-tooltip> {{ $t("startNewChat") }} </q-tooltip>
       </q-btn>
       <q-btn flat round color="white" icon="mdi-dots-vertical">
         <q-menu dark right :offset="[-15, -5]">
           <q-list dense style="min-width: 100px">
             <q-item clickable v-close-popup @click="openNewGroupDialog">
-              <q-item-section>New group</q-item-section>
+              <q-item-section>
+                {{ $t("newGroup") }}
+              </q-item-section>
             </q-item>
             <q-separator dark />
             <q-item clickable v-close-popup @click="$emit('set-left-panel', 'settings')">
-              <q-item-section>Settings</q-item-section>
+              <q-item-section>
+                {{ $t("settings") }}
+              </q-item-section>
             </q-item>
             <q-separator dark />
             <q-item clickable v-close-popup @click="logOut">
-              <q-item-section>Log out</q-item-section>
+              <q-item-section>
+                {{ $t("logOut") }}
+              </q-item-section>
             </q-item>
           </q-list>
         </q-menu>
@@ -76,17 +84,24 @@
   <div class="row q-pa-md bg-light-blue-9" v-if="state.notificationsEnablePanelActive">
     <q-btn color="light-blue-9" flat round icon="mdi-bell" class="bg-grey-5 q-mr-md" />
     <div class="column text-white">
-      <span> Get notified of new messages </span>
+      <span> {{ $t("getNotifiedOfNewMessages") }} </span>
       <div>
         <span @click="askNotificationPermission" class="enable-desktop-notifications-link">
-          Turn on desktop notifications
+          {{ $t("turnOnDesktopNotifications") }}
         </span>
         <q-icon name="mdi-chevron-right" />
       </div>
     </div>
   </div>
   <div class="search-bar-container q-pa-md">
-    <q-input bg-color="blue-grey-10" dark dense rounded standout placeholder="Search for a chat">
+    <q-input
+      bg-color="blue-grey-10"
+      dark
+      dense
+      rounded
+      standout
+      :placeholder="$t('searchForAChat')"
+    >
       <template #prepend>
         <q-icon name="mdi-magnify" />
       </template>
@@ -110,8 +125,8 @@
     </template>
     <q-item v-else>
       <q-item-section>
-        <q-item-label lines="1"> No chats found. </q-item-label>
-        <q-item-label caption lines="1"> Start a conversation or join a group. </q-item-label>
+        <q-item-label lines="1"> {{ $t("noChatsFound") }}. </q-item-label>
+        <q-item-label caption lines="1"> {{ $t("startAConversationOrJoinAGroup") }}. </q-item-label>
       </q-item-section>
     </q-item>
   </q-list>

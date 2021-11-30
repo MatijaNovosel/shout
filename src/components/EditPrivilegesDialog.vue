@@ -2,10 +2,12 @@
   <q-dialog :model-value="modelValue" persistent>
     <q-card dark class="new-chat-dialog">
       <q-bar>
-        <span> Edit privileges </span>
+        <span> {{ $t("editPrivileges") }} </span>
         <q-space />
         <q-btn dense flat icon="close" @click="close">
-          <q-tooltip>Close</q-tooltip>
+          <q-tooltip>
+            {{ $t("close") }}
+          </q-tooltip>
         </q-btn>
       </q-bar>
       <q-card-section>
@@ -48,7 +50,7 @@ export default defineComponent({
   emits: ["update:modelValue"],
   setup(props, { emit }) {
     const store = useStore();
-    const i18n = useI18n();
+    const { t } = useI18n({ useScope: "global" });
 
     const state = reactive({
       user: computed(() => store.getters["user/user"]),
@@ -63,7 +65,7 @@ export default defineComponent({
     };
 
     const privilegesEnum = Object.entries(CHAT_PRIVILEGES).map((entry) => ({
-      label: i18n.t(`privileges.${entry[0]}`),
+      label: t(`privileges.${entry[0]}`),
       value: entry[1]
     }));
 

@@ -5,7 +5,9 @@
         <span> Edit avatar </span>
         <q-space />
         <q-btn dense flat icon="close" @click="close">
-          <q-tooltip>Close</q-tooltip>
+          <q-tooltip>
+            {{ $t("close") }}
+          </q-tooltip>
         </q-btn>
       </q-bar>
       <q-card-section class="column items-center justify-center">
@@ -26,7 +28,9 @@
           v-model:scale="state.avatarEditorScale"
         />
         <br />
-        <q-btn color="orange" @click="save"> Save </q-btn>
+        <q-btn color="orange" @click="save">
+          {{ $t("save") }}
+        </q-btn>
       </q-card-section>
     </q-card>
   </q-dialog>

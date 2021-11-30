@@ -5,7 +5,9 @@
         <span> Create new group </span>
         <q-space />
         <q-btn dense flat icon="close" @click="close">
-          <q-tooltip>Close</q-tooltip>
+          <q-tooltip>
+            {{ $t("close") }}
+          </q-tooltip>
         </q-btn>
       </q-bar>
       <q-card-section>

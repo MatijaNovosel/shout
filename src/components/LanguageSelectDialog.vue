@@ -2,18 +2,20 @@
   <q-dialog :model-value="modelValue" @hide="$emit('update:modelValue', false)" persistent>
     <q-card dark class="language-select-dialog">
       <q-bar>
-        <span> Select language </span>
+        <span> {{ $t("selectLanguage") }} </span>
         <q-space />
         <q-btn dense flat icon="close" @click="close">
-          <q-tooltip>Close</q-tooltip>
+          <q-tooltip>
+            {{ $t("close") }}
+          </q-tooltip>
         </q-btn>
       </q-bar>
       <q-card-section>
         <q-option-group
           @update:model-value="languageChanged"
           v-model="state.selectedLang"
-          :options="languages"
-          color="primary"
+          :options="state.languages"
+          color="orange"
         />
       </q-card-section>
     </q-card>
@@ -21,7 +23,7 @@
 </template>
 
 <script>
-import { defineComponent, reactive } from "vue";
+import { defineComponent, reactive, computed } from "vue";
 import { LANGUAGES } from "src/utils/constants";
 import { Notify } from "quasar";
 import UserService from "src/services/users";
@@ -38,31 +40,32 @@ export default defineComponent({
   emits: ["update:modelValue"],
   setup(props, { emit }) {
     const store = useStore();
-    const i18n = useI18n();
+    const { t, locale } = useI18n({ useScope: "global" });
 
     const state = reactive({
-      selectedLang: "en"
+      selectedLang: "hr",
+      languages: computed(() => {
+        return [
+          {
+            label: t("english"),
+            value: LANGUAGES.ENGLISH
+          },
+          {
+            label: t("croatian"),
+            value: LANGUAGES.CROATIAN
+          }
+        ];
+      })
     });
 
     const close = () => {
       emit("update:modelValue", false);
     };
 
-    const languages = [
-      {
-        label: i18n.t("english"),
-        value: LANGUAGES.ENGLISH
-      },
-      {
-        label: i18n.t("croatian"),
-        value: LANGUAGES.CROATIAN
-      }
-    ];
-
     const languageChanged = async () => {
       try {
         await UserService.updateLanguage(state.selectedLang, store.getters["user/user"].id);
-        i18n.locale.value = "hr";
+        locale.value = state.selectedLang;
         Notify.create({
           message: "Successfully changed language",
           position: "top",
@@ -82,7 +85,6 @@ export default defineComponent({
     return {
       state,
       close,
-      languages,
       languageChanged
     };
   }

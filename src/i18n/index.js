@@ -1,7 +1,7 @@
-import enUS from "./en-US";
-import hrHR from "./hr-HR";
+import en from "./en-US";
+import hr from "./hr-HR";
 
 export default {
-  "en-US": enUS,
-  "hr-HR": hrHR
+  en,
+  hr
 };
