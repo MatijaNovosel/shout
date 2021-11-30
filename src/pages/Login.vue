@@ -13,7 +13,7 @@
                 clearable
                 type="email"
                 name="email"
-                label="Email"
+                :label="$t('email')"
                 v-model="values.email"
                 :error="submitCount > 0 && errors.email !== undefined"
                 :error-message="errors.email"
@@ -27,7 +27,7 @@
                 clearable
                 type="password"
                 name="password"
-                label="Password"
+                :label="$t('password')"
                 v-model="values.password"
                 class="q-mt-md"
                 :error="submitCount > 0 && errors.password !== undefined"
@@ -41,12 +41,12 @@
                 type="submit"
                 unelevated
                 color="light-green-7"
-                label="Login"
+                :label="$t('login')"
               />
             </q-card-actions>
             <q-card-section class="text-center q-pa-none">
               <p class="text-grey-6">
-                Not registered?
+                {{ $t("notRegistered") }}
                 <span
                   class="text-orange text-bold cursor-pointer"
                   @click="
@@ -55,7 +55,7 @@
                     })
                   "
                 >
-                  Create an account
+                  {{ $t("createAnAccount") }}
                 </span>
               </p>
             </q-card-section>
@@ -76,11 +76,13 @@ import { useForm } from "vee-validate";
 import * as yup from "yup";
 import { useStore } from "vuex";
 import UserService from "src/services/users";
+import { useI18n } from "vue-i18n";
 
 export default defineComponent({
   name: "Login",
   setup() {
     const store = useStore();
+    const { t } = useI18n();
 
     const schema = yup.object({
       email: yup.string().required().email().nullable().label("Email"),
@@ -106,7 +108,7 @@ export default defineComponent({
         const userDetails = await UserService.getDetails(data.user.uid);
         await store.dispatch("user/fetchUser", { id: data.user.uid, ...userDetails });
         Notify.create({
-          message: "You have successfully signed in",
+          message: t("signedIn"),
           position: "top",
           color: "dark",
           textColor: "orange"

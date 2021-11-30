@@ -53,7 +53,7 @@
               color="white"
               icon="mdi-magnify"
             >
-              <q-tooltip> Search messages </q-tooltip>
+              <q-tooltip> {{ $t("searchMessages") }} </q-tooltip>
             </q-btn>
             <q-btn flat round color="white" icon="mdi-pin">
               <q-menu dark anchor="bottom left" self="top left">
@@ -65,7 +65,7 @@
                       </q-avatar>
                     </q-item-section>
                     <q-item-section>
-                      <q-item-label> You </q-item-label>
+                      <q-item-label> {{ $t("you") }} </q-item-label>
                       <q-item-label caption class="text-grey"> Message test </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -77,13 +77,13 @@
                       </q-avatar>
                     </q-item-section>
                     <q-item-section>
-                      <q-item-label> You </q-item-label>
+                      <q-item-label> {{ $t("you") }} </q-item-label>
                       <q-item-label caption class="text-grey"> Message test 2 </q-item-label>
                     </q-item-section>
                   </q-item>
                 </q-list>
               </q-menu>
-              <q-tooltip> Pinned messages </q-tooltip>
+              <q-tooltip> {{ $t("pinnedMessages") }} </q-tooltip>
             </q-btn>
             <q-btn flat round color="white" icon="mdi-comment-text-multiple">
               <q-menu dark left>
@@ -97,7 +97,7 @@
                   </q-item>
                 </q-list>
               </q-menu>
-              <q-tooltip> Text channels </q-tooltip>
+              <q-tooltip> {{ $t("textChannels") }} </q-tooltip>
             </q-btn>
             <q-btn flat round color="white" icon="mdi-dots-vertical">
               <q-menu dark left>
@@ -107,16 +107,24 @@
                     v-close-popup
                     @click="openRightPanel(GROUP_CHAT_RIGHT_PANEL.DETAILS)"
                   >
-                    <q-item-section>Group info</q-item-section>
+                    <q-item-section>
+                      {{ $t("groupInfo") }}
+                    </q-item-section>
                   </q-item>
                   <q-item clickable v-close-popup @click="messageSelectMode = !messageSelectMode">
-                    <q-item-section>Select messages</q-item-section>
+                    <q-item-section>
+                      {{ $t("selectMessages") }}
+                    </q-item-section>
                   </q-item>
                   <q-item clickable v-close-popup>
-                    <q-item-section>Mute notifications</q-item-section>
+                    <q-item-section>
+                      {{ $t("muteNotifications") }}
+                    </q-item-section>
                   </q-item>
                   <q-item clickable v-close-popup @click="leaveGroup">
-                    <q-item-section>Exit group</q-item-section>
+                    <q-item-section>
+                      {{ $t("exitGroup") }}
+                    </q-item-section>
                   </q-item>
                 </q-list>
               </q-menu>
@@ -157,7 +165,7 @@
               icon="mdi-emoticon"
               @click="openEmojiPanel"
             >
-              <q-tooltip top> Emoji picker </q-tooltip>
+              <q-tooltip top> {{ $t("emojiPicker") }} </q-tooltip>
             </q-btn>
           </div>
           <div class="bottom-bar-center">
@@ -166,7 +174,7 @@
               dense
               rounded
               standout
-              placeholder="Type a message or upload a file by dragging"
+              :placeholder="$t('typeAMessage')"
               v-model="state.msgText"
             />
           </div>
@@ -183,11 +191,15 @@
                 @click="record"
                 v-if="!state.recording"
               >
-                <q-tooltip top> Record audio message </q-tooltip>
+                <q-tooltip top>
+                  {{ $t("recordAudioMessage") }}
+                </q-tooltip>
               </q-btn>
               <template v-else>
                 <q-btn flat round color="red" icon="mdi-close-circle" @click="stopRecording(true)">
-                  <q-tooltip top> Cancel recording </q-tooltip>
+                  <q-tooltip top>
+                    {{ $t("cancelRecording") }}
+                  </q-tooltip>
                 </q-btn>
                 <span class="text-white">
                   {{ state.elapsedRecordingSecondsFormatted }}
@@ -199,7 +211,9 @@
                   icon="mdi-check-circle-outline"
                   @click="stopRecording(false)"
                 >
-                  <q-tooltip top> Stop recording </q-tooltip>
+                  <q-tooltip top>
+                    {{ $t("stopRecording") }}
+                  </q-tooltip>
                 </q-btn>
               </template>
             </template>
@@ -275,6 +289,7 @@ import { useStore } from "vuex";
 import { Notify, useQuasar } from "quasar";
 import AvatarEditorDialog from "src/components/avatarEditor/AvatarEditorDialog.vue";
 import { firebase } from "src/boot/firebase";
+import { useI18n } from "vue-i18n";
 
 export default defineComponent({
   name: "ChatDetails",
@@ -291,6 +306,7 @@ export default defineComponent({
     const route = useRoute();
     const router = useRouter();
     const $q = useQuasar();
+    const { t } = useI18n({ useScope: "global" });
 
     const messagePanel = ref(null);
 
@@ -342,7 +358,7 @@ export default defineComponent({
         if (state.chatDetails) {
           let txt = state.chatDetails.users.map((u) => u.username).join(", ");
           if (state.chatDetails.users.length > 3) {
-            txt += " and others";
+            txt += t("andOthers");
           }
           return txt;
         }
@@ -464,7 +480,7 @@ export default defineComponent({
     const sendFiles = async () => {
       try {
         $q.loading.show({
-          message: "Uploading files..."
+          message: t("uploadingFiles")
         });
         for (let i = 0; i < state.files.length; i++) {
           await ChatService.uploadFile(
@@ -489,14 +505,14 @@ export default defineComponent({
       try {
         await ChatService.deleteMessage(state.chatDetails.id, id);
         Notify.create({
-          message: "Successfully deleted message",
+          message: t("deleteMsgSuccess"),
           position: "top",
           color: "dark",
           textColor: "orange"
         });
       } catch (e) {
         Notify.create({
-          message: "Failed to delete message",
+          message: t("deleteMsgFailure"),
           position: "top",
           color: "dark",
           textColor: "orange"
@@ -523,14 +539,14 @@ export default defineComponent({
         });
         state.chatDetails.avatar = url;
         Notify.create({
-          message: "Successfully updated group profile picture",
+          message: t("updateGroupProfilePictureSuccess"),
           position: "top",
           color: "dark",
           textColor: "orange"
         });
       } catch (e) {
         Notify.create({
-          message: "Failed to update group profile picture",
+          message: t("updateGroupProfilePictureFailure"),
           position: "top",
           color: "dark",
           textColor: "orange"
@@ -619,7 +635,7 @@ export default defineComponent({
           state.chatDetails.id
         );
         Notify.create({
-          message: "You have left the group",
+          message: t("youHaveLeftTheGroup"),
           position: "top",
           color: "dark",
           textColor: "orange"
@@ -629,7 +645,7 @@ export default defineComponent({
         });
       } catch (e) {
         Notify.create({
-          message: "Failed to leave group",
+          message: t("failedToLeaveGroup"),
           position: "top",
           color: "dark",
           textColor: "orange"

@@ -4,7 +4,9 @@
     class="bg-grey-10 window-height window-width row justify-center items-center"
   >
     <div class="row justify-center" style="width: 400px">
-      <span class="text-white text-h6 q-mb-md"> Loading ... </span>
+      <span class="text-white text-h6 q-mb-md">
+        {{ $t("loading") }}
+      </span>
       <q-linear-progress color="orange" indeterminate />
     </div>
   </q-page>

@@ -13,7 +13,7 @@
                 clearable
                 name="email"
                 type="email"
-                label="Email"
+                :label="$t('email')"
                 v-model="values.email"
                 :error="submitCount > 0 && errors.email !== undefined"
                 :error-message="errors.email"
@@ -27,7 +27,7 @@
                 clearable
                 class="q-my-md"
                 name="username"
-                label="Username"
+                :label="$t('username')"
                 v-model="values.username"
                 :error="submitCount > 0 && errors.username !== undefined"
                 :error-message="errors.username"
@@ -41,7 +41,7 @@
                 clearable
                 name="password"
                 type="password"
-                label="Password"
+                :label="$t('password')"
                 v-model="values.password"
                 :error="submitCount > 0 && errors.password !== undefined"
                 :error-message="errors.password"
@@ -54,12 +54,12 @@
                 type="submit"
                 unelevated
                 color="light-green-7"
-                label="Register"
+                :label="$t('register')"
               />
             </q-card-actions>
             <q-card-section class="text-center q-pa-none">
               <p class="text-grey-6">
-                Have an account?
+                {{ $t("haveAnAccount") }}
                 <span
                   class="text-orange text-bold cursor-pointer"
                   @click="
@@ -68,7 +68,7 @@
                     })
                   "
                 >
-                  Sign in
+                  {{ $t("signIn") }}
                 </span>
               </p>
             </q-card-section>
@@ -87,10 +87,13 @@ import { useForm } from "vee-validate";
 import * as yup from "yup";
 import { ROUTE_NAMES } from "src/router/routeNames";
 import UserService from "src/services/users";
+import { useI18n } from "vue-i18n";
 
 export default defineComponent({
   name: "Register",
   setup() {
+    const { t } = useI18n();
+
     const schema = yup.object({
       email: yup.string().required().email().nullable().label("Email"),
       username: yup.string().required().min(4).nullable().label("Username"),
@@ -117,7 +120,7 @@ export default defineComponent({
           email: values.email
         });
         Notify.create({
-          message: "You have successfully created an account",
+          message: t("createdAccount"),
           position: "top",
           color: "dark",
           textColor: "orange"
