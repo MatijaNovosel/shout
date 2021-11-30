@@ -74,14 +74,14 @@ export default defineComponent({
       try {
         await UserService.updatePrivileges(newPrivileges, props.userId, props.chatId);
         Notify.create({
-          message: "Successfully changed privileges",
+          message: t("successfullyChangedPrivileges"),
           position: "top",
           color: "dark",
           textColor: "orange"
         });
       } catch (e) {
         Notify.create({
-          message: "Failed to change privileges",
+          message: t("failedToChangePrivileges"),
           position: "top",
           color: "dark",
           textColor: "orange"

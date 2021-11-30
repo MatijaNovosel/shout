@@ -21,10 +21,14 @@
             </q-item-section>
           </q-item>
           <q-item clickable v-close-popup @click="$emit('select-messages')">
-            <q-item-section>Select messages</q-item-section>
+            <q-item-section>
+              {{ $t("selectMessages") }}
+            </q-item-section>
           </q-item>
           <q-item clickable v-close-popup>
-            <q-item-section>Mute notifications</q-item-section>
+            <q-item-section>
+              {{ $t("muteNotifications") }}
+            </q-item-section>
           </q-item>
           <q-item clickable v-close-popup>
             <q-item-section>

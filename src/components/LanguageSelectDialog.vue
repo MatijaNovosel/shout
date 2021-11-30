@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import { defineComponent, reactive, computed } from "vue";
+import { defineComponent, reactive, computed, watch } from "vue";
 import { LANGUAGES } from "src/utils/constants";
 import { Notify } from "quasar";
 import UserService from "src/services/users";
@@ -66,22 +66,31 @@ export default defineComponent({
       try {
         await UserService.updateLanguage(state.selectedLang, store.getters["user/user"].id);
         locale.value = state.selectedLang;
-        await store.dispatch("user/changeLang");
+        await store.dispatch("user/changeLang", state.selectedLang);
         Notify.create({
-          message: "Successfully changed language",
+          message: t("successfullyChangedLanguage"),
           position: "top",
           color: "dark",
           textColor: "orange"
         });
       } catch (e) {
         Notify.create({
-          message: "Failed to change language",
+          message: t("failedToChangeLanguage"),
           position: "top",
           color: "dark",
           textColor: "orange"
         });
       }
     };
+
+    watch(
+      () => props.modelValue,
+      (val) => {
+        if (val) {
+          state.selectedLang = store.getters["user/user"].lang;
+        }
+      }
+    );
 
     return {
       state,

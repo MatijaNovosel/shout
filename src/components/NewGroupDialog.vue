@@ -2,7 +2,7 @@
   <q-dialog :model-value="modelValue" persistent>
     <q-card dark class="new-chat-dialog">
       <q-bar>
-        <span> Create new group </span>
+        <span> {{ $t("createNewGroup") }} </span>
         <q-space />
         <q-btn dense flat icon="close" @click="close">
           <q-tooltip>
@@ -18,7 +18,7 @@
           dense
           rounded
           standout
-          placeholder="Search for a username"
+          :placeholder="$t('searchForAUsername')"
           v-model="state.searchQuery"
           @update:model-value="search"
           :loading="state.searching"
@@ -45,7 +45,7 @@
               </q-item-section>
               <q-item-section>
                 <q-item-label> {{ `${user.username}#${user.shorthandId}` }} </q-item-label>
-                <q-item-label caption> Status </q-item-label>
+                <q-item-label caption> {{ $t("status") }} </q-item-label>
               </q-item-section>
             </q-item>
           </template>
@@ -56,8 +56,8 @@
               </q-avatar>
             </q-item-section>
             <q-item-section>
-              <q-item-label> No users found. </q-item-label>
-              <q-item-label caption> Enter new search criteria. </q-item-label>
+              <q-item-label> {{ $t("noUsersFound") }}. </q-item-label>
+              <q-item-label caption> {{ $t("enterNewSearchCriteria") }}. </q-item-label>
             </q-item-section>
           </q-item>
         </q-list>
@@ -84,7 +84,7 @@
         </template>
         <div class="row justify-center" v-else>
           <q-chip color="grey-7" text-color="white">
-            No users added, search for possible group members
+            {{ $t("searchForGroupMembers") }}
           </q-chip>
         </div>
       </q-card-section>
@@ -95,7 +95,7 @@
           color="orange"
           @click="createGroup"
         >
-          Create group
+          {{ $t("createGroup") }}
         </q-btn>
       </q-card-section>
     </q-card>

@@ -33,14 +33,14 @@
           controls
         >
           <source :src="state.selectedFile.urlContent" type="video/mp4" />
-          Your browser does not support the video tag.
+          {{ $t("yourBrowserDoesNotSupportTheVideoTag") }}.
         </video>
         <audio
           controls
           v-else-if="fileIsType(state.selectedFile.name, [GENERALIZED_FILE_TYPES.AUDIO])"
         >
           <source :src="state.selectedFile.urlContent" type="audio/webm" />
-          Your browser does not support the audio element.
+          {{ $t("yourBrowserDoesNotSupportTheAudioElement") }}.
         </audio>
         <div
           class="
@@ -54,7 +54,7 @@
           v-else
         >
           <q-icon size="60px" name="mdi-file" />
-          <span class="q-pt-sm"> No preview available. </span>
+          <span class="q-pt-sm"> {{ $t("noPreviewAvailable") }}. </span>
         </div>
       </div>
       <div class="col-12 q-pt-lg row justify-center items-center">

@@ -1,7 +1,9 @@
 <template>
   <div class="overlay-container" @dragover="dragover" @drop="drop">
     <div class="full-width overlay-indicator" v-show="state.draggingOver" @dragleave="dragleave">
-      <h2 class="pointer-events-none text-grey text-h6">Drag file here</h2>
+      <h2 class="pointer-events-none text-grey text-h6">
+        {{ $t("dragFileHere") }}
+      </h2>
     </div>
     <input type="file" multiple hidden @change="onChange" ref="filePicker" />
     <slot />
@@ -13,12 +15,14 @@ import { defineComponent, reactive, ref, computed, watch, inject } from "vue";
 import { MIME_TYPES } from "src/utils/constants";
 import { getFileExtension } from "src/utils/helpers";
 import { Notify } from "quasar";
+import { useI18n } from "vue-i18n";
 
 export default defineComponent({
   name: "upload-overlay",
   emits: ["change"],
   setup(props, { emit }) {
     const filePicker = ref(null);
+    const { t } = useI18n();
 
     // Plugins
     const filePickerTrigger = inject("filePickerTrigger");
@@ -60,7 +64,7 @@ export default defineComponent({
           .every((ext) => state.allowedExtensions.includes(ext))
       ) {
         Notify.create({
-          message: "That file extension is not allowed!",
+          message: t("thatFileExtensionIsNotAllowed"),
           position: "top",
           color: "dark",
           textColor: "orange"
@@ -70,7 +74,7 @@ export default defineComponent({
 
       if ([...e.dataTransfer.files].length > 5) {
         Notify.create({
-          message: "You can upload a maximum of 5 files!",
+          message: t("max5Files"),
           position: "top",
           color: "dark",
           textColor: "orange"
@@ -81,7 +85,7 @@ export default defineComponent({
       // Under 2MB
       if ([...e.dataTransfer.files].some((f) => f.size >= 3145728)) {
         Notify.create({
-          message: "Maximum upload size is 3MB!",
+          message: t("maxUploadSize"),
           position: "top",
           color: "dark",
           textColor: "orange"

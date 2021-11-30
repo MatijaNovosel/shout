@@ -21,7 +21,7 @@
       rounded
       clearable
       standout
-      placeholder="Search emojis"
+      :placeholder="$t('searchEmojis')"
       class="q-pa-md emoji-search"
       v-model="state.emojiSearchText"
     >
@@ -47,7 +47,7 @@
             <q-tooltip anchor="top middle" self="bottom middle"> :{{ emoji[0] }}: </q-tooltip>
           </span>
         </template>
-        <span class="text-white" v-else> No emojis found. </span>
+        <span class="text-white" v-else> {{ $t("noEmojisFound") }}. </span>
       </q-tab-panel>
     </q-tab-panels>
   </div>

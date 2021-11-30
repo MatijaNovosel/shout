@@ -25,7 +25,9 @@
               @click="openRightPanel(GROUP_CHAT_RIGHT_PANEL.DETAILS)"
             >
               <img :src="state.chatDetails.avatar" />
-              <q-tooltip> Group details </q-tooltip>
+              <q-tooltip>
+                {{ $t("groupDetails") }}
+              </q-tooltip>
             </q-avatar>
             <div class="column q-ml-md justify-center" v-if="!state.loading">
               <template v-if="state.chatDetails">

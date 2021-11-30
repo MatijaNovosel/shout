@@ -2,7 +2,7 @@
   <q-dialog :model-value="modelValue" persistent>
     <q-card dark class="new-chat-dialog">
       <q-bar>
-        <span> Edit avatar </span>
+        <span> {{ $t("editAvatar") }} </span>
         <q-space />
         <q-btn dense flat icon="close" @click="close">
           <q-tooltip>

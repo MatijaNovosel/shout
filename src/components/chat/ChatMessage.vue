@@ -46,7 +46,7 @@
         <div v-else-if="message.type === MSG_TYPE.AUDIO">
           <audio controls>
             <source :src="message.fileUrl" type="audio/webm" />
-            Your browser does not support the audio element.
+            {{ $t("yourBrowserDoesNotSupportTheAudioElement") }}.
           </audio>
         </div>
         <div
@@ -70,7 +70,7 @@
               controls
             >
               <source :src="message.fileUrl" type="video/mp4" />
-              Your browser does not support the video tag.
+              {{ $t("yourBrowserDoesNotSupportTheVideoTag") }}.
             </video>
           </template>
           <template v-else-if="fileIsType(message.fileName, [GENERALIZED_FILE_TYPES.IMAGE])">
@@ -112,14 +112,15 @@
           <q-btn size="xs" flat round icon="mdi-chevron-down">
             <q-menu dark left>
               <q-list dense style="min-width: 100px">
-                <q-item clickable v-close-popup v-if="!message.sent">
-                  <q-item-section>Reply</q-item-section>
+                <q-item clickable v-close-popup>
+                  <q-item-section>
+                    {{ $t("forwardMessage") }}
+                  </q-item-section>
                 </q-item>
                 <q-item clickable v-close-popup>
-                  <q-item-section>Forward message</q-item-section>
-                </q-item>
-                <q-item clickable v-close-popup>
-                  <q-item-section>Pin message</q-item-section>
+                  <q-item-section>
+                    {{ $t("pinMessage") }}
+                  </q-item-section>
                 </q-item>
                 <q-item
                   clickable
@@ -127,7 +128,9 @@
                   @click="deleteMsg"
                   v-if="message.username === currentUser"
                 >
-                  <q-item-section>Delete message</q-item-section>
+                  <q-item-section>
+                    {{ $t("deleteMessage") }}
+                  </q-item-section>
                 </q-item>
               </q-list>
             </q-menu>

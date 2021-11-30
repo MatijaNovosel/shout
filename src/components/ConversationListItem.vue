@@ -29,7 +29,7 @@
         }"
       >
         {{
-          `${conversation.lastMsg.you ? "You: " : `${conversation.lastMsg.username}: `}${
+          `${conversation.lastMsg.you ? `${t("you")}: ` : `${conversation.lastMsg.username}: `}${
             conversation.lastMsg.txt
           }`
         }}
@@ -46,13 +46,19 @@
     >
       <q-list dense style="min-width: 100px">
         <q-item clickable v-close-popup>
-          <q-item-section>Mute notifications</q-item-section>
+          <q-item-section>
+            {{ $t("muteNotifications") }}
+          </q-item-section>
         </q-item>
         <q-item clickable v-close-popup v-if="conversation.type === CHAT_TYPE.PRIVATE">
-          <q-item-section>Delete chat</q-item-section>
+          <q-item-section>
+            {{ $t("deleteChat") }}
+          </q-item-section>
         </q-item>
         <q-item clickable v-close-popup v-if="conversation.type === CHAT_TYPE.GROUP">
-          <q-item-section>Exit group</q-item-section>
+          <q-item-section>
+            {{ $t("exitGroup") }}
+          </q-item-section>
         </q-item>
       </q-list>
     </q-menu>

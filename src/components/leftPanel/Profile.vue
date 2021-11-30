@@ -8,7 +8,9 @@
         round
         flat
       />
-      <span class="text-white text-h6 q-ml-sm"> Profile </span>
+      <span class="text-white text-h6 q-ml-sm">
+        {{ $t("profile") }}
+      </span>
     </div>
     <q-avatar size="200px" class="q-my-lg">
       <q-spinner size="md" color="orange" v-if="state.uploadingPfp" />
@@ -24,7 +26,7 @@
     </q-avatar>
     <q-input
       dark
-      label="Username"
+      :label="$t('username')"
       :model-value="`${user.username}#${user.shorthandId}`"
       label-color="orange"
       class="full-width q-px-lg"
@@ -53,6 +55,7 @@ import { useStore } from "vuex";
 import AvatarEditorDialog from "../avatarEditor/AvatarEditorDialog.vue";
 import UserService from "src/services/users";
 import { Notify } from "quasar";
+import { useI18n } from "vue-i18n";
 
 export default defineComponent({
   name: "profile",
@@ -62,6 +65,7 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
+    const { t } = useI18n({ useScope: "global" });
 
     const state = reactive({
       avatarEditorDialog: false,
@@ -80,14 +84,14 @@ export default defineComponent({
         userDetails.avatarUrl = url;
         await store.dispatch("user/fetchUser", userDetails);
         Notify.create({
-          message: "Successfully updated profile picture",
+          message: t("successfullyChangedProfilePicture"),
           position: "top",
           color: "dark",
           textColor: "orange"
         });
       } catch (e) {
         Notify.create({
-          message: "Failed to update profile picture",
+          message: t("failedToUpdateProfilePicture"),
           position: "top",
           color: "dark",
           textColor: "orange"
