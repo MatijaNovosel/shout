@@ -89,6 +89,10 @@ export default {
   haveAnAccount: "Imate račun?",
   signIn: "Prijavite se",
   createdAccount: "Uspješno ste stvorili račun",
+  description: "Opis",
+  users: "korisnika",
+  removeMember: "Ukloni člana",
+  groupName: "Ime grupe",
   privileges: {
     ALL: "Sve privilegije",
     CAN_SEND_MESSAGES: "Može slati poruke",

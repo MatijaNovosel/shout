@@ -5,7 +5,9 @@
     >
       <div>
         <q-btn size="sm" color="grey" icon="mdi-close" round flat @click="$emit('close')" />
-        <span class="text-white q-ml-sm"> Group details </span>
+        <span class="text-white q-ml-sm">
+          {{ $t("groupInfo") }}
+        </span>
       </div>
       <div class="q-mr-md">
         <q-btn flat round color="red-5" icon="mdi-exit-to-app" @click="leaveGroup" />
@@ -25,7 +27,7 @@
     </q-avatar>
     <q-input
       dark
-      label="Group name"
+      :label="$t('groupName')"
       label-color="orange"
       class="full-width q-px-lg"
       :readonly="!state.editingGroupName"
@@ -44,7 +46,7 @@
     </span>
     <q-input
       dark
-      label="Description"
+      :label="$t('description')"
       v-model="state.newGroupDescription"
       label-color="orange"
       class="full-width q-px-lg q-mt-md"
@@ -74,7 +76,9 @@
     <div class="column self-start q-pl-sm full-width">
       <q-list dark>
         <q-item>
-          <q-item-section> Mute notifications </q-item-section>
+          <q-item-section>
+            {{ $t("muteNotifications") }}
+          </q-item-section>
           <q-item-section side>
             <q-checkbox dark v-model="state.muteNotifications" />
           </q-item-section>
@@ -83,7 +87,7 @@
     </div>
     <div class="column self-start q-px-sm full-width q-mt-sm">
       <div class="row text-orange justify-between q-pl-md">
-        <span> {{ groupDetails.users.length }} users </span>
+        <span> {{ groupDetails.users.length }} {{ $t("users") }} </span>
         <div>
           <q-btn color="grey" flat round size="sm" icon="mdi-magnify" />
           <q-btn
@@ -116,10 +120,14 @@
               <q-menu dark right :offset="[-15, -5]">
                 <q-list dense style="min-width: 100px">
                   <q-item clickable v-close-popup @click="removeFromGroup(user)">
-                    <q-item-section>Remove member</q-item-section>
+                    <q-item-section>
+                      {{ $t("removeMember") }}
+                    </q-item-section>
                   </q-item>
                   <q-item clickable v-close-popup @click="openEditPrivilegeDialog(user)">
-                    <q-item-section>Edit privileges</q-item-section>
+                    <q-item-section>
+                      {{ $t("editPrivileges") }}
+                    </q-item-section>
                   </q-item>
                 </q-list>
               </q-menu>

@@ -89,6 +89,10 @@ export default {
   haveAnAccount: "Have an account?",
   signIn: "Sign in",
   createdAccount: "You have successfully created an account",
+  description: "Description",
+  users: "users",
+  removeMember: "Remove member",
+  groupName: "Group name",
   privileges: {
     ALL: "All privileges",
     CAN_SEND_MESSAGES: "Can send messages",

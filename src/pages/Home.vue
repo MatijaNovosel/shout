@@ -45,6 +45,7 @@ import { useStore } from "vuex";
 import { firebase } from "src/boot/firebase";
 import { isAfter } from "date-fns";
 import { GROUP_CHANGE_TYPE } from "src/utils/constants";
+import { useI18n } from "vue-i18n";
 
 export default defineComponent({
   name: "Home",
@@ -55,6 +56,7 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
+    const { locale } = useI18n({ useScope: "global" });
 
     const state = reactive({
       width: 0,
@@ -82,6 +84,8 @@ export default defineComponent({
       setTimeout(async () => {
         await store.dispatch("app/setLoading", false);
       }, 750);
+      console.log(store.getters["user/user"].lang);
+      locale.value = store.getters["user/user"].lang;
     });
 
     firebase
