@@ -18,5 +18,8 @@ export default {
   },
   RESPOND_TO_INVITE(state, inviteId) {
     state.user.invites = state.user.invites.filter((inv) => inv.id !== inviteId);
+  },
+  CHANGE_LANG(state, lang) {
+    state.user.lang = lang;
   }
 };

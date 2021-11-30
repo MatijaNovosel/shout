@@ -25,6 +25,11 @@ export default {
   searchForAChat: "Search for a chat",
   noChatsFound: "No chats found",
   startAConversationOrJoinAGroup: "Start a conversation or join a group",
+  theme: "Theme",
+  language: "Language",
+  chatWallpaper: "Chat wallpaper",
+  blocked: "Blocked",
+  signedOut: "Signed out!",
   privileges: {
     ALL: "All privileges",
     CAN_SEND_MESSAGES: "Can send messages",

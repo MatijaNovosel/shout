@@ -11,5 +11,8 @@ export default {
   },
   respondToInvite({ commit }, inviteId) {
     commit("RESPOND_TO_INVITE", inviteId);
+  },
+  changeLang({ commit }, lang) {
+    commit("CHANGE_LANG", lang);
   }
 };

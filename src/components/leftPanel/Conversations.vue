@@ -145,6 +145,7 @@ import UserSearchDialog from "src/components/UserSearchDialog.vue";
 import NewGroupDialog from "src/components/NewGroupDialog.vue";
 import { copyToClipboard } from "src/utils/helpers";
 import ChatService from "src/services/chats";
+import { useI18n } from "vue-i18n";
 
 export default defineComponent({
   name: "conversations",
@@ -157,6 +158,7 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const router = useRouter();
+    const { t } = useI18n({ useScope: "global" });
 
     const state = reactive({
       userListContainerStyle: computed(() => {
@@ -189,7 +191,7 @@ export default defineComponent({
 
     const askNotificationPermission = () => {
       if (!("Notification" in window)) {
-        console.log("This browser does not support notifications.");
+        console.error("This browser does not support notifications.");
       } else {
         if (checkNotificationPromise()) {
           Notification.requestPermission().then((permission) => {
@@ -205,7 +207,7 @@ export default defineComponent({
 
     const handlePermission = () => {
       if (Notification.permission === "denied" || Notification.permission === "default") {
-        console.log("Nope!");
+        console.error("Nope!");
       } else {
         state.notificationsEnabled = true;
         state.notificationsEnablePanelActive = false;
@@ -216,7 +218,7 @@ export default defineComponent({
     const logOut = async () => {
       try {
         Notify.create({
-          message: "Signed out!",
+          message: t("signedOut"),
           position: "top",
           color: "dark",
           textColor: "orange"

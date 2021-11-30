@@ -66,6 +66,7 @@ export default defineComponent({
       try {
         await UserService.updateLanguage(state.selectedLang, store.getters["user/user"].id);
         locale.value = state.selectedLang;
+        await store.dispatch("user/changeLang");
         Notify.create({
           message: "Successfully changed language",
           position: "top",

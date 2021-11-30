@@ -25,6 +25,11 @@ export default {
   searchForAChat: "Pronađite razgovor",
   noChatsFound: "Nije pronađen ni jedan razgovor",
   startAConversationOrJoinAGroup: "Započnite razgovor ili se pridružite grupi",
+  theme: "Tema",
+  language: "Jezik",
+  chatWallpaper: "Pozadinska slika razgovora",
+  blocked: "Blokirani kontakti",
+  signedOut: "Odjavljeni ste!",
   privileges: {
     ALL: "Sve privilegije",
     CAN_SEND_MESSAGES: "Može slati poruke",

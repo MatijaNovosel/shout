@@ -8,35 +8,43 @@
         round
         flat
       />
-      <span class="text-white text-h6 q-ml-sm"> Settings </span>
+      <span class="text-white text-h6 q-ml-sm"> {{ $t("settings") }} </span>
     </div>
     <q-list dark>
       <q-item clickable v-close-popup>
         <q-item-section avatar>
           <q-icon color="grey" size="xs" name="mdi-circle" />
         </q-item-section>
-        <q-item-section>Theme</q-item-section>
+        <q-item-section>
+          {{ $t("theme") }}
+        </q-item-section>
       </q-item>
       <q-separator dark />
       <q-item clickable v-close-popup>
         <q-item-section avatar>
           <q-icon color="grey" size="xs" name="mdi-text-box" />
         </q-item-section>
-        <q-item-section>Chat wallpaper</q-item-section>
+        <q-item-section>
+          {{ $t("chatWallpaper") }}
+        </q-item-section>
       </q-item>
       <q-separator dark />
       <q-item clickable v-close-popup>
         <q-item-section avatar>
           <q-icon color="grey" size="xs" name="mdi-close-circle" />
         </q-item-section>
-        <q-item-section>Blocked</q-item-section>
+        <q-item-section>
+          {{ $t("blocked") }}
+        </q-item-section>
       </q-item>
       <q-separator dark />
       <q-item clickable v-close-popup @click="state.languageSelectDialog = true">
         <q-item-section avatar>
           <q-icon color="grey" size="xs" name="mdi-flag" />
         </q-item-section>
-        <q-item-section>Language</q-item-section>
+        <q-item-section>
+          {{ $t("language") }}
+        </q-item-section>
       </q-item>
     </q-list>
     <language-select-dialog v-model="state.languageSelectDialog" />
