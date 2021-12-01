@@ -563,64 +563,66 @@ export default defineComponent({
     };
 
     const processMessages = async (messages) => {
-      const userId = store.getters["user/user"].id;
+      if (store.getters["user/user"]) {
+        const userId = store.getters["user/user"].id;
 
-      for (let i = 0; i < messages.length; i++) {
-        const sent = userId === messages[i].userId;
-        const sentAt = new Date(messages[i].sentAt.seconds * 1000);
-        const files = firebase
-          .firestore()
-          .collection("/chats")
-          .doc(state.chatDetails.id)
-          .collection("files");
-
-        let username = "";
-
-        if (messages[i].userId === userId) {
-          username = `${store.getters["user/user"].username}#${store.getters["user/user"].shorthandId}`;
-        } else {
-          const user = await firebase
+        for (let i = 0; i < messages.length; i++) {
+          const sent = userId === messages[i].userId;
+          const sentAt = new Date(messages[i].sentAt.seconds * 1000);
+          const files = firebase
             .firestore()
-            .collection("/users")
-            .doc(messages[i].userId)
-            .get();
-          username = `${user.data().username}#${user.data().shorthandId}`;
-        }
+            .collection("/chats")
+            .doc(state.chatDetails.id)
+            .collection("files");
 
-        if (messages[i].type === MSG_TYPE.FILE || messages[i].type === MSG_TYPE.AUDIO) {
-          const file = firebase.storage().ref(messages[i].fileId);
-          const fileUrl = await file.getDownloadURL();
+          let username = "";
 
-          const fileInfo = await files.doc(messages[i].fileId).get();
+          if (messages[i].userId === userId) {
+            username = `${store.getters["user/user"].username}#${store.getters["user/user"].shorthandId}`;
+          } else {
+            const user = await firebase
+              .firestore()
+              .collection("/users")
+              .doc(messages[i].userId)
+              .get();
+            username = `${user.data().username}#${user.data().shorthandId}`;
+          }
 
-          state.messages.push({
-            id: messages[i].id,
-            userId,
-            sent,
-            sentAt,
-            type: messages[i].type,
-            fileUrl,
-            chatId: state.chatDetails.id,
-            fileId: messages[i].fileId,
-            fileName: fileInfo.data().name,
-            fileSize: fileInfo.data().size,
-            username,
-            portrait: messages[i].portrait
-          });
-        } else {
-          state.messages.push({
-            id: messages[i].id,
-            userId,
-            sent,
-            sentAt,
-            type: messages[i].type,
-            txt: messages[i].txt,
-            username
-          });
-        }
+          if (messages[i].type === MSG_TYPE.FILE || messages[i].type === MSG_TYPE.AUDIO) {
+            const file = firebase.storage().ref(messages[i].fileId);
+            const fileUrl = await file.getDownloadURL();
 
-        if (sent) {
-          scrollToEndOfMsgContainer();
+            const fileInfo = await files.doc(messages[i].fileId).get();
+
+            state.messages.push({
+              id: messages[i].id,
+              userId,
+              sent,
+              sentAt,
+              type: messages[i].type,
+              fileUrl,
+              chatId: state.chatDetails.id,
+              fileId: messages[i].fileId,
+              fileName: fileInfo.data().name,
+              fileSize: fileInfo.data().size,
+              username,
+              portrait: messages[i].portrait
+            });
+          } else {
+            state.messages.push({
+              id: messages[i].id,
+              userId,
+              sent,
+              sentAt,
+              type: messages[i].type,
+              txt: messages[i].txt,
+              username
+            });
+          }
+
+          if (sent) {
+            scrollToEndOfMsgContainer();
+          }
         }
       }
     };

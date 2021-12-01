@@ -84,7 +84,6 @@ export default defineComponent({
       setTimeout(async () => {
         await store.dispatch("app/setLoading", false);
       }, 750);
-      console.log(store.getters["user/user"].lang);
       locale.value = store.getters["user/user"].lang;
     });
 
