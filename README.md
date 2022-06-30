@@ -1,6 +1,5 @@
-# Chat app web (chat-app-web)
-
-A chat app for the web, based on WhatsApp.
+<h1 align=center>Chat app web</h1>
+<p align=center>Messaging service for the web, based on WhatsApp.</p>
 
 ![image](https://user-images.githubusercontent.com/36193643/144072641-3a353892-48ab-4c95-9f27-cbbd3f7e4e4b.png)
 
