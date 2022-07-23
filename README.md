@@ -4,6 +4,11 @@
   📱 <a href="https://github.com/MatijaNovosel/chat-app"> Mobile version </a>
 </p>
 
+## 🔨 Built With
+
+- [Firebase](https://firebase.google.com/)
+- [Vue 3](https://vuejs.org/)
+
 ![image](https://user-images.githubusercontent.com/36193643/144072641-3a353892-48ab-4c95-9f27-cbbd3f7e4e4b.png)
 
 ## Install the dependencies
