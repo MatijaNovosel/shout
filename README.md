@@ -12,6 +12,12 @@
 
 ![image](https://user-images.githubusercontent.com/36193643/144072641-3a353892-48ab-4c95-9f27-cbbd3f7e4e4b.png)
 
+## 🚀 Features
+
+- End to end user encryption
+- Real time private and group chatting with the option of sending all sorts of multimedia
+- User customization
+
 ## Install the dependencies
 ```bash
 npm install
