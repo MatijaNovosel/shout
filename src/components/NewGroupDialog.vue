@@ -102,80 +102,68 @@
   </q-dialog>
 </template>
 
-<script>
-import { defineComponent, reactive, computed } from "vue";
+<script setup>
+import { reactive, computed } from "vue";
 import { useStore } from "vuex";
 import { debounce } from "debounce";
 import UserService from "src/services/users";
 import ChatService from "src/services/chats";
 
-export default defineComponent({
-  name: "new-group-dialog",
-  props: {
-    modelValue: {
-      type: Boolean
-    }
-  },
-  emits: ["update:modelValue"],
-  setup(props, { emit }) {
-    const store = useStore();
-
-    const state = reactive({
-      user: computed(() => store.getters["user/user"]),
-      filteredUsers: [],
-      searchQuery: null,
-      searching: false,
-      selectedUsers: []
-    });
-
-    const close = () => {
-      state.selectedUsers = [];
-      state.searchQuery = null;
-      emit("update:modelValue", false);
-    };
-
-    const findUser = async () => {
-      state.searching = true;
-      state.filteredUsers = await UserService.searchByUsername(props.users, state.searchQuery);
-      setTimeout(() => {
-        state.searching = false;
-      }, 400);
-    };
-
-    const search = debounce(findUser, 750);
-
-    const selectUser = (user) => {
-      if (!state.selectedUsers.some((u) => u.id === user.id)) {
-        state.selectedUsers.push(user);
-      }
-    };
-
-    const createGroup = async () => {
-      await ChatService.createGroup(
-        {
-          id: state.user.id,
-          avatarUrl: state.user.avatarUrl,
-          username: state.user.username,
-          shorthandId: state.user.shorthandId
-        },
-        state.selectedUsers
-      );
-    };
-
-    const removeSelectedUser = (val) => {
-      state.selectedUsers = state.selectedUsers.filter((u) => u.id !== val.id);
-    };
-
-    return {
-      state,
-      close,
-      search,
-      selectUser,
-      createGroup,
-      removeSelectedUser
-    };
+const props = defineProps({
+  modelValue: {
+    type: Boolean
   }
 });
+
+const emit = useEmits(["update:modelValue"]);
+
+const store = useStore();
+
+const state = reactive({
+  user: computed(() => store.getters["user/user"]),
+  filteredUsers: [],
+  searchQuery: null,
+  searching: false,
+  selectedUsers: []
+});
+
+const close = () => {
+  state.selectedUsers = [];
+  state.searchQuery = null;
+  emit("update:modelValue", false);
+};
+
+const findUser = async () => {
+  state.searching = true;
+  state.filteredUsers = await UserService.searchByUsername(props.users, state.searchQuery);
+  setTimeout(() => {
+    state.searching = false;
+  }, 400);
+};
+
+const search = debounce(findUser, 750);
+
+const selectUser = (user) => {
+  if (!state.selectedUsers.some((u) => u.id === user.id)) {
+    state.selectedUsers.push(user);
+  }
+};
+
+const createGroup = async () => {
+  await ChatService.createGroup(
+    {
+      id: state.user.id,
+      avatarUrl: state.user.avatarUrl,
+      username: state.user.username,
+      shorthandId: state.user.shorthandId
+    },
+    state.selectedUsers
+  );
+};
+
+const removeSelectedUser = (val) => {
+  state.selectedUsers = state.selectedUsers.filter((u) => u.id !== val.id);
+};
 </script>
 
 <style scoped lang="scss">

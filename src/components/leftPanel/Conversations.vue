@@ -134,8 +134,8 @@
   <new-group-dialog v-model="state.newGroupDialog" />
 </template>
 
-<script>
-import { defineComponent, reactive, computed } from "vue";
+<script setup>
+import { reactive, computed } from "vue";
 import ConversationListItem from "src/components/ConversationListItem.vue";
 import { Notify } from "quasar";
 import { ROUTE_NAMES } from "src/router/routeNames";
@@ -147,144 +147,125 @@ import { copyToClipboard } from "src/utils/helpers";
 import ChatService from "src/services/chats";
 import { useI18n } from "vue-i18n";
 
-export default defineComponent({
-  name: "conversations",
-  emits: ["set-left-panel", "reload-conversations"],
-  components: {
-    ConversationListItem,
-    UserSearchDialog,
-    NewGroupDialog
-  },
-  setup() {
-    const store = useStore();
-    const router = useRouter();
-    const { t } = useI18n({ useScope: "global" });
+const emit = defineEmits(["set-left-panel", "reload-conversations"]);
 
-    const state = reactive({
-      userListContainerStyle: computed(() => {
-        if (!state.notificationsEnablePanelActive) {
-          return {
-            height: "calc(100% - 130px)",
-            "max-height": "calc(100% - 130px)"
-          };
-        } else {
-          return {
-            height: "calc(100% - 204px)",
-            "max-height": "calc(100% - 204px)"
-          };
-        }
-      }),
-      notificationsEnabled: false,
-      notificationsEnablePanelActive: true,
-      userSearchDialog: false,
-      newGroupDialog: false
-    });
+const store = useStore();
+const router = useRouter();
+const { t } = useI18n({ useScope: "global" });
+const user = computed(() => store.getters["user/user"]);
+const chats = computed(() => store.getters["chats/chats"]);
 
-    const checkNotificationPromise = () => {
-      try {
-        Notification.requestPermission().then();
-      } catch (e) {
-        return false;
-      }
-      return true;
-    };
-
-    const askNotificationPermission = () => {
-      if (!("Notification" in window)) {
-        console.error("This browser does not support notifications.");
-      } else {
-        if (checkNotificationPromise()) {
-          Notification.requestPermission().then((permission) => {
-            handlePermission(permission);
-          });
-        } else {
-          Notification.requestPermission((permission) => {
-            handlePermission(permission);
-          });
-        }
-      }
-    };
-
-    const handlePermission = () => {
-      if (Notification.permission === "denied" || Notification.permission === "default") {
-        console.error("Nope!");
-      } else {
-        state.notificationsEnabled = true;
-        state.notificationsEnablePanelActive = false;
-        // Handle sending notifications here
-      }
-    };
-
-    const logOut = async () => {
-      try {
-        Notify.create({
-          message: t("signedOut"),
-          position: "top",
-          color: "dark",
-          textColor: "orange"
-        });
-        await store.dispatch("user/logOut");
-        router.push({
-          name: ROUTE_NAMES.LOGIN
-        });
-      } catch (e) {
-        Notify.create({
-          message: e.message,
-          position: "top",
-          color: "dark",
-          textColor: "orange"
-        });
-      }
-    };
-
-    const openUserSearchDialog = () => {
-      state.userSearchDialog = true;
-    };
-
-    const openNewGroupDialog = () => {
-      state.newGroupDialog = true;
-    };
-
-    const copyUsernameToClipboard = () => {
-      copyToClipboard(
-        `${store.getters["user/user"].username}#${store.getters["user/user"].shorthandId}`
-      );
-      Notify.create({
-        message: "Username copied to clipboard",
-        position: "top",
-        color: "dark",
-        textColor: "orange"
-      });
-    };
-
-    const respondToGroupInvite = async (response, invite) => {
-      await ChatService.sendGroupInviteResponse(
-        response,
-        invite.id,
-        {
-          id: store.getters["user/user"].id,
-          about: "About",
-          avatarUrl: store.getters["user/user"].avatarUrl,
-          username: `${store.getters["user/user"].username}#${store.getters["user/user"].shorthandId}`
-        },
-        invite.chatId
-      );
-      store.dispatch("user/respondToInvite", invite.id);
-    };
-
-    return {
-      state,
-      askNotificationPermission,
-      logOut,
-      openUserSearchDialog,
-      copyUsernameToClipboard,
-      user: computed(() => store.getters["user/user"]),
-      chats: computed(() => store.getters["chats/chats"]),
-      respondToGroupInvite,
-      openNewGroupDialog
-    };
-  }
+const state = reactive({
+  userListContainerStyle: computed(() => {
+    if (!state.notificationsEnablePanelActive) {
+      return {
+        height: "calc(100% - 130px)",
+        "max-height": "calc(100% - 130px)"
+      };
+    } else {
+      return {
+        height: "calc(100% - 204px)",
+        "max-height": "calc(100% - 204px)"
+      };
+    }
+  }),
+  notificationsEnabled: false,
+  notificationsEnablePanelActive: true,
+  userSearchDialog: false,
+  newGroupDialog: false
 });
+
+const checkNotificationPromise = () => {
+  try {
+    Notification.requestPermission().then();
+  } catch (e) {
+    return false;
+  }
+  return true;
+};
+
+const askNotificationPermission = () => {
+  if (!("Notification" in window)) {
+    console.error("This browser does not support notifications.");
+  } else {
+    if (checkNotificationPromise()) {
+      Notification.requestPermission().then((permission) => {
+        handlePermission(permission);
+      });
+    } else {
+      Notification.requestPermission((permission) => {
+        handlePermission(permission);
+      });
+    }
+  }
+};
+
+const handlePermission = () => {
+  if (Notification.permission === "denied" || Notification.permission === "default") {
+    console.error("Nope!");
+  } else {
+    state.notificationsEnabled = true;
+    state.notificationsEnablePanelActive = false;
+    // Handle sending notifications here
+  }
+};
+
+const logOut = async () => {
+  try {
+    Notify.create({
+      message: t("signedOut"),
+      position: "top",
+      color: "dark",
+      textColor: "orange"
+    });
+    await store.dispatch("user/logOut");
+    router.push({
+      name: ROUTE_NAMES.LOGIN
+    });
+  } catch (e) {
+    Notify.create({
+      message: e.message,
+      position: "top",
+      color: "dark",
+      textColor: "orange"
+    });
+  }
+};
+
+const openUserSearchDialog = () => {
+  state.userSearchDialog = true;
+};
+
+const openNewGroupDialog = () => {
+  state.newGroupDialog = true;
+};
+
+const copyUsernameToClipboard = () => {
+  copyToClipboard(
+    `${store.getters["user/user"].username}#${store.getters["user/user"].shorthandId}`
+  );
+  Notify.create({
+    message: "Username copied to clipboard",
+    position: "top",
+    color: "dark",
+    textColor: "orange"
+  });
+};
+
+const respondToGroupInvite = async (response, invite) => {
+  await ChatService.sendGroupInviteResponse(
+    response,
+    invite.id,
+    {
+      id: store.getters["user/user"].id,
+      about: "About",
+      avatarUrl: store.getters["user/user"].avatarUrl,
+      username: `${store.getters["user/user"].username}#${store.getters["user/user"].shorthandId}`
+    },
+    invite.chatId
+  );
+  store.dispatch("user/respondToInvite", invite.id);
+};
 </script>
 
 <style scoped lang="scss">

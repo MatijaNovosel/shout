@@ -23,90 +23,78 @@
   </q-dialog>
 </template>
 
-<script>
-import { defineComponent, reactive, computed, watch } from "vue";
+<script setup>
+import { reactive, computed, watch } from "vue";
 import { useStore } from "vuex";
 import { CHAT_PRIVILEGES } from "src/utils/constants";
 import { useI18n } from "vue-i18n";
 import UserService from "src/services/users";
 import { Notify } from "quasar";
 
-export default defineComponent({
-  name: "edit-privileges-dialog",
-  props: {
-    modelValue: {
-      type: Boolean
-    },
-    privileges: {
-      type: Array
-    },
-    userId: {
-      type: String
-    },
-    chatId: {
-      type: String
-    }
+const props = defineProps({
+  modelValue: {
+    type: Boolean
   },
-  emits: ["update:modelValue"],
-  setup(props, { emit }) {
-    const store = useStore();
-    const { t } = useI18n({ useScope: "global" });
-
-    const state = reactive({
-      user: computed(() => store.getters["user/user"]),
-      filteredUsers: [],
-      searchQuery: null,
-      searching: false,
-      selectedPrivileges: []
-    });
-
-    const close = () => {
-      emit("update:modelValue", false);
-    };
-
-    const privilegesEnum = Object.entries(CHAT_PRIVILEGES).map((entry) => ({
-      label: t(`privileges.${entry[0]}`),
-      value: entry[1]
-    }));
-
-    const privilegesChanged = async () => {
-      const newPrivileges = [...state.selectedPrivileges];
-      try {
-        await UserService.updatePrivileges(newPrivileges, props.userId, props.chatId);
-        Notify.create({
-          message: t("successfullyChangedPrivileges"),
-          position: "top",
-          color: "dark",
-          textColor: "orange"
-        });
-      } catch (e) {
-        Notify.create({
-          message: t("failedToChangePrivileges"),
-          position: "top",
-          color: "dark",
-          textColor: "orange"
-        });
-      }
-    };
-
-    watch(
-      () => props.privileges,
-      (val) => {
-        if (val) {
-          state.selectedPrivileges = val;
-        }
-      }
-    );
-
-    return {
-      state,
-      close,
-      privilegesEnum,
-      CHAT_PRIVILEGES,
-      privilegesChanged
-    };
+  privileges: {
+    type: Array
+  },
+  userId: {
+    type: String
+  },
+  chatId: {
+    type: String
   }
 });
+
+const emit = defineEmits(["update:modelValue"]);
+const store = useStore();
+const { t } = useI18n({ useScope: "global" });
+
+const state = reactive({
+  user: computed(() => store.getters["user/user"]),
+  filteredUsers: [],
+  searchQuery: null,
+  searching: false,
+  selectedPrivileges: []
+});
+
+const close = () => {
+  emit("update:modelValue", false);
+};
+
+const privilegesEnum = Object.entries(CHAT_PRIVILEGES).map((entry) => ({
+  label: t(`privileges.${entry[0]}`),
+  value: entry[1]
+}));
+
+const privilegesChanged = async () => {
+  const newPrivileges = [...state.selectedPrivileges];
+  try {
+    await UserService.updatePrivileges(newPrivileges, props.userId, props.chatId);
+    Notify.create({
+      message: t("successfullyChangedPrivileges"),
+      position: "top",
+      color: "dark",
+      textColor: "orange"
+    });
+  } catch (e) {
+    Notify.create({
+      message: t("failedToChangePrivileges"),
+      position: "top",
+      color: "dark",
+      textColor: "orange"
+    });
+  }
+};
+
+watch(
+  () => props.privileges,
+  (val) => {
+    if (val) {
+      state.selectedPrivileges = val;
+    }
+  }
+);
 </script>
 
 <style scoped lang="scss">

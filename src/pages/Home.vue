@@ -35,8 +35,8 @@
   </q-page>
 </template>
 
-<script>
-import { defineComponent, reactive, computed, onMounted } from "vue";
+<script setup>
+import { reactive, computed, onMounted } from "vue";
 import Conversations from "src/components/leftPanel/Conversations.vue";
 import Profile from "src/components/leftPanel/Profile.vue";
 import Settings from "src/components/leftPanel/Settings.vue";
@@ -47,79 +47,62 @@ import { isAfter } from "date-fns";
 import { GROUP_CHANGE_TYPE } from "src/utils/constants";
 import { useI18n } from "vue-i18n";
 
-export default defineComponent({
-  name: "Home",
-  components: {
-    Conversations,
-    Profile,
-    Settings
-  },
-  setup() {
-    const store = useStore();
-    const { locale } = useI18n({ useScope: "global" });
+const store = useStore();
+const { locale } = useI18n({ useScope: "global" });
 
-    const state = reactive({
-      width: 0,
-      leftPaneComponent: "conversations",
-      appLoading: computed(() => store.getters["app/loading"]),
-      loadedAt: new Date()
-    });
-
-    const changeMainContainerWidth = () => {
-      state.width = window.innerWidth - 100;
-    };
-
-    const setLeftPanel = (name) => {
-      state.leftPaneComponent = name;
-    };
-
-    const getConversations = async () => {
-      const chats = await ChatService.getAll(store.getters["user/user"].id);
-      await store.dispatch("chats/setChats", chats);
-    };
-
-    onMounted(async () => {
-      await store.dispatch("app/setLoading", true);
-      await getConversations();
-      setTimeout(async () => {
-        await store.dispatch("app/setLoading", false);
-      }, 750);
-      locale.value = store.getters["user/user"].lang;
-    });
-
-    firebase
-      .firestore()
-      .collection("/chats")
-      .where("userIds", "array-contains", store.getters["user/user"].id)
-      .onSnapshot(async (snapshot) => {
-        let changes = 0;
-        snapshot.forEach((doc) => {
-          const data = doc.data();
-          if (isAfter(new Date(data.lastChangedAt.seconds * 1000), state.loadedAt)) {
-            if (
-              [
-                GROUP_CHANGE_TYPE.NAME,
-                GROUP_CHANGE_TYPE.AVATAR,
-                GROUP_CHANGE_TYPE.MESSAGE_SENT
-              ].includes(data.changeType)
-            ) {
-              changes++;
-            }
-          }
-        });
-        if (changes !== 0) {
-          await getConversations();
-        }
-      });
-
-    return {
-      changeMainContainerWidth,
-      state,
-      setLeftPanel,
-      getConversations
-    };
-  }
+const state = reactive({
+  width: 0,
+  leftPaneComponent: "conversations",
+  appLoading: computed(() => store.getters["app/loading"]),
+  loadedAt: new Date()
 });
+
+const changeMainContainerWidth = () => {
+  state.width = window.innerWidth - 100;
+};
+
+const setLeftPanel = (name) => {
+  state.leftPaneComponent = name;
+};
+
+const getConversations = async () => {
+  const chats = await ChatService.getAll(store.getters["user/user"].id);
+  await store.dispatch("chats/setChats", chats);
+};
+
+onMounted(async () => {
+  await store.dispatch("app/setLoading", true);
+  await getConversations();
+  setTimeout(async () => {
+    await store.dispatch("app/setLoading", false);
+  }, 750);
+  locale.value = store.getters["user/user"].lang;
+});
+
+firebase
+  .firestore()
+  .collection("/chats")
+  .where("userIds", "array-contains", store.getters["user/user"].id)
+  .onSnapshot(async (snapshot) => {
+    let changes = 0;
+    snapshot.forEach((doc) => {
+      const data = doc.data();
+      if (isAfter(new Date(data.lastChangedAt.seconds * 1000), state.loadedAt)) {
+        if (
+          [
+            GROUP_CHANGE_TYPE.NAME,
+            GROUP_CHANGE_TYPE.AVATAR,
+            GROUP_CHANGE_TYPE.MESSAGE_SENT
+          ].includes(data.changeType)
+        ) {
+          changes++;
+        }
+      }
+    });
+    if (changes !== 0) {
+      await getConversations();
+    }
+  });
 </script>
 
 <style scoped lang="scss">

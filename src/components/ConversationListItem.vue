@@ -65,73 +65,48 @@
   </q-item>
 </template>
 
-<script>
+<script setup>
 import { defineComponent } from "vue";
 import { CHAT_TYPE } from "../utils/constants";
 import { formatDistanceToNow, isSameDay, format } from "date-fns";
 import { ROUTE_NAMES } from "src/router/routeNames";
 
-export default defineComponent({
-  name: "conversation-list-item",
-  props: {
-    conversation: {
-      type: Object,
-      required: true
-    }
-  },
-  setup(props) {
-    const getConversationIcon = () => {
-      switch (props.conversation.type) {
-        case CHAT_TYPE.PRIVATE:
-          return "mdi-account-supervisor";
-        case CHAT_TYPE.GROUP:
-          return "mdi-account-group";
-        case CHAT_TYPE.SELF:
-          return "mdi-account";
-        default:
-          return "mdi-circle";
-      }
-    };
-
-    const getRoute = () => {
-      const route = {
-        params: {
-          id: props.conversation.id
-        }
-      };
-
-      switch (props.conversation.type) {
-        case CHAT_TYPE.PRIVATE:
-          route.name = ROUTE_NAMES.PRIVATE_CHAT;
-          break;
-        case CHAT_TYPE.GROUP:
-          route.name = ROUTE_NAMES.GROUP_CHAT;
-          break;
-        case CHAT_TYPE.SELF:
-          route.name = ROUTE_NAMES.SELF_CHAT;
-          break;
-        default:
-          route.name = ROUTE_NAMES.INDEX;
-          break;
-      }
-
-      return route;
-    };
-
-    const formatMessageDate = (sentAt) => {
-      if (isSameDay(new Date(), new Date(sentAt))) {
-        return format(new Date(sentAt), "HH:mm");
-      }
-      return formatDistanceToNow(new Date(sentAt));
-    };
-
-    return {
-      formatDistanceToNow,
-      CHAT_TYPE,
-      getConversationIcon,
-      getRoute,
-      formatMessageDate
-    };
+const props = defineProps({
+  conversation: {
+    type: Object,
+    required: true
   }
 });
+
+const getRoute = () => {
+  const route = {
+    params: {
+      id: props.conversation.id
+    }
+  };
+
+  switch (props.conversation.type) {
+    case CHAT_TYPE.PRIVATE:
+      route.name = ROUTE_NAMES.PRIVATE_CHAT;
+      break;
+    case CHAT_TYPE.GROUP:
+      route.name = ROUTE_NAMES.GROUP_CHAT;
+      break;
+    case CHAT_TYPE.SELF:
+      route.name = ROUTE_NAMES.SELF_CHAT;
+      break;
+    default:
+      route.name = ROUTE_NAMES.INDEX;
+      break;
+  }
+
+  return route;
+};
+
+const formatMessageDate = (sentAt) => {
+  if (isSameDay(new Date(), new Date(sentAt))) {
+    return format(new Date(sentAt), "HH:mm");
+  }
+  return formatDistanceToNow(new Date(sentAt));
+};
 </script>

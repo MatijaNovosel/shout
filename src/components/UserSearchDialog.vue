@@ -71,59 +71,49 @@
   </q-dialog>
 </template>
 
-<script>
-import { defineComponent, reactive, computed } from "vue";
+<script setup>
+import { reactive, computed } from "vue";
 import { useStore } from "vuex";
 import { debounce } from "debounce";
 import UserService from "src/services/users";
 
-export default defineComponent({
-  name: "user-search-dialog",
-  props: {
-    modelValue: {
-      type: Boolean
-    },
-    users: {
-      type: Array
-    }
+const props = defineProps({
+  modelValue: {
+    type: Boolean
   },
-  emits: ["update:modelValue", "user-selected"],
-  setup(props, { emit }) {
-    const store = useStore();
-
-    const state = reactive({
-      user: computed(() => store.getters["user/user"]),
-      filteredUsers: [],
-      searchQuery: null,
-      searching: false
-    });
-
-    const close = () => {
-      emit("update:modelValue", false);
-    };
-
-    const findUser = async () => {
-      state.searching = true;
-      state.filteredUsers = await UserService.searchByUsername(props.users, state.searchQuery);
-      setTimeout(() => {
-        state.searching = false;
-      }, 400);
-    };
-
-    const search = debounce(findUser, 750);
-
-    const selectUser = (user) => {
-      emit("user-selected", user);
-    };
-
-    return {
-      state,
-      close,
-      search,
-      selectUser
-    };
+  users: {
+    type: Array
   }
 });
+
+const emit = defineEmits(["update:modelValue", "user-selected"]);
+
+const store = useStore();
+
+const state = reactive({
+  user: computed(() => store.getters["user/user"]),
+  filteredUsers: [],
+  searchQuery: null,
+  searching: false
+});
+
+const close = () => {
+  emit("update:modelValue", false);
+};
+
+const findUser = async () => {
+  state.searching = true;
+  state.filteredUsers = await UserService.searchByUsername(props.users, state.searchQuery);
+  setTimeout(() => {
+    state.searching = false;
+  }, 400);
+};
+
+const search = debounce(findUser, 750);
+
+const selectUser = (user) => {
+  emit("user-selected", user);
+};
 </script>
 
 <style scoped lang="scss">

@@ -16,21 +16,13 @@
   </div>
 </template>
 
-<script>
-import { defineComponent, reactive } from "vue";
+<script setup>
+import { reactive } from "vue";
 
-export default defineComponent({
-  name: "private-chat-search",
-  emits: ["close"],
-  setup() {
-    const state = reactive({
-      muteNotifications: false
-    });
+const emits = defineEmits(["close"]);
 
-    return {
-      state
-    };
-  }
+const state = reactive({
+  muteNotifications: false
 });
 </script>
 

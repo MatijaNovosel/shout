@@ -51,25 +51,14 @@
   </div>
 </template>
 
-<script>
-import { defineComponent, reactive } from "vue";
+<script setup>
+import { reactive } from "vue";
 import LanguageSelectDialog from "../LanguageSelectDialog.vue";
 
-export default defineComponent({
-  name: "settings",
-  emits: ["set-left-panel"],
-  components: {
-    LanguageSelectDialog
-  },
-  setup() {
-    const state = reactive({
-      languageSelectDialog: false
-    });
+const emit = defineEmits(["set-left-panel"]);
 
-    return {
-      state
-    };
-  }
+const state = reactive({
+  languageSelectDialog: false
 });
 </script>
 

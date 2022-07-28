@@ -53,87 +53,79 @@
   </div>
 </template>
 
-<script>
-import { defineComponent, reactive, computed, onMounted, onUnmounted } from "vue";
+<script setup>
+import { reactive, computed, onMounted, onUnmounted } from "vue";
 import emojis from "src/utils/emojis";
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#escaping
 const escapeRegExp = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-export default defineComponent({
-  name: "emoji-picker",
-  props: {
-    search: {
-      type: String,
-      default: ""
-    }
-  },
-  setup(props, { emit }) {
-    const state = reactive({
-      tab: "People",
-      emojiSearchText: null,
-      categories: ["People", "Nature", "Objects", "Places", "Symbols"],
-      emojisComputed: computed(() => {
-        if (state.emojiSearchText !== null && state.emojiSearchText !== "") {
-          const obj = {};
-          for (const category in emojis) {
-            obj[category] = {};
-            for (const emoji in emojis[category]) {
-              if (new RegExp(`.*${escapeRegExp(state.emojiSearchText)}.*`).test(emoji)) {
-                obj[category][emoji] = emojis[category][emoji];
-              }
-            }
-            if (Object.keys(obj[category]).length === 0) {
-              delete obj[category];
-            }
-          }
-          return obj;
-        }
-        return emojis;
-      })
-    });
-
-    const insert = (emoji) => {
-      emit("emoji", emoji);
-    };
-
-    const escape = (e) => {
-      if (e.keyCode === 27) {
-        emit("close");
-      }
-    };
-
-    const formatTabIcon = (category) => {
-      switch (category) {
-        case "People":
-          return "mdi-emoticon";
-        case "Nature":
-          return "mdi-leaf";
-        case "Objects":
-          return "mdi-book-open-blank-variant";
-        case "Places":
-          return "mdi-map-marker";
-        case "Symbols":
-          return "mdi-triangle";
-        default:
-          return "mdi-circle";
-      }
-    };
-
-    onMounted(() => {
-      document.addEventListener("keyup", escape);
-    });
-
-    onUnmounted(() => {
-      document.removeEventListener("keyup", escape);
-    });
-
-    return {
-      state,
-      insert,
-      formatTabIcon
-    };
+const props = defineProps({
+  search: {
+    type: String,
+    default: ""
   }
+});
+
+const emit = defineEmits(["emoji", "close"]);
+
+const state = reactive({
+  tab: "People",
+  emojiSearchText: null,
+  categories: ["People", "Nature", "Objects", "Places", "Symbols"],
+  emojisComputed: computed(() => {
+    if (state.emojiSearchText !== null && state.emojiSearchText !== "") {
+      const obj = {};
+      for (const category in emojis) {
+        obj[category] = {};
+        for (const emoji in emojis[category]) {
+          if (new RegExp(`.*${escapeRegExp(state.emojiSearchText)}.*`).test(emoji)) {
+            obj[category][emoji] = emojis[category][emoji];
+          }
+        }
+        if (Object.keys(obj[category]).length === 0) {
+          delete obj[category];
+        }
+      }
+      return obj;
+    }
+    return emojis;
+  })
+});
+
+const insert = (emoji) => {
+  emit("emoji", emoji);
+};
+
+const escape = (e) => {
+  if (e.keyCode === 27) {
+    emit("close");
+  }
+};
+
+const formatTabIcon = (category) => {
+  switch (category) {
+    case "People":
+      return "mdi-emoticon";
+    case "Nature":
+      return "mdi-leaf";
+    case "Objects":
+      return "mdi-book-open-blank-variant";
+    case "Places":
+      return "mdi-map-marker";
+    case "Symbols":
+      return "mdi-triangle";
+    default:
+      return "mdi-circle";
+  }
+};
+
+onMounted(() => {
+  document.addEventListener("keyup", escape);
+});
+
+onUnmounted(() => {
+  document.removeEventListener("keyup", escape);
 });
 </script>
 

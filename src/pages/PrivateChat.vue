@@ -143,139 +143,107 @@
   </div>
 </template>
 
-<script>
-import { defineComponent, reactive, onMounted } from "vue";
-import { range, randInt, downloadURI } from "src/utils/helpers";
+<script setup>
+import { reactive, onMounted } from "vue";
+import { range, randInt } from "src/utils/helpers";
 import { loremIpsum, MSG_TYPE, PRIVATE_CHAT_RIGHT_PANEL } from "src/utils/constants";
-import { format } from "date-fns";
-import { ROUTE_NAMES } from "src/router/routeNames";
 import MessagePanel from "src/components/chat/MessagePanel.vue";
 import ContactDetails from "src/components/chat/rightPanel/ContactDetails.vue";
 import PrivateChatSearch from "src/components/chat/rightPanel/PrivateChatSearch.vue";
 
-export default defineComponent({
-  name: "ChatDetails",
-  components: {
-    MessagePanel,
-    ContactDetails,
-    PrivateChatSearch
-  },
-  setup() {
-    const contactDetails = {
-      name: "Name Surname",
-      status: "Name Surname status"
-    };
+const contactDetails = {
+  name: "Name Surname",
+  status: "Name Surname status"
+};
 
-    const state = reactive({
-      messages: [],
-      recording: false,
-      recordingCancelled: false,
-      rightPanelOpen: false,
-      mediaRecorder: null,
-      recordedChunks: [],
-      msgText: null,
-      shouldShowScrollToBottom: false,
-      scrollToBottomTrigger: false,
-      activeRightPanel: PRIVATE_CHAT_RIGHT_PANEL.DETAILS
-    });
+const state = reactive({
+  messages: [],
+  recording: false,
+  recordingCancelled: false,
+  rightPanelOpen: false,
+  mediaRecorder: null,
+  recordedChunks: [],
+  msgText: null,
+  shouldShowScrollToBottom: false,
+  scrollToBottomTrigger: false,
+  activeRightPanel: PRIVATE_CHAT_RIGHT_PANEL.DETAILS
+});
 
-    const stopRecording = (cancel) => {
-      state.recording = false;
-      if (cancel === true) {
-        state.recordingCancelled = cancel;
-        state.mediaRecorder = null;
-      } else {
-        state.recordingCancelled = cancel;
-        state.mediaRecorder.stop();
-        state.recordedChunks = [];
-      }
-    };
+const stopRecording = (cancel) => {
+  state.recording = false;
+  if (cancel === true) {
+    state.recordingCancelled = cancel;
+    state.mediaRecorder = null;
+  } else {
+    state.recordingCancelled = cancel;
+    state.mediaRecorder.stop();
+    state.recordedChunks = [];
+  }
+};
 
-    const download = () => {
-      downloadURI(
-        URL.createObjectURL(new Blob(state.recordedChunks)),
-        `${format(new Date(), "ddMMyyyyHHmm")}.wav`
-      );
-    };
-
-    const handleSuccess = (stream) => {
-      state.mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
-      state.mediaRecorder.addEventListener("dataavailable", (e) => {
-        if (e.data.size > 0) {
-          state.recordedChunks.push(e.data);
-        }
-      });
-      state.mediaRecorder.addEventListener("stop", () => {
-        if (!state.recordingCancelled) {
-          state.messages.push({
-            userId: 1,
-            sent: true,
-            type: MSG_TYPE.AUDIO,
-            audioContent: URL.createObjectURL(new Blob(state.recordedChunks))
-          });
-          scrollToEndOfMsgContainer();
-        }
-      });
-      state.mediaRecorder.start();
-    };
-
-    const scrollToEndOfMsgContainer = () => {
-      state.scrollToBottomTrigger = !state.scrollToBottomTrigger;
-    };
-
-    const record = () => {
-      state.recording = true;
-      navigator.mediaDevices.getUserMedia({ audio: true, video: false }).then(handleSuccess);
-    };
-
-    const sendTxtMsg = () => {
-      if (state.msgText !== null && state.msgText !== "" && state.msgText.length > 4) {
-        state.messages.push({
-          userId: 1,
-          sent: true,
-          type: MSG_TYPE.TXT,
-          txt: state.msgText
-        });
-        state.msgText = null;
-        scrollToEndOfMsgContainer();
-      }
-    };
-
-    const shouldShowScrollToBottom = (val) => {
-      state.shouldShowScrollToBottom = val;
-    };
-
-    const openRightPanel = (rightPanel) => {
-      state.activeRightPanel = rightPanel;
-      state.rightPanelOpen = true;
-    };
-
-    onMounted(() => {
-      state.messages = range(15).map((n) => {
-        const userId = randInt(1, 2);
-        return {
-          userId,
-          txt: loremIpsum.substr(0, randInt(10, loremIpsum.length)),
-          sent: userId === 1,
-          type: MSG_TYPE.TXT
-        };
+const handleSuccess = (stream) => {
+  state.mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
+  state.mediaRecorder.addEventListener("dataavailable", (e) => {
+    if (e.data.size > 0) {
+      state.recordedChunks.push(e.data);
+    }
+  });
+  state.mediaRecorder.addEventListener("stop", () => {
+    if (!state.recordingCancelled) {
+      state.messages.push({
+        userId: 1,
+        sent: true,
+        type: MSG_TYPE.AUDIO,
+        audioContent: URL.createObjectURL(new Blob(state.recordedChunks))
       });
       scrollToEndOfMsgContainer();
-    });
+    }
+  });
+  state.mediaRecorder.start();
+};
 
-    return {
-      state,
-      record,
-      stopRecording,
-      sendTxtMsg,
-      scrollToEndOfMsgContainer,
-      shouldShowScrollToBottom,
-      indexRoute: ROUTE_NAMES.INDEX,
-      contactDetails,
-      openRightPanel,
-      PRIVATE_CHAT_RIGHT_PANEL
-    };
+const scrollToEndOfMsgContainer = () => {
+  state.scrollToBottomTrigger = !state.scrollToBottomTrigger;
+};
+
+const record = () => {
+  state.recording = true;
+  navigator.mediaDevices.getUserMedia({ audio: true, video: false }).then(handleSuccess);
+};
+
+const sendTxtMsg = () => {
+  if (state.msgText !== null && state.msgText !== "" && state.msgText.length > 4) {
+    state.messages.push({
+      userId: 1,
+      sent: true,
+      type: MSG_TYPE.TXT,
+      txt: state.msgText
+    });
+    state.msgText = null;
+    scrollToEndOfMsgContainer();
   }
+};
+
+const shouldShowScrollToBottom = (val) => {
+  state.shouldShowScrollToBottom = val;
+};
+
+const openRightPanel = (rightPanel) => {
+  state.activeRightPanel = rightPanel;
+  state.rightPanelOpen = true;
+};
+
+onMounted(() => {
+  state.messages = range(15).map((n) => {
+    const userId = randInt(1, 2);
+    return {
+      userId,
+      txt: loremIpsum.substring(0, randInt(10, loremIpsum.length)),
+      sent: userId === 1,
+      type: MSG_TYPE.TXT
+    };
+  });
+  scrollToEndOfMsgContainer();
 });
 </script>
 

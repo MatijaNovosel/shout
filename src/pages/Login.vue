@@ -66,8 +66,8 @@
   </q-page>
 </template>
 
-<script>
-import { defineComponent, reactive } from "vue";
+<script setup>
+import { reactive } from "vue";
 import firebase from "firebase";
 import { Notify } from "quasar";
 import { useRouter } from "vue-router";
@@ -78,67 +78,52 @@ import { useStore } from "vuex";
 import UserService from "src/services/users";
 import { useI18n } from "vue-i18n";
 
-export default defineComponent({
-  name: "Login",
-  setup() {
-    const store = useStore();
-    const { t } = useI18n();
+const store = useStore();
+const { t } = useI18n();
 
-    const schema = yup.object({
-      email: yup.string().required().email().nullable().label("Email"),
-      password: yup.string().required().nullable().label("Password")
+const schema = yup.object({
+  email: yup.string().required().email().nullable().label("Email"),
+  password: yup.string().required().nullable().label("Password")
+});
+
+const { handleSubmit, errors, values, submitCount } = useForm({
+  validationSchema: schema
+});
+
+const router = useRouter();
+
+const state = reactive({
+  loading: false
+});
+
+const onSubmit = handleSubmit(async () => {
+  try {
+    state.loading = true;
+    const data = await firebase.auth().signInWithEmailAndPassword(values.email, values.password);
+    const userDetails = await UserService.getDetails(data.user.uid);
+    await store.dispatch("user/fetchUser", { id: data.user.uid, ...userDetails });
+    Notify.create({
+      message: t("signedIn"),
+      position: "top",
+      color: "dark",
+      textColor: "orange"
     });
-
-    const { handleSubmit, errors, values, submitCount } = useForm({
-      validationSchema: schema
+    router.push({
+      name: ROUTE_NAMES.INDEX
     });
-
-    const router = useRouter();
-
-    const state = reactive({
-      loading: false
+  } catch (e) {
+    Notify.create({
+      message: e.message,
+      position: "top",
+      color: "dark",
+      textColor: "orange"
     });
-
-    const onSubmit = handleSubmit(async () => {
-      try {
-        state.loading = true;
-        const data = await firebase
-          .auth()
-          .signInWithEmailAndPassword(values.email, values.password);
-        const userDetails = await UserService.getDetails(data.user.uid);
-        await store.dispatch("user/fetchUser", { id: data.user.uid, ...userDetails });
-        Notify.create({
-          message: t("signedIn"),
-          position: "top",
-          color: "dark",
-          textColor: "orange"
-        });
-        router.push({
-          name: ROUTE_NAMES.INDEX
-        });
-      } catch (e) {
-        Notify.create({
-          message: e.message,
-          position: "top",
-          color: "dark",
-          textColor: "orange"
-        });
-      } finally {
-        state.loading = false;
-      }
-    });
-
-    return {
-      onSubmit,
-      values,
-      submitCount,
-      errors,
-      registerRoute: ROUTE_NAMES.REGISTER,
-      state
-    };
+  } finally {
+    state.loading = false;
   }
 });
 </script>
+
 <style lang="scss" scoped>
 .login-card {
   width: 700px;

@@ -36,87 +36,70 @@
   </q-dialog>
 </template>
 
-<script>
-import { defineComponent, reactive, ref, onMounted, onUnmounted, computed } from "vue";
+<script setup>
+import { reactive, ref, onMounted, onUnmounted, computed } from "vue";
 import AvatarEditor from "src/components/avatarEditor/AvatarEditor.vue";
 import AvatarEditorScale from "src/components/avatarEditor/AvatarEditorScale.vue";
 import { dataURLtoFile } from "src/utils/helpers";
 import { useStore } from "vuex";
 
-export default defineComponent({
-  name: "avatar-editor-dialog",
-  components: {
-    AvatarEditor,
-    AvatarEditorScale
+const props = defineProps({
+  modelValue: {
+    type: Boolean
   },
-  props: {
-    modelValue: {
-      type: Boolean
-    },
-    initialImage: {
-      type: String
-    }
-  },
-  emits: ["update:modelValue", "save"],
-  setup(props, { emit }) {
-    const store = useStore();
-
-    const state = reactive({
-      avatarEditorScale: 1,
-      scaleMin: 1,
-      scaleMax: 3,
-      scaleStep: 0.02,
-      userAvatar: computed(() => store.getters["user/user"].avatarUrl)
-    });
-
-    const avatarEditor = ref(null);
-
-    const close = () => {
-      emit("update:modelValue", false);
-    };
-
-    const save = () => {
-      const canvasData = avatarEditor.value.getImageScaled();
-      const img = canvasData.toDataURL("image/png");
-      const imgFile = dataURLtoFile(img, "savedImg.png");
-      emit("save", imgFile);
-      close();
-    };
-
-    const onImageReady = (scale) => {
-      state.avatarEditorScale = parseFloat(scale);
-    };
-
-    const handleWheelEvent = (e) => {
-      if (e.deltaY > 0) {
-        // Down
-        if (state.avatarEditorScale - state.scaleStep >= state.scaleMin) {
-          state.avatarEditorScale -= state.scaleStep;
-        }
-      } else {
-        // Up
-        if (state.avatarEditorScale + state.scaleStep <= state.scaleMax) {
-          state.avatarEditorScale += state.scaleStep;
-        }
-      }
-    };
-
-    onMounted(() => {
-      document.addEventListener("wheel", handleWheelEvent);
-    });
-
-    onUnmounted(() => {
-      document.removeEventListener("wheel", handleWheelEvent);
-    });
-
-    return {
-      state,
-      close,
-      avatarEditor,
-      save,
-      onImageReady
-    };
+  initialImage: {
+    type: String
   }
+});
+const emit = defineEmits(["update:modelValue", "save"]);
+const store = useStore();
+
+const state = reactive({
+  avatarEditorScale: 1,
+  scaleMin: 1,
+  scaleMax: 3,
+  scaleStep: 0.02,
+  userAvatar: computed(() => store.getters["user/user"].avatarUrl)
+});
+
+const avatarEditor = ref(null);
+
+const close = () => {
+  emit("update:modelValue", false);
+};
+
+const save = () => {
+  const canvasData = avatarEditor.value.getImageScaled();
+  const img = canvasData.toDataURL("image/png");
+  const imgFile = dataURLtoFile(img, "savedImg.png");
+  emit("save", imgFile);
+  close();
+};
+
+const onImageReady = (scale) => {
+  state.avatarEditorScale = parseFloat(scale);
+};
+
+const handleWheelEvent = (e) => {
+  if (e.deltaY > 0) {
+    // Down
+    if (state.avatarEditorScale - state.scaleStep >= state.scaleMin) {
+      state.avatarEditorScale -= state.scaleStep;
+    }
+  } else {
+    // Up
+    if (state.avatarEditorScale + state.scaleStep <= state.scaleMax) {
+      state.avatarEditorScale += state.scaleStep;
+    }
+  }
+};
+
+onMounted(() => {
+  document.addEventListener("wheel", handleWheelEvent);
+});
+
+onUnmounted(() => {
+  document.removeEventListener("wheel", handleWheelEvent);
 });
 </script>
 

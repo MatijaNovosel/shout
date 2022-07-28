@@ -150,8 +150,8 @@
   />
 </template>
 
-<script>
-import { defineComponent, reactive, computed, watch } from "vue";
+<script setup>
+import { reactive, watch } from "vue";
 import { useStore } from "vuex";
 import { format } from "date-fns";
 import UserSearchDialog from "src/components/UserSearchDialog.vue";
@@ -161,217 +161,193 @@ import { Notify } from "quasar";
 import { useRouter } from "vue-router";
 import { ROUTE_NAMES } from "src/router/routeNames";
 
-export default defineComponent({
-  name: "group-details",
-  emits: ["close", "open-avatar-editor"],
-  components: {
-    UserSearchDialog,
-    EditPrivilegesDialog
+const emit = defineEmits(["close", "open-avatar-editor"]);
+
+const props = defineProps({
+  groupDetails: {
+    type: Object,
+    required: true
   },
-  props: {
-    groupDetails: {
-      type: Object,
-      required: true
-    },
-    uploadingPfp: {
-      type: Boolean
-    }
-  },
-  setup(props, { emit }) {
-    const store = useStore();
-    const router = useRouter();
-
-    const state = reactive({
-      muteNotifications: false,
-      avatarEditorDialog: false,
-      userSearchDialog: false,
-      editPrivilegesDialog: false,
-      editingGroupName: false,
-      editingGroupDescription: false,
-      userPrivileges: [],
-      selectedUserId: null,
-      newGroupName: null,
-      newGroupDescription: null
-    });
-
-    const openAvatarEditorDialog = () => {
-      emit("open-avatar-editor");
-    };
-
-    const userSelected = async (user) => {
-      try {
-        await ChatService.sendGroupInvite(user.id, props.groupDetails.id, props.groupDetails.name);
-        Notify.create({
-          message: "Successfully sent the group invite",
-          position: "top",
-          color: "dark",
-          textColor: "orange"
-        });
-      } catch (e) {
-        Notify.create({
-          message: "Failed to send the group invite",
-          position: "top",
-          color: "dark",
-          textColor: "orange"
-        });
-      }
-    };
-
-    const removeFromGroup = async (user) => {
-      try {
-        await ChatService.removeFromGroup(
-          store.getters["user/user"].id,
-          { id: user.id, username: `${user.username}#${user.shorthandId}` },
-          props.groupDetails.id
-        );
-        Notify.create({
-          message: `Successfully removed ${user.username}#${user.shorthandId}`,
-          position: "top",
-          color: "dark",
-          textColor: "orange"
-        });
-      } catch (e) {
-        Notify.create({
-          message: "Failed to remove user",
-          position: "top",
-          color: "dark",
-          textColor: "orange"
-        });
-      }
-    };
-
-    const leaveGroup = async () => {
-      try {
-        await ChatService.leaveGroup(
-          {
-            id: store.getters["user/user"].id,
-            username: `${store.getters["user/user"].username}#${store.getters["user/user"].shorthandId}`
-          },
-          props.groupDetails.id
-        );
-        Notify.create({
-          message: "You have left the group",
-          position: "top",
-          color: "dark",
-          textColor: "orange"
-        });
-        router.push({
-          name: ROUTE_NAMES.HOME
-        });
-      } catch (e) {
-        Notify.create({
-          message: "Failed to leave group",
-          position: "top",
-          color: "dark",
-          textColor: "orange"
-        });
-      }
-    };
-
-    const startEditingGroupName = () => {
-      state.editingGroupName = true;
-    };
-
-    const cancelGroupNameEdit = () => {
-      state.newGroupName = props.groupDetails.name;
-      state.editingGroupName = false;
-    };
-
-    const openEditPrivilegeDialog = (user) => {
-      state.userPrivileges = [...user.privileges];
-      state.selectedUserId = user.id;
-      state.editPrivilegesDialog = true;
-    };
-
-    const confirmGroupNameEdit = async () => {
-      state.editingGroupName = false;
-      try {
-        await ChatService.changeGroupName(
-          state.newGroupName,
-          props.groupDetails.id,
-          store.getters["user/user"].id
-        );
-        Notify.create({
-          message: "Successfully changed group name",
-          position: "top",
-          color: "dark",
-          textColor: "orange"
-        });
-      } catch (e) {
-        Notify.create({
-          message: "Failed to change group name",
-          position: "top",
-          color: "dark",
-          textColor: "orange"
-        });
-      }
-    };
-
-    const confirmGroupDescriptionEdit = async () => {
-      state.editingGroupDescription = false;
-      try {
-        await ChatService.changeGroupDescription(
-          state.newGroupDescription,
-          props.groupDetails.id,
-          store.getters["user/user"].id
-        );
-        Notify.create({
-          message: "Successfully changed group description",
-          position: "top",
-          color: "dark",
-          textColor: "orange"
-        });
-      } catch (e) {
-        Notify.create({
-          message: "Failed to change group description",
-          position: "top",
-          color: "dark",
-          textColor: "orange"
-        });
-      }
-    };
-
-    const cancelGroupDescriptionEdit = () => {
-      state.newGroupDescription = props.groupDetails.description;
-      state.editingGroupDescription = false;
-    };
-
-    const startEditingGroupDescription = () => {
-      state.editingGroupDescription = true;
-    };
-
-    watch(
-      () => props.groupDetails,
-      (val) => {
-        if (val) {
-          state.newGroupName = val.name;
-          state.newGroupDescription = val.description;
-        }
-      },
-      {
-        deep: true,
-        immediate: true
-      }
-    );
-
-    return {
-      state,
-      openAvatarEditorDialog,
-      format,
-      userSelected,
-      userComputed: computed(() => store.getters["user/user"]),
-      removeFromGroup,
-      leaveGroup,
-      openEditPrivilegeDialog,
-      startEditingGroupName,
-      cancelGroupNameEdit,
-      confirmGroupNameEdit,
-      confirmGroupDescriptionEdit,
-      cancelGroupDescriptionEdit,
-      startEditingGroupDescription
-    };
+  uploadingPfp: {
+    type: Boolean
   }
 });
+
+const store = useStore();
+const router = useRouter();
+
+const state = reactive({
+  muteNotifications: false,
+  avatarEditorDialog: false,
+  userSearchDialog: false,
+  editPrivilegesDialog: false,
+  editingGroupName: false,
+  editingGroupDescription: false,
+  userPrivileges: [],
+  selectedUserId: null,
+  newGroupName: null,
+  newGroupDescription: null
+});
+
+const openAvatarEditorDialog = () => {
+  emit("open-avatar-editor");
+};
+
+const userSelected = async (user) => {
+  try {
+    await ChatService.sendGroupInvite(user.id, props.groupDetails.id, props.groupDetails.name);
+    Notify.create({
+      message: "Successfully sent the group invite",
+      position: "top",
+      color: "dark",
+      textColor: "orange"
+    });
+  } catch (e) {
+    Notify.create({
+      message: "Failed to send the group invite",
+      position: "top",
+      color: "dark",
+      textColor: "orange"
+    });
+  }
+};
+
+const removeFromGroup = async (user) => {
+  try {
+    await ChatService.removeFromGroup(
+      store.getters["user/user"].id,
+      { id: user.id, username: `${user.username}#${user.shorthandId}` },
+      props.groupDetails.id
+    );
+    Notify.create({
+      message: `Successfully removed ${user.username}#${user.shorthandId}`,
+      position: "top",
+      color: "dark",
+      textColor: "orange"
+    });
+  } catch (e) {
+    Notify.create({
+      message: "Failed to remove user",
+      position: "top",
+      color: "dark",
+      textColor: "orange"
+    });
+  }
+};
+
+const leaveGroup = async () => {
+  try {
+    await ChatService.leaveGroup(
+      {
+        id: store.getters["user/user"].id,
+        username: `${store.getters["user/user"].username}#${store.getters["user/user"].shorthandId}`
+      },
+      props.groupDetails.id
+    );
+    Notify.create({
+      message: "You have left the group",
+      position: "top",
+      color: "dark",
+      textColor: "orange"
+    });
+    router.push({
+      name: ROUTE_NAMES.HOME
+    });
+  } catch (e) {
+    Notify.create({
+      message: "Failed to leave group",
+      position: "top",
+      color: "dark",
+      textColor: "orange"
+    });
+  }
+};
+
+const startEditingGroupName = () => {
+  state.editingGroupName = true;
+};
+
+const cancelGroupNameEdit = () => {
+  state.newGroupName = props.groupDetails.name;
+  state.editingGroupName = false;
+};
+
+const openEditPrivilegeDialog = (user) => {
+  state.userPrivileges = [...user.privileges];
+  state.selectedUserId = user.id;
+  state.editPrivilegesDialog = true;
+};
+
+const confirmGroupNameEdit = async () => {
+  state.editingGroupName = false;
+  try {
+    await ChatService.changeGroupName(
+      state.newGroupName,
+      props.groupDetails.id,
+      store.getters["user/user"].id
+    );
+    Notify.create({
+      message: "Successfully changed group name",
+      position: "top",
+      color: "dark",
+      textColor: "orange"
+    });
+  } catch (e) {
+    Notify.create({
+      message: "Failed to change group name",
+      position: "top",
+      color: "dark",
+      textColor: "orange"
+    });
+  }
+};
+
+const confirmGroupDescriptionEdit = async () => {
+  state.editingGroupDescription = false;
+  try {
+    await ChatService.changeGroupDescription(
+      state.newGroupDescription,
+      props.groupDetails.id,
+      store.getters["user/user"].id
+    );
+    Notify.create({
+      message: "Successfully changed group description",
+      position: "top",
+      color: "dark",
+      textColor: "orange"
+    });
+  } catch (e) {
+    Notify.create({
+      message: "Failed to change group description",
+      position: "top",
+      color: "dark",
+      textColor: "orange"
+    });
+  }
+};
+
+const cancelGroupDescriptionEdit = () => {
+  state.newGroupDescription = props.groupDetails.description;
+  state.editingGroupDescription = false;
+};
+
+const startEditingGroupDescription = () => {
+  state.editingGroupDescription = true;
+};
+
+watch(
+  () => props.groupDetails,
+  (val) => {
+    if (val) {
+      state.newGroupName = val.name;
+      state.newGroupDescription = val.description;
+    }
+  },
+  {
+    deep: true,
+    immediate: true
+  }
+);
 </script>
 
 <style scoped lang="scss">

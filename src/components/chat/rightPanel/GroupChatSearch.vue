@@ -52,58 +52,48 @@
   </div>
 </template>
 
-<script>
-import { defineComponent, reactive } from "vue";
+<script setup>
+import { reactive } from "vue";
 import { debounce } from "debounce";
 import { MSG_TYPE } from "src/utils/constants";
 import { format } from "date-fns";
 
-export default defineComponent({
-  name: "group-chat-search",
-  emits: ["close", "scroll-to-message"],
-  props: {
-    messages: {
-      type: Array
-    }
-  },
-  setup(props, { emit }) {
-    const state = reactive({
-      searching: false,
-      foundMessages: [],
-      searchQuery: null
-    });
+const emit = defineEmits(["close", "scroll-to-message"]);
 
-    const searchMessages = async () => {
-      if (state.searchQuery !== null && state.searchQuery !== "") {
-        state.searching = true;
-        state.foundMessages = props.messages.filter((msg) => {
-          if (msg.type === MSG_TYPE.TXT) {
-            return msg.txt.toLowerCase().includes(state.searchQuery.toLowerCase());
-          }
-          return false;
-        });
-        setTimeout(() => {
-          state.searching = false;
-        }, 400);
-      } else {
-        state.foundMessages = [];
-      }
-    };
-
-    const search = debounce(searchMessages, 750);
-
-    const selectMessage = (msg) => {
-      emit("scroll-to-message", msg.id);
-    };
-
-    return {
-      state,
-      search,
-      selectMessage,
-      format
-    };
+const props = defineProps({
+  messages: {
+    type: Array
   }
 });
+
+const state = reactive({
+  searching: false,
+  foundMessages: [],
+  searchQuery: null
+});
+
+const searchMessages = async () => {
+  if (state.searchQuery !== null && state.searchQuery !== "") {
+    state.searching = true;
+    state.foundMessages = props.messages.filter((msg) => {
+      if (msg.type === MSG_TYPE.TXT) {
+        return msg.txt.toLowerCase().includes(state.searchQuery.toLowerCase());
+      }
+      return false;
+    });
+    setTimeout(() => {
+      state.searching = false;
+    }, 400);
+  } else {
+    state.foundMessages = [];
+  }
+};
+
+const search = debounce(searchMessages, 750);
+
+const selectMessage = (msg) => {
+  emit("scroll-to-message", msg.id);
+};
 </script>
 
 <style scoped lang="scss">

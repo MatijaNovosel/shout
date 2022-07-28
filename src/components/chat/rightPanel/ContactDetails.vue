@@ -48,27 +48,18 @@
   </div>
 </template>
 
-<script>
-import { defineComponent, reactive } from "vue";
+<script setup>
+const emit = defineEmits(["close"]);
 
-export default defineComponent({
-  name: "contact-details",
-  emits: ["close"],
-  props: {
-    contactDetails: {
-      type: Object,
-      required: true
-    }
-  },
-  setup() {
-    const state = reactive({
-      muteNotifications: false
-    });
-
-    return {
-      state
-    };
+const props = defineProps({
+  contactDetails: {
+    type: Object,
+    required: true
   }
+});
+
+const state = reactive({
+  muteNotifications: false
 });
 </script>
 

@@ -79,79 +79,64 @@
   </q-page>
 </template>
 
-<script>
-import { defineComponent, reactive } from "vue";
+<script setup>
+import { reactive } from "vue";
 import firebase from "firebase";
 import { Notify } from "quasar";
 import { useForm } from "vee-validate";
 import * as yup from "yup";
-import { ROUTE_NAMES } from "src/router/routeNames";
 import UserService from "src/services/users";
 import { useI18n } from "vue-i18n";
 
-export default defineComponent({
-  name: "Register",
-  setup() {
-    const { t } = useI18n();
+const { t } = useI18n();
 
-    const schema = yup.object({
-      email: yup.string().required().email().nullable().label("Email"),
-      username: yup.string().required().min(4).nullable().label("Username"),
-      password: yup.string().required().min(6).nullable().label("Password")
+const schema = yup.object({
+  email: yup.string().required().email().nullable().label("Email"),
+  username: yup.string().required().min(4).nullable().label("Username"),
+  password: yup.string().required().min(6).nullable().label("Password")
+});
+
+const { handleSubmit, errors, values, submitCount, resetForm } = useForm({
+  validationSchema: schema
+});
+
+const state = reactive({
+  loading: false
+});
+
+const onSubmit = handleSubmit(async () => {
+  try {
+    state.loading = true;
+    const data = await firebase
+      .auth()
+      .createUserWithEmailAndPassword(values.email, values.password);
+    await UserService.addUser({
+      id: data.user.uid,
+      username: values.username,
+      email: values.email
     });
-
-    const { handleSubmit, errors, values, submitCount, resetForm } = useForm({
-      validationSchema: schema
+    Notify.create({
+      message: t("createdAccount"),
+      position: "top",
+      color: "dark",
+      textColor: "orange"
     });
-
-    const state = reactive({
-      loading: false
-    });
-
-    const onSubmit = handleSubmit(async () => {
-      try {
-        state.loading = true;
-        const data = await firebase
-          .auth()
-          .createUserWithEmailAndPassword(values.email, values.password);
-        await UserService.addUser({
-          id: data.user.uid,
-          username: values.username,
-          email: values.email
-        });
-        Notify.create({
-          message: t("createdAccount"),
-          position: "top",
-          color: "dark",
-          textColor: "orange"
-        });
-        resetForm({
-          values: {
-            email: null,
-            password: null,
-            username: null
-          }
-        });
-      } catch (e) {
-        Notify.create({
-          message: e.message,
-          position: "top",
-          color: "dark",
-          textColor: "orange"
-        });
-      } finally {
-        state.loading = false;
+    resetForm({
+      values: {
+        email: null,
+        password: null,
+        username: null
       }
     });
-
-    return {
-      onSubmit,
-      errors,
-      submitCount,
-      loginRoute: ROUTE_NAMES.LOGIN,
-      values,
-      state
-    };
+  } catch (e) {
+    Notify.create({
+      message: e.message,
+      position: "top",
+      color: "dark",
+      textColor: "orange"
+    });
+  } finally {
+    state.loading = false;
   }
 });
 </script>

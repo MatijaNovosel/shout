@@ -16,33 +16,21 @@
   </q-dialog>
 </template>
 
-<script>
-import { defineComponent, reactive } from "vue";
-
-export default defineComponent({
-  name: "image-preview-dialog",
-  props: {
-    modelValue: {
-      type: Boolean
-    },
-    src: {
-      type: String
-    }
+<script setup>
+const props = defineProps({
+  modelValue: {
+    type: Boolean
   },
-  emits: ["update:modelValue"],
-  setup(props, { emit }) {
-    const state = reactive({});
-
-    const close = () => {
-      emit("update:modelValue", false);
-    };
-
-    return {
-      state,
-      close
-    };
+  src: {
+    type: String
   }
 });
+
+const emit = defineEmits(["update:modelValue"]);
+
+const close = () => {
+  emit("update:modelValue", false);
+};
 </script>
 
 <style scoped lang="scss">

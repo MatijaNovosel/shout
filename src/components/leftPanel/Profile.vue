@@ -49,66 +49,52 @@
   />
 </template>
 
-<script>
-import { defineComponent, reactive, computed } from "vue";
+<script setup>
+import { reactive, computed } from "vue";
 import { useStore } from "vuex";
 import AvatarEditorDialog from "../avatarEditor/AvatarEditorDialog.vue";
 import UserService from "src/services/users";
 import { Notify } from "quasar";
 import { useI18n } from "vue-i18n";
 
-export default defineComponent({
-  name: "profile",
-  emits: ["set-left-panel"],
-  components: {
-    AvatarEditorDialog
-  },
-  setup() {
-    const store = useStore();
-    const { t } = useI18n({ useScope: "global" });
+const emit = defineEmits(["set-left-panel"]);
+const store = useStore();
+const { t } = useI18n({ useScope: "global" });
+const user = computed(() => store.getters["user/user"]);
 
-    const state = reactive({
-      avatarEditorDialog: false,
-      uploadingPfp: false
-    });
-
-    const openAvatarEditorDialog = () => {
-      state.avatarEditorDialog = true;
-    };
-
-    const uploadPfp = async (imgFile) => {
-      try {
-        state.uploadingPfp = true;
-        const url = await UserService.uploadProfilePicture(imgFile, store.getters["user/user"].id);
-        const userDetails = { ...store.getters["user/user"] };
-        userDetails.avatarUrl = url;
-        await store.dispatch("user/fetchUser", userDetails);
-        Notify.create({
-          message: t("successfullyChangedProfilePicture"),
-          position: "top",
-          color: "dark",
-          textColor: "orange"
-        });
-      } catch (e) {
-        Notify.create({
-          message: t("failedToUpdateProfilePicture"),
-          position: "top",
-          color: "dark",
-          textColor: "orange"
-        });
-      } finally {
-        state.uploadingPfp = false;
-      }
-    };
-
-    return {
-      state,
-      openAvatarEditorDialog,
-      uploadPfp,
-      user: computed(() => store.getters["user/user"])
-    };
-  }
+const state = reactive({
+  avatarEditorDialog: false,
+  uploadingPfp: false
 });
+
+const openAvatarEditorDialog = () => {
+  state.avatarEditorDialog = true;
+};
+
+const uploadPfp = async (imgFile) => {
+  try {
+    state.uploadingPfp = true;
+    const url = await UserService.uploadProfilePicture(imgFile, store.getters["user/user"].id);
+    const userDetails = { ...store.getters["user/user"] };
+    userDetails.avatarUrl = url;
+    await store.dispatch("user/fetchUser", userDetails);
+    Notify.create({
+      message: t("successfullyChangedProfilePicture"),
+      position: "top",
+      color: "dark",
+      textColor: "orange"
+    });
+  } catch (e) {
+    Notify.create({
+      message: t("failedToUpdateProfilePicture"),
+      position: "top",
+      color: "dark",
+      textColor: "orange"
+    });
+  } finally {
+    state.uploadingPfp = false;
+  }
+};
 </script>
 
 <style scoped lang="scss">

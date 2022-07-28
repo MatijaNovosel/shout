@@ -7,17 +7,6 @@
   </div>
 </template>
 
-<script>
-import { defineComponent } from "vue";
-
-export default defineComponent({
-  name: "Index",
-  setup() {
-    return {};
-  }
-});
-</script>
-
 <style scoped lang="scss">
 .index-bg {
   background-color: #262d31;

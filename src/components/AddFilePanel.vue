@@ -43,14 +43,7 @@
           {{ $t("yourBrowserDoesNotSupportTheAudioElement") }}.
         </audio>
         <div
-          class="
-            preview-box-bg
-            column
-            justify-center
-            items-center
-            align-center
-            text-grey text-center
-          "
+          class="preview-box-bg column justify-center items-center align-center text-grey text-center"
           v-else
         >
           <q-icon size="60px" name="mdi-file" />
@@ -87,15 +80,7 @@
           </span>
         </div>
         <div
-          class="
-            file-preview-item
-            q-mr-md
-            row
-            justify-center
-            items-center
-            align-center
-            cursor-pointer
-          "
+          class="file-preview-item q-mr-md row justify-center items-center align-center cursor-pointer"
           @click="triggerFilePickerManually"
         >
           <q-icon color="orange" size="40px" name="mdi-plus" />
@@ -105,8 +90,8 @@
   </div>
 </template>
 
-<script>
-import { defineComponent, reactive, onMounted, onUnmounted, watch } from "vue";
+<script setup>
+import { reactive, onMounted, onUnmounted, watch } from "vue";
 import {
   getFileIcon,
   getFileExtension,
@@ -117,129 +102,112 @@ import {
 } from "src/utils/helpers";
 import { GENERALIZED_FILE_TYPES } from "src/utils/constants";
 
-export default defineComponent({
-  name: "add-file-panel",
-  emits: ["close", "trigger-file-picker", "send-files"],
-  props: {
-    files: {
-      type: Object,
-      required: true
-    }
-  },
-  setup(props, { emit }) {
-    const state = reactive({
-      selectedFile: null,
-      files: []
-    });
-
-    const close = () => {
-      state.files = [];
-      emit("close");
-    };
-
-    const escape = (e) => {
-      if (e.keyCode === 27) {
-        close();
-      }
-    };
-
-    const sendFiles = () => {
-      emit("send-files");
-      close();
-    };
-
-    const removeFile = (file) => {
-      const foundFileIndex = state.files.findIndex((f) => f.name === file.name);
-
-      if (state.files.length === 1) {
-        state.selectedFile = null;
-        state.files.splice(foundFileIndex, 1);
-        close();
-      } else {
-        if (state.selectedFile.name === file.name) {
-          if (foundFileIndex - 1 in state.files) {
-            state.selectedFile = state.files[foundFileIndex - 1];
-            state.files.splice(foundFileIndex, 1);
-          } else {
-            state.selectedFile = state.files[foundFileIndex + 1];
-            state.files.splice(foundFileIndex, 1);
-          }
-        } else {
-          state.files.splice(foundFileIndex, 1);
-        }
-      }
-    };
-
-    const setActiveFile = (file) => {
-      if (state.selectedFile.name !== file.name) {
-        state.selectedFile = file;
-      }
-    };
-
-    const triggerFilePickerManually = () => {
-      emit("trigger-file-picker");
-    };
-
-    onMounted(() => {
-      document.addEventListener("keyup", escape);
-    });
-
-    onUnmounted(() => {
-      document.removeEventListener("keyup", escape);
-    });
-
-    watch(
-      () => props.files,
-      async (val) => {
-        const files = [...val];
-        if (files.length !== 0) {
-          for (let i = 0; i < files.length; i++) {
-            const isImg = fileIsType(files[i].name, [GENERALIZED_FILE_TYPES.IMAGE]);
-            const isVideo = fileIsType(files[i].name, [GENERALIZED_FILE_TYPES.VIDEO]);
-            const isAudio = fileIsType(files[i].name, [GENERALIZED_FILE_TYPES.AUDIO]);
-
-            if (isImg || isVideo || isAudio) {
-              let dimensions = {};
-              const url = await readUrl(files[i]);
-
-              if (isImg) {
-                dimensions = await imageSize(url);
-              } else {
-                dimensions = await videoSize(url);
-              }
-
-              if (dimensions.width > dimensions.height) {
-                files[i].portrait = false;
-              } else {
-                files[i].portrait = true;
-              }
-
-              files[i].urlContent = url;
-            }
-            state.files.push(files[i]);
-          }
-          state.selectedFile = state.files[0];
-        }
-      },
-      {
-        immediate: true
-      }
-    );
-
-    return {
-      state,
-      getFileIcon,
-      removeFile,
-      setActiveFile,
-      getFileExtension,
-      close,
-      triggerFilePickerManually,
-      sendFiles,
-      fileIsType,
-      GENERALIZED_FILE_TYPES
-    };
+const emit = defineEmits(["close", "trigger-file-picker", "send-files"]);
+const props = defineProps({
+  files: {
+    type: Object,
+    required: true
   }
 });
+
+const state = reactive({
+  selectedFile: null,
+  files: []
+});
+
+const close = () => {
+  state.files = [];
+  emit("close");
+};
+
+const escape = (e) => {
+  if (e.keyCode === 27) {
+    close();
+  }
+};
+
+const sendFiles = () => {
+  emit("send-files");
+  close();
+};
+
+const removeFile = (file) => {
+  const foundFileIndex = state.files.findIndex((f) => f.name === file.name);
+
+  if (state.files.length === 1) {
+    state.selectedFile = null;
+    state.files.splice(foundFileIndex, 1);
+    close();
+  } else {
+    if (state.selectedFile.name === file.name) {
+      if (foundFileIndex - 1 in state.files) {
+        state.selectedFile = state.files[foundFileIndex - 1];
+        state.files.splice(foundFileIndex, 1);
+      } else {
+        state.selectedFile = state.files[foundFileIndex + 1];
+        state.files.splice(foundFileIndex, 1);
+      }
+    } else {
+      state.files.splice(foundFileIndex, 1);
+    }
+  }
+};
+
+const setActiveFile = (file) => {
+  if (state.selectedFile.name !== file.name) {
+    state.selectedFile = file;
+  }
+};
+
+const triggerFilePickerManually = () => {
+  emit("trigger-file-picker");
+};
+
+onMounted(() => {
+  document.addEventListener("keyup", escape);
+});
+
+onUnmounted(() => {
+  document.removeEventListener("keyup", escape);
+});
+
+watch(
+  () => props.files,
+  async (val) => {
+    const files = [...val];
+    if (files.length !== 0) {
+      for (let i = 0; i < files.length; i++) {
+        const isImg = fileIsType(files[i].name, [GENERALIZED_FILE_TYPES.IMAGE]);
+        const isVideo = fileIsType(files[i].name, [GENERALIZED_FILE_TYPES.VIDEO]);
+        const isAudio = fileIsType(files[i].name, [GENERALIZED_FILE_TYPES.AUDIO]);
+
+        if (isImg || isVideo || isAudio) {
+          let dimensions = {};
+          const url = await readUrl(files[i]);
+
+          if (isImg) {
+            dimensions = await imageSize(url);
+          } else {
+            dimensions = await videoSize(url);
+          }
+
+          if (dimensions.width > dimensions.height) {
+            files[i].portrait = false;
+          } else {
+            files[i].portrait = true;
+          }
+
+          files[i].urlContent = url;
+        }
+        state.files.push(files[i]);
+      }
+      state.selectedFile = state.files[0];
+    }
+  },
+  {
+    immediate: true
+  }
+);
 </script>
 
 <style lang="scss" scoped>
