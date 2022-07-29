@@ -40,7 +40,7 @@
           </div>
           <div class="row q-mr-md">
             <q-btn
-              @click="$router.push({ name: indexRoute })"
+              @click="$router.push({ name: ROUTE_NAMES.INDEXy })"
               flat
               round
               color="white"

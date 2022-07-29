@@ -14,10 +14,10 @@
                 type="email"
                 name="email"
                 :label="$t('email')"
-                v-model="values.email"
-                :error="submitCount > 0 && errors.email !== undefined"
-                :error-message="errors.email"
-                :hide-bottom-space="submitCount == 0 || errors.email === undefined"
+                v-model="state.auth.email"
+                :error="$v.email.$error"
+                :error-message="collectErrors($v.email.$errors)"
+                :hide-bottom-space="!$v.email.$error"
               />
               <q-input
                 dark
@@ -28,15 +28,16 @@
                 type="password"
                 name="password"
                 :label="$t('password')"
-                v-model="values.password"
                 class="q-mt-md"
-                :error="submitCount > 0 && errors.password !== undefined"
-                :error-message="errors.password"
-                :hide-bottom-space="submitCount == 0 || errors.password === undefined"
+                v-model="state.auth.password"
+                :error="$v.password.$error"
+                :error-message="collectErrors($v.password.$errors)"
+                :hide-bottom-space="!$v.password.$error"
               />
             </q-card-section>
             <q-card-actions class="row justify-center q-mt-none">
               <q-btn
+                :disable="$v.$invalid"
                 :loading="state.loading"
                 type="submit"
                 unelevated
@@ -71,32 +72,34 @@ import { reactive } from "vue";
 import { Notify } from "quasar";
 import { useRouter } from "vue-router";
 import { ROUTE_NAMES } from "src/router/routeNames";
-import { useForm } from "vee-validate";
-import * as yup from "yup";
 import { useStore } from "vuex";
 import UserService from "src/services/users";
 import { useI18n } from "vue-i18n";
 import { supabase } from "../supabase";
+import useVuelidate from "@vuelidate/core";
+import { required, email } from "@vuelidate/validators";
+import { collectErrors } from "src/utils/helpers";
 
 const store = useStore();
 const { t } = useI18n();
-
-const schema = yup.object({
-  email: yup.string().required().email().nullable().label("Email"),
-  password: yup.string().required().nullable().label("Password")
-});
-
-const { handleSubmit, errors, values, submitCount } = useForm({
-  validationSchema: schema
-});
-
 const router = useRouter();
 
 const state = reactive({
-  loading: false
+  loading: false,
+  auth: {
+    email: null,
+    password: null
+  }
 });
 
-const onSubmit = handleSubmit(async () => {
+const rules = {
+  password: { required, $autoDirty: true },
+  email: { required, email, $autoDirty: true }
+};
+
+const $v = useVuelidate(rules, state.auth);
+
+const onSubmit = async () => {
   try {
     state.loading = true;
     // const data = await firebase.auth().signInWithEmailAndPassword(values.email, values.password);
@@ -122,7 +125,7 @@ const onSubmit = handleSubmit(async () => {
   } finally {
     state.loading = false;
   }
-});
+};
 </script>
 
 <style lang="scss" scoped>

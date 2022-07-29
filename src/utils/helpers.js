@@ -205,3 +205,7 @@ export const fileIsType = (fileName, types) => {
 
   return isType;
 };
+
+export const collectErrors = (errors) => {
+  return errors.map((error) => error.$message).join("");
+};

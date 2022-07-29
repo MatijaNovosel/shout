@@ -14,10 +14,10 @@
                 name="email"
                 type="email"
                 :label="$t('email')"
-                v-model="values.email"
-                :error="submitCount > 0 && errors.email !== undefined"
-                :error-message="errors.email"
-                :hide-bottom-space="submitCount == 0 || errors.email === undefined"
+                v-model="state.auth.email"
+                :error="$v.email.$error"
+                :error-message="collectErrors($v.email.$errors)"
+                :hide-bottom-space="!$v.email.$error"
               />
               <q-input
                 dark
@@ -28,10 +28,10 @@
                 class="q-my-md"
                 name="username"
                 :label="$t('username')"
-                v-model="values.username"
-                :error="submitCount > 0 && errors.username !== undefined"
-                :error-message="errors.username"
-                :hide-bottom-space="submitCount == 0 || errors.username === undefined"
+                v-model="state.auth.username"
+                :error="$v.username.$error"
+                :error-message="collectErrors($v.username.$errors)"
+                :hide-bottom-space="!$v.username.$error"
               />
               <q-input
                 dark
@@ -42,14 +42,15 @@
                 name="password"
                 type="password"
                 :label="$t('password')"
-                v-model="values.password"
-                :error="submitCount > 0 && errors.password !== undefined"
-                :error-message="errors.password"
-                :hide-bottom-space="submitCount == 0 || errors.password === undefined"
+                v-model="state.auth.password"
+                :error="$v.password.$error"
+                :error-message="collectErrors($v.password.$errors)"
+                :hide-bottom-space="!$v.password.$error"
               />
             </q-card-section>
             <q-card-actions class="q-px-md row justify-center">
               <q-btn
+                :disable="$v.$invalid"
                 :loading="state.loading"
                 type="submit"
                 unelevated
@@ -64,7 +65,7 @@
                   class="text-orange text-bold cursor-pointer"
                   @click="
                     $router.push({
-                      name: loginRoute
+                      name: ROUTE_NAMES.LOGIN
                     })
                   "
                 >
@@ -82,37 +83,41 @@
 <script setup>
 import { reactive } from "vue";
 import { Notify } from "quasar";
-import { useForm } from "vee-validate";
-import * as yup from "yup";
-import UserService from "src/services/users";
 import { useI18n } from "vue-i18n";
-import { supabase } from "../supabase";
+import { supabase } from "src/supabase";
+import useVuelidate from "@vuelidate/core";
+import { required, email } from "@vuelidate/validators";
+import { ROUTE_NAMES } from "src/router/routeNames";
+import { collectErrors } from "src/utils/helpers";
 
 const { t } = useI18n();
 
-const schema = yup.object({
-  email: yup.string().required().email().nullable().label("Email"),
-  username: yup.string().required().min(4).nullable().label("Username"),
-  password: yup.string().required().min(6).nullable().label("Password")
-});
-
-const { handleSubmit, errors, values, submitCount, resetForm } = useForm({
-  validationSchema: schema
-});
-
 const state = reactive({
-  loading: false
+  loading: false,
+  auth: {
+    email: null,
+    password: null,
+    username: null
+  }
 });
 
-const onSubmit = handleSubmit(async () => {
+const rules = {
+  username: { required, $autoDirty: true },
+  password: { required, $autoDirty: true },
+  email: { required, email, $autoDirty: true }
+};
+
+const $v = useVuelidate(rules, state.auth);
+
+const onSubmit = async () => {
   try {
     state.loading = true;
     // const data = await firebase.auth().createUserWithEmailAndPassword(values.email, values.password);
     const data = {};
 
     const { error } = await supabase.auth.signUp({
-      email: values.email,
-      password: values.password
+      email: state.auth.email,
+      password: state.auth.password
     });
 
     if (error) {
@@ -126,13 +131,9 @@ const onSubmit = handleSubmit(async () => {
       textColor: "orange"
     });
 
-    resetForm({
-      values: {
-        email: null,
-        password: null,
-        username: null
-      }
-    });
+    state.auth.email = null;
+    state.auth.password = null;
+    state.auth.username = null;
   } catch (e) {
     Notify.create({
       message: e.message,
@@ -143,7 +144,7 @@ const onSubmit = handleSubmit(async () => {
   } finally {
     state.loading = false;
   }
-});
+};
 </script>
 
 <style lang="scss" scoped>

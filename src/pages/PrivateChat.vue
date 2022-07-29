@@ -23,7 +23,7 @@
           </div>
           <div class="row">
             <q-btn
-              @click="$router.push({ name: indexRoute })"
+              @click="$router.push({ name: ROUTE_NAMES.INDEX })"
               flat
               round
               color="white"
@@ -150,6 +150,7 @@ import { loremIpsum, MSG_TYPE, PRIVATE_CHAT_RIGHT_PANEL } from "src/utils/consta
 import MessagePanel from "src/components/chat/MessagePanel.vue";
 import ContactDetails from "src/components/chat/rightPanel/ContactDetails.vue";
 import PrivateChatSearch from "src/components/chat/rightPanel/PrivateChatSearch.vue";
+import { ROUTE_NAMES } from "src/router/routeNames";
 
 const contactDetails = {
   name: "Name Surname",
