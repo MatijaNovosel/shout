@@ -51,7 +51,7 @@
                   class="text-orange text-bold cursor-pointer"
                   @click="
                     $router.push({
-                      name: registerRoute
+                      name: ROUTE_NAMES.REGISTER
                     })
                   "
                 >
@@ -76,6 +76,7 @@ import * as yup from "yup";
 import { useStore } from "vuex";
 import UserService from "src/services/users";
 import { useI18n } from "vue-i18n";
+import { supabase } from "../supabase";
 
 const store = useStore();
 const { t } = useI18n();

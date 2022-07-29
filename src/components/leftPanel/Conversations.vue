@@ -147,7 +147,7 @@ import { copyToClipboard } from "src/utils/helpers";
 import ChatService from "src/services/chats";
 import { useI18n } from "vue-i18n";
 
-const emit = defineEmits(["set-left-panel", "reload-conversations"]);
+defineEmits(["set-left-panel", "reload-conversations"]);
 
 const store = useStore();
 const router = useRouter();

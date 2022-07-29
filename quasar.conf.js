@@ -10,6 +10,7 @@ module.exports = configure(function (ctx) {
     build: {
       vueRouterMode: "history",
       publicPath: "/",
+      env: require("dotenv").config().parsed,
       chainWebpack(chain) {
         chain.plugin("eslint-webpack-plugin").use(ESLintPlugin, [{ extensions: ["js", "vue"] }]);
       }

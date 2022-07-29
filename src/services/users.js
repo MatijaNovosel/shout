@@ -27,6 +27,7 @@ class UserService {
   }
 
   async addUser(user) {
+    /*
     const { id, email, username } = user;
     await this.userCollection.doc(id).set({
       username,
@@ -36,6 +37,7 @@ class UserService {
         .join(""),
       lang: "en"
     });
+    */
   }
 
   async getDetails(uid) {

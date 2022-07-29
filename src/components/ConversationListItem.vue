@@ -66,7 +66,6 @@
 </template>
 
 <script setup>
-import { defineComponent } from "vue";
 import { CHAT_TYPE } from "../utils/constants";
 import { formatDistanceToNow, isSameDay, format } from "date-fns";
 import { ROUTE_NAMES } from "src/router/routeNames";

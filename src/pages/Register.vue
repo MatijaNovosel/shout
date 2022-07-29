@@ -86,6 +86,7 @@ import { useForm } from "vee-validate";
 import * as yup from "yup";
 import UserService from "src/services/users";
 import { useI18n } from "vue-i18n";
+import { supabase } from "../supabase";
 
 const { t } = useI18n();
 
@@ -109,11 +110,14 @@ const onSubmit = handleSubmit(async () => {
     // const data = await firebase.auth().createUserWithEmailAndPassword(values.email, values.password);
     const data = {};
 
-    await UserService.addUser({
-      id: data.user.uid,
-      username: values.username,
-      email: values.email
+    const { error } = await supabase.auth.signUp({
+      email: values.email,
+      password: values.password
     });
+
+    if (error) {
+      throw error;
+    }
 
     Notify.create({
       message: t("createdAccount"),
