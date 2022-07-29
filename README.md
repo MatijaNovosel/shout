@@ -8,7 +8,7 @@
 
 ## 🔨 Built With
 
-- [Firebase](https://firebase.google.com/)
+- [Supabase](https://supabase.com/)
 - [Vue 3](https://vuejs.org/)
 - [Quasar](https://quasar.dev/)
 
