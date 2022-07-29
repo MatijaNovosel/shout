@@ -1,5 +1,4 @@
 import StorageService from "src/services/storage";
-import firebase from "firebase";
 
 export default {
   SET_USER(state, data) {
@@ -14,7 +13,6 @@ export default {
   async LOG_OUT(state) {
     StorageService.removeSavedState("user");
     state.user = null;
-    await firebase.auth().signOut();
   },
   RESPOND_TO_INVITE(state, inviteId) {
     state.user.invites = state.user.invites.filter((inv) => inv.id !== inviteId);

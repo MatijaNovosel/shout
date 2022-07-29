@@ -1,4 +1,3 @@
-import { firebase } from "src/boot/firebase";
 import {
   range,
   sample,
@@ -8,9 +7,11 @@ import {
 } from "src/utils/helpers";
 
 class UserService {
+  /*
   constructor() {
     this.userCollection = firebase.firestore().collection("/users");
   }
+  */
 
   async getAll() {
     const users = await this.userCollection.get();
@@ -84,7 +85,8 @@ class UserService {
 
   async uploadProfilePicture(file, userId) {
     const guid = generateGuid();
-    const retVal = await firebase.storage().ref(guid).put(file);
+    // const retVal = await firebase.storage().ref(guid).put(file);
+    const retVal = {};
     const url = await retVal.ref.getDownloadURL();
     await this.userCollection.doc(userId).update({
       avatarUrl: url
@@ -93,8 +95,10 @@ class UserService {
   }
 
   async updatePrivileges(newPrivileges, userId, chatId) {
-    const chat = await firebase.firestore().collection("/chats").doc(chatId).get();
+    // const chat = await firebase.firestore().collection("/chats").doc(chatId).get();
+    const chat = {};
     const users = chat.data().users;
+    /*
     await firebase
       .firestore()
       .collection("/chats")
@@ -107,6 +111,7 @@ class UserService {
           return user;
         })
       });
+    */
   }
 
   async updateLanguage(lang, userId) {

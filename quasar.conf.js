@@ -4,7 +4,7 @@ const { configure } = require("quasar/wrappers");
 module.exports = configure(function (ctx) {
   return {
     supportTS: false,
-    boot: ["i18n", "axios", "firebase"],
+    boot: ["i18n", "axios"],
     css: ["app.scss"],
     extras: ["roboto-font", "material-icons", "mdi-v6"],
     build: {

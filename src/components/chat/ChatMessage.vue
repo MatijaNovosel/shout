@@ -152,7 +152,6 @@ import {
   getFileFromUrl,
   fileIsType
 } from "src/utils/helpers";
-import { firebase } from "src/boot/firebase";
 import { useStore } from "vuex";
 
 const emit = defineEmits(["selected", "delete-msg", "open-image-preview-dialog"]);
@@ -231,7 +230,8 @@ const messageSelected = () => {
 };
 
 const download = async () => {
-  const files = firebase.firestore().collection("/chats").doc(props.chatId).collection("files");
+  // const files = firebase.firestore().collection("/chats").doc(props.chatId).collection("files");
+  const files = [];
   const fileData = await files.doc(props.message.fileId).get();
   const fileContent = await getFileFromUrl(props.message.fileUrl, fileData.data().name);
   downloadFile(fileContent);

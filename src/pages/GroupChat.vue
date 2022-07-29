@@ -279,7 +279,6 @@ import ChatService from "src/services/chats";
 import { useStore } from "vuex";
 import { Notify, useQuasar } from "quasar";
 import AvatarEditorDialog from "src/components/avatarEditor/AvatarEditorDialog.vue";
-import { firebase } from "src/boot/firebase";
 import { useI18n } from "vue-i18n";
 
 const store = useStore();
@@ -545,23 +544,30 @@ const processMessages = async (messages) => {
     for (let i = 0; i < messages.length; i++) {
       const sent = userId === messages[i].userId;
       const sentAt = new Date(messages[i].sentAt.seconds * 1000);
+
+      /*
       const files = firebase
         .firestore()
         .collection("/chats")
         .doc(state.chatDetails.id)
         .collection("files");
+      */
+
+      const files = [];
 
       let username = "";
 
       if (messages[i].userId === userId) {
         username = `${store.getters["user/user"].username}#${store.getters["user/user"].shorthandId}`;
       } else {
-        const user = await firebase.firestore().collection("/users").doc(messages[i].userId).get();
+        // const user = await firebase.firestore().collection("/users").doc(messages[i].userId).get();
+        const user = {};
         username = `${user.data().username}#${user.data().shorthandId}`;
       }
 
       if (messages[i].type === MSG_TYPE.FILE || messages[i].type === MSG_TYPE.AUDIO) {
-        const file = firebase.storage().ref(messages[i].fileId);
+        // const file = firebase.storage().ref(messages[i].fileId);
+        const file = {};
         const fileUrl = await file.getDownloadURL();
 
         const fileInfo = await files.doc(messages[i].fileId).get();
@@ -672,6 +678,7 @@ const loadMessages = async (first) => {
     state.loading = false;
 
     // Message socket
+    /*
     firebase
       .firestore()
       .collection("/chats")
@@ -699,8 +706,10 @@ const loadMessages = async (first) => {
           processMessages(messages);
         }
       });
+    */
 
     // Group changes socket
+    /*
     firebase
       .firestore()
       .collection("/chats")
@@ -723,6 +732,7 @@ const loadMessages = async (first) => {
           }
         }
       });
+      */
   }
 };
 

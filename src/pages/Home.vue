@@ -42,7 +42,6 @@ import Profile from "src/components/leftPanel/Profile.vue";
 import Settings from "src/components/leftPanel/Settings.vue";
 import ChatService from "src/services/chats";
 import { useStore } from "vuex";
-import { firebase } from "src/boot/firebase";
 import { isAfter } from "date-fns";
 import { GROUP_CHANGE_TYPE } from "src/utils/constants";
 import { useI18n } from "vue-i18n";
@@ -79,6 +78,7 @@ onMounted(async () => {
   locale.value = store.getters["user/user"].lang;
 });
 
+/*
 firebase
   .firestore()
   .collection("/chats")
@@ -103,6 +103,7 @@ firebase
       await getConversations();
     }
   });
+  */
 </script>
 
 <style scoped lang="scss">

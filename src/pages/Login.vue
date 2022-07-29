@@ -68,7 +68,6 @@
 
 <script setup>
 import { reactive } from "vue";
-import firebase from "firebase";
 import { Notify } from "quasar";
 import { useRouter } from "vue-router";
 import { ROUTE_NAMES } from "src/router/routeNames";
@@ -99,7 +98,8 @@ const state = reactive({
 const onSubmit = handleSubmit(async () => {
   try {
     state.loading = true;
-    const data = await firebase.auth().signInWithEmailAndPassword(values.email, values.password);
+    // const data = await firebase.auth().signInWithEmailAndPassword(values.email, values.password);
+    const data = {};
     const userDetails = await UserService.getDetails(data.user.uid);
     await store.dispatch("user/fetchUser", { id: data.user.uid, ...userDetails });
     Notify.create({

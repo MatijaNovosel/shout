@@ -1,5 +1,4 @@
 import { GENERALIZED_FILE_TYPES, MIME_TYPES, MIME_TYPE_ICONS } from "./constants";
-import { firebase } from "src/boot/firebase";
 import axios from "axios";
 
 export const range = (start, stop, step) => {
@@ -118,31 +117,7 @@ export const sample = (arr) => {
 };
 
 export const readDocuments = async (collection, options = {}) => {
-  const { where, orderBy, limit } = options;
-  let query = firebase.firestore().collection(collection);
-
-  if (where) {
-    if (where[0] instanceof Array) {
-      // It's an array of array
-      for (const w of where) {
-        query = query.where(...w);
-      }
-    } else {
-      query = query.where(...where);
-    }
-  }
-
-  if (orderBy) {
-    query = query.orderBy(...orderBy);
-  }
-
-  if (limit) {
-    query = query.limit(limit);
-  }
-
-  const res = await query.get();
-
-  return res;
+  return [];
 };
 
 export const checkUsernamePattern = (username) => {
@@ -172,20 +147,7 @@ export const dataURLtoFile = (dataurl, filename) => {
 
 export const uploadTaskPromise = async (fileGuid, file) => {
   return new Promise(function (resolve, reject) {
-    const storageRef = firebase.storage().ref(fileGuid);
-    const uploadTask = storageRef.put(file);
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-      },
-      (err) => reject(err),
-      () => {
-        uploadTask.snapshot.ref.getDownloadURL().then(function (downloadURL) {
-          resolve(downloadURL);
-        });
-      }
-    );
+    resolve(""); // Popravi ovo poslije
   });
 };
 

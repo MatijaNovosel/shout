@@ -49,9 +49,11 @@
 </template>
 
 <script setup>
+import { reactive } from "vue";
+
 const emit = defineEmits(["close"]);
 
-const props = defineProps({
+defineProps({
   contactDetails: {
     type: Object,
     required: true

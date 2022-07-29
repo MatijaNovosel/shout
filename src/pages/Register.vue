@@ -81,7 +81,6 @@
 
 <script setup>
 import { reactive } from "vue";
-import firebase from "firebase";
 import { Notify } from "quasar";
 import { useForm } from "vee-validate";
 import * as yup from "yup";
@@ -107,20 +106,22 @@ const state = reactive({
 const onSubmit = handleSubmit(async () => {
   try {
     state.loading = true;
-    const data = await firebase
-      .auth()
-      .createUserWithEmailAndPassword(values.email, values.password);
+    // const data = await firebase.auth().createUserWithEmailAndPassword(values.email, values.password);
+    const data = {};
+
     await UserService.addUser({
       id: data.user.uid,
       username: values.username,
       email: values.email
     });
+
     Notify.create({
       message: t("createdAccount"),
       position: "top",
       color: "dark",
       textColor: "orange"
     });
+
     resetForm({
       values: {
         email: null,

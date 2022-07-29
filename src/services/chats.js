@@ -1,10 +1,8 @@
-import { firebase } from "src/boot/firebase";
 import {
   generateGuid,
   blobToFile,
   uploadTaskPromise,
   stripHtml,
-  getFileExtension,
   imageSize,
   videoSize,
   fileIsType
@@ -18,9 +16,11 @@ import {
 import { format } from "date-fns";
 
 class ChatService {
+  /*
   constructor() {
     this.chatsCollection = firebase.firestore().collection("/chats");
   }
+  */
 
   async getAll(userId) {
     const chatsData = await this.chatsCollection.where("userIds", "array-contains", userId).get();
@@ -68,7 +68,8 @@ class ChatService {
         if (lastMsg.type === MSG_TYPE.INFO) {
           lastMsg.username = "System";
         } else {
-          const user = await firebase.firestore().collection("/users").doc(lastMsg.userId).get();
+          // const user = await firebase.firestore().collection("/users").doc(lastMsg.userId).get();
+          const user = {};
           lastMsg.username = `${user.data().username}#${user.data().shorthandId}`;
         }
       }
@@ -107,14 +108,16 @@ class ChatService {
     const userIdEntries = Object.keys(userIds);
 
     for (let i = 0; i < userIdEntries.length; i++) {
-      const user = await firebase.firestore().collection("/users").doc(userIdEntries[i]).get();
+      // const user = await firebase.firestore().collection("/users").doc(userIdEntries[i]).get();
+      const user = {};
       userIds[userIdEntries[i]] = `${user.data().username}#${user.data().shorthandId}`;
     }
 
     for (let i = 0; i < msgCol.length; i++) {
       msgCol[i].username = userIds[msgCol[i].userId];
       if (msgCol[i].type === MSG_TYPE.FILE || msgCol[i].type === MSG_TYPE.AUDIO) {
-        const file = firebase.storage().ref(msgCol[i].fileId);
+        // const file = firebase.storage().ref(msgCol[i].fileId);
+        const file = {};
         const url = await file.getDownloadURL();
         const fileInfo = await ref.collection("files").doc(msgCol[i].fileId).get();
         msgCol[i].fileUrl = url;
@@ -207,7 +210,8 @@ class ChatService {
   async deleteMessage(chatId, msgId) {
     const chatsRef = this.chatsCollection.doc(chatId);
     const messages = chatsRef.collection("messages");
-    const doc = await messages.where(firebase.firestore.FieldPath.documentId(), "==", msgId).get();
+    // const doc = await messages.where(firebase.firestore.FieldPath.documentId(), "==", msgId).get();
+    const doc = [];
 
     const fileIds = [];
 
@@ -222,7 +226,8 @@ class ChatService {
     });
 
     for (let i = 0; i < fileIds.length; i++) {
-      const storageRef = firebase.storage().ref(fileIds[i]);
+      // const storageRef = firebase.storage().ref(fileIds[i]);
+      const storageRef = {};
       await storageRef.delete(storageRef);
     }
 
@@ -258,7 +263,8 @@ class ChatService {
 
   async changeGroupProfilePicture(file, groupId) {
     const guid = generateGuid();
-    const retVal = await firebase.storage().ref(guid).put(file);
+    // const retVal = await firebase.storage().ref(guid).put(file);
+    const retVal = {};
     const url = await retVal.ref.getDownloadURL();
     await this.chatsCollection.doc(groupId).update({
       avatar: url,
@@ -306,6 +312,10 @@ class ChatService {
         chatId
       });
     }
+
+    return {};
+
+    /*
     await firebase
       .firestore()
       .collection("/users")
@@ -315,9 +325,11 @@ class ChatService {
       .update({
         confirmed: true
       });
+    */
   }
 
   async sendGroupInvite(userId, chatId, chatName) {
+    /*
     await firebase
       .firestore()
       .collection("/users")
@@ -328,6 +340,7 @@ class ChatService {
         txt: `You have been invited to join <b>${chatName}</b>`,
         confirmed: false
       });
+      */
   }
 
   async removeFromGroup(userInitiatorId, user, chatId) {

@@ -115,7 +115,7 @@ const props = defineProps({
   }
 });
 
-const emit = useEmits(["update:modelValue"]);
+const emit = defineEmits(["update:modelValue"]);
 
 const store = useStore();
 
