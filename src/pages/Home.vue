@@ -42,8 +42,6 @@ import Profile from "src/components/leftPanel/Profile.vue";
 import Settings from "src/components/leftPanel/Settings.vue";
 import ChatService from "src/services/chats";
 import { useStore } from "vuex";
-import { isAfter } from "date-fns";
-import { GROUP_CHANGE_TYPE } from "src/utils/constants";
 import { useI18n } from "vue-i18n";
 
 const store = useStore();
@@ -65,8 +63,8 @@ const setLeftPanel = (name) => {
 };
 
 const getConversations = async () => {
-  const chats = await ChatService.getAll(store.getters["user/user"].id);
-  await store.dispatch("chats/setChats", chats);
+  // const chats = await ChatService.getAll(store.getters["user/user"].id);
+  await store.dispatch("chats/setChats", []);
 };
 
 onMounted(async () => {

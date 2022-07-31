@@ -112,8 +112,6 @@ const $v = useVuelidate(rules, state.auth);
 const onSubmit = async () => {
   try {
     state.loading = true;
-    // const data = await firebase.auth().createUserWithEmailAndPassword(values.email, values.password);
-    const data = {};
 
     const { error } = await supabase.auth.signUp({
       email: state.auth.email,
@@ -134,6 +132,8 @@ const onSubmit = async () => {
     state.auth.email = null;
     state.auth.password = null;
     state.auth.username = null;
+
+    $v.value.$reset();
   } catch (e) {
     Notify.create({
       message: e.message,

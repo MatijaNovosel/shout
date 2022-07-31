@@ -102,16 +102,25 @@ const $v = useVuelidate(rules, state.auth);
 const onSubmit = async () => {
   try {
     state.loading = true;
-    // const data = await firebase.auth().signInWithEmailAndPassword(values.email, values.password);
-    const data = {};
-    const userDetails = await UserService.getDetails(data.user.uid);
-    await store.dispatch("user/fetchUser", { id: data.user.uid, ...userDetails });
+
+    const { error } = await supabase.auth.signIn({
+      email: state.auth.email,
+      password: state.auth.password
+    });
+
+    if (error) {
+      throw error;
+    }
+
+    store.dispatch("user/fetchUser", { id: 1, email });
+
     Notify.create({
       message: t("signedIn"),
       position: "top",
       color: "dark",
       textColor: "orange"
     });
+
     router.push({
       name: ROUTE_NAMES.INDEX
     });
