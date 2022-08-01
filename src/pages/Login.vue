@@ -117,9 +117,7 @@ const onSubmit = async () => {
     store.dispatch("user/fetchUser", {
       id: 1,
       email,
-      avatarUrl: details.avatarUrl,
-      shorthandId: details.shorthandId,
-      username: details.username
+      ...details
     });
 
     Notify.create({

@@ -74,15 +74,12 @@
 <script setup>
 import { reactive, computed } from "vue";
 import { useStore } from "vuex";
-import { debounce } from "debounce";
+import { debounce } from "quasar";
 import UserService from "src/services/users";
 
-const props = defineProps({
+defineProps({
   modelValue: {
     type: Boolean
-  },
-  users: {
-    type: Array
   }
 });
 
@@ -103,7 +100,7 @@ const close = () => {
 
 const findUser = async () => {
   state.searching = true;
-  state.filteredUsers = await UserService.searchByUsername(props.users, state.searchQuery);
+  state.filteredUsers = await UserService.searchByUsername(state.searchQuery);
   setTimeout(() => {
     state.searching = false;
   }, 400);

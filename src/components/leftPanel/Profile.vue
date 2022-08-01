@@ -36,7 +36,7 @@
       dark
       label="Status"
       autogrow
-      model-value="I will not go, prefer a feast of friends to the giant family"
+      :model-value="user.status"
       label-color="orange"
       class="full-width q-px-lg q-mt-md"
       readonly
@@ -59,8 +59,8 @@ import { useI18n } from "vue-i18n";
 
 const emit = defineEmits(["set-left-panel"]);
 const store = useStore();
-const { t } = useI18n({ useScope: "global" });
 const user = computed(() => store.getters["user/user"]);
+const { t } = useI18n({ useScope: "global" });
 
 const state = reactive({
   avatarEditorDialog: false,

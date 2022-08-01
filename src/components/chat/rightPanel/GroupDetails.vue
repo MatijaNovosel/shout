@@ -137,11 +137,7 @@
       </q-list>
     </div>
   </div>
-  <user-search-dialog
-    :users="groupDetails.users.map((u) => `${u.username}#${u.shorthandId}`)"
-    v-model="state.userSearchDialog"
-    @user-selected="userSelected"
-  />
+  <user-search-dialog v-model="state.userSearchDialog" @user-selected="userSelected" />
   <edit-privileges-dialog
     :chat-id="groupDetails.id"
     :user-id="state.selectedUserId"

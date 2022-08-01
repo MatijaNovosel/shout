@@ -2,58 +2,14 @@ import { readDocuments, checkUsernamePattern, generateGuid } from "src/utils/hel
 import { supabase } from "src/supabase";
 
 class UserService {
-  /*
-  constructor() {
-    this.userCollection = firebase.firestore().collection("/users");
-  }
-  */
-
-  async getAll() {
-    const users = await this.userCollection.get();
-    const retVal = [];
-    users.forEach((snapshot) => {
-      const data = snapshot.data();
-      retVal.push({
-        username: data.username,
-        email: data.email
-      });
-    });
-    return retVal;
-  }
-
-  async addUser(user) {
-    /*
-    const { id, email, username } = user;
-    await this.userCollection.doc(id).set({
-      username,
-      email,
-      shorthandId: range(6)
-        .map(() => sample(range(6)).toString())
-        .join(""),
-      lang: "en"
-    });
-    */
-  }
-
   async getDetails(uid) {
-    /*
-    const user = await this.userCollection.doc(uid).get();
-    const invites = await this.userCollection.doc(uid).collection("/invites").get();
-
-    const invitesMapped = [];
-    invites.forEach((i) => {
-      if (!i.data().confirmed) {
-        invitesMapped.push({ id: i.id, ...i.data() });
-      }
-    });
-
-    return { invites: invitesMapped, ...user.data() };
-    */
     const { data, error } = await supabase
       .from("profiles")
-      .select("shorthandId, avatarUrl, username")
+      .select("shorthandId, avatarUrl, username, status")
       .eq("id", uid)
       .single();
+
+    // TODO: Collect invites
 
     if (error) {
       throw error;
@@ -77,28 +33,19 @@ class UserService {
       const username = searchQuery.split("#")[0];
       const shorthandId = searchQuery.split("#")[1];
 
-      const res = await readDocuments("users", {
-        where: [
-          ["username", "==", username],
-          ["shorthandId", "==", shorthandId]
-        ]
-      });
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("id, shorthandId, username")
+        .eq("username", username)
+        .eq("shorthandId", shorthandId);
 
-      const users = [];
+      // TODO: Collect invites
 
-      res.forEach((r) => {
-        const data = r.data();
+      if (error) {
+        throw error;
+      }
 
-        if (existingUsers) {
-          if (!existingUsers.some((u) => u === `${data.username}#${data.shorthandId}`)) {
-            users.push({ id: r.id, ...r.data() });
-          }
-        } else {
-          users.push({ id: r.id, ...r.data() });
-        }
-      });
-
-      return users;
+      return data;
     }
     return [];
   }
@@ -135,9 +82,10 @@ class UserService {
   }
 
   async updateLanguage(lang, userId) {
-    await this.userCollection.doc(userId).update({
-      lang
-    });
+    const { error } = await supabase.from("profiles").update({ lang }).eq("id", userId);
+    if (error) {
+      throw error;
+    }
   }
 }
 

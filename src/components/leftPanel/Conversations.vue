@@ -137,13 +137,12 @@
 <script setup>
 import { reactive, computed } from "vue";
 import ConversationListItem from "src/components/ConversationListItem.vue";
-import { Notify } from "quasar";
+import { Notify, copyToClipboard } from "quasar";
 import { ROUTE_NAMES } from "src/router/routeNames";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import UserSearchDialog from "src/components/UserSearchDialog.vue";
 import NewGroupDialog from "src/components/NewGroupDialog.vue";
-import { copyToClipboard } from "src/utils/helpers";
 import ChatService from "src/services/chats";
 import { useI18n } from "vue-i18n";
 import { supabase } from "src/supabase";

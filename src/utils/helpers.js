@@ -124,15 +124,6 @@ export const checkUsernamePattern = (username) => {
   return /^[A-Za-z]+#[0-9]{6}$/.test(username);
 };
 
-export const copyToClipboard = (text) => {
-  const clipboardData =
-    event.clipboardData ||
-    window.clipboardData ||
-    event.originalEvent?.clipboardData ||
-    navigator.clipboard;
-  clipboardData.writeText(text);
-};
-
 export const dataURLtoFile = (dataurl, filename) => {
   const arr = dataurl.split(","),
     mime = arr[0].match(/:(.*?);/)[1],
