@@ -28,18 +28,16 @@ class UserService {
     }
   }
 
-  async searchByUsername(existingUsers, searchQuery) {
+  async searchByUsername(searchQuery) {
     if (checkUsernamePattern(searchQuery)) {
       const username = searchQuery.split("#")[0];
       const shorthandId = searchQuery.split("#")[1];
 
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, shorthandId, username")
+        .select("id, shorthandId, username, avatarUrl")
         .eq("username", username)
         .eq("shorthandId", shorthandId);
-
-      // TODO: Collect invites
 
       if (error) {
         throw error;

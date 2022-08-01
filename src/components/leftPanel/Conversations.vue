@@ -147,7 +147,7 @@ import ChatService from "src/services/chats";
 import { useI18n } from "vue-i18n";
 import { supabase } from "src/supabase";
 
-defineEmits(["set-left-panel", "reload-conversations"]);
+defineEmits(["set-left-panel"]);
 
 const store = useStore();
 const router = useRouter();

@@ -117,6 +117,7 @@ const onSubmit = async () => {
     store.dispatch("user/fetchUser", {
       id: 1,
       email,
+      invites: [],
       ...details
     });
 

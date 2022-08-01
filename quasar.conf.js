@@ -27,7 +27,7 @@ module.exports = configure(function (ctx) {
       },
       plugins: ["Notify", "Loading"]
     },
-    animations: [],
+    animations: ["slideInLeft", "slideInRight"],
     ssr: {
       pwa: false,
       prodPort: 3000,

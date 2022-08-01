@@ -13,19 +13,16 @@
   <q-page v-show="!state.appLoading" class="flex flex-center">
     <div class="row main-container" :style="{ width: `${state.width - 300}px` }">
       <div class="col-3 full-height">
-        <keep-alive>
-          <profile @set-left-panel="setLeftPanel" v-if="state.leftPaneComponent === 'profile'" />
-        </keep-alive>
-        <keep-alive>
-          <settings @set-left-panel="setLeftPanel" v-if="state.leftPaneComponent === 'settings'" />
-        </keep-alive>
-        <keep-alive>
-          <conversations
-            @reload-conversations="getConversations"
-            @set-left-panel="setLeftPanel"
-            v-if="state.leftPaneComponent === 'conversations'"
-          />
-        </keep-alive>
+        <transition
+          enter-active-class="animated slideInLeft"
+          leave-active-class="animated slideInRight"
+          appear
+          :duration="300"
+        >
+          <div :key="state.leftPaneComponentName" style="display: contents">
+            <component @set-left-panel="setLeftPanel" :is="leftPaneComponent" />
+          </div>
+        </transition>
       </div>
       <div class="col-9 full-height right-panel">
         <router-view />
@@ -36,7 +33,7 @@
 </template>
 
 <script setup>
-import { reactive, computed, onMounted } from "vue";
+import { reactive, computed, onMounted, shallowRef } from "vue";
 import Conversations from "src/components/leftPanel/Conversations.vue";
 import Profile from "src/components/leftPanel/Profile.vue";
 import Settings from "src/components/leftPanel/Settings.vue";
@@ -45,13 +42,14 @@ import { useStore } from "vuex";
 import { useI18n } from "vue-i18n";
 
 const store = useStore();
+const leftPaneComponent = shallowRef(Conversations);
 const { locale } = useI18n({ useScope: "global" });
 
 const state = reactive({
   width: 0,
-  leftPaneComponent: "conversations",
   appLoading: computed(() => store.getters["app/loading"]),
-  loadedAt: new Date()
+  loadedAt: new Date(),
+  leftPaneComponentName: "conversations"
 });
 
 const changeMainContainerWidth = () => {
@@ -59,7 +57,23 @@ const changeMainContainerWidth = () => {
 };
 
 const setLeftPanel = (name) => {
-  state.leftPaneComponent = name;
+  if (state.leftPaneComponentName === name) {
+    return;
+  }
+
+  switch (name) {
+    case "conversations":
+      leftPaneComponent.value = Conversations;
+      break;
+    case "profile":
+      leftPaneComponent.value = Profile;
+      break;
+    case "settings":
+      leftPaneComponent.value = Settings;
+      break;
+  }
+
+  state.leftPaneComponentName = name;
 };
 
 const getConversations = async () => {
