@@ -17,6 +17,7 @@
           enter-active-class="animated slideInLeft"
           leave-active-class="animated slideInRight"
           appear
+          mode="out-in"
           :duration="300"
         >
           <div :key="state.leftPaneComponentName" style="display: contents">
