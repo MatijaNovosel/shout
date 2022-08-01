@@ -14,7 +14,7 @@
             @click="openRightPanel(PRIVATE_CHAT_RIGHT_PANEL.DETAILS)"
           >
             <q-avatar size="40px">
-              <img src="../assets/plenkovic.jpg" />
+              <img src="/plenkovic.jpg" />
             </q-avatar>
             <div class="column q-ml-md">
               <span> {{ contactDetails.name }} </span>

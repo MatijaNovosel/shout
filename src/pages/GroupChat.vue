@@ -61,7 +61,7 @@
                   <q-item clickable>
                     <q-item-section top avatar>
                       <q-avatar>
-                        <img src="../assets/me.jpg" />
+                        <img src="/plenkovic.jpg" />
                       </q-avatar>
                     </q-item-section>
                     <q-item-section>
@@ -73,7 +73,7 @@
                   <q-item clickable>
                     <q-item-section top avatar>
                       <q-avatar>
-                        <img src="../assets/me.jpg" />
+                        <img src="/plenkovic.jpg" />
                       </q-avatar>
                     </q-item-section>
                     <q-item-section>

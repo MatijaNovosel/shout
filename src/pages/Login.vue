@@ -75,14 +75,14 @@ import { ROUTE_NAMES } from "src/router/routeNames";
 import { useStore } from "vuex";
 import UserService from "src/services/users";
 import { useI18n } from "vue-i18n";
-import { supabase } from "../supabase";
+import { supabase } from "src/supabase";
 import useVuelidate from "@vuelidate/core";
 import { required, email } from "@vuelidate/validators";
 import { collectErrors } from "src/utils/helpers";
 
 const store = useStore();
-const { t } = useI18n();
 const router = useRouter();
+const { t } = useI18n();
 
 const state = reactive({
   loading: false,
@@ -103,7 +103,7 @@ const onSubmit = async () => {
   try {
     state.loading = true;
 
-    const { error } = await supabase.auth.signIn({
+    const { user, error } = await supabase.auth.signIn({
       email: state.auth.email,
       password: state.auth.password
     });
@@ -112,7 +112,15 @@ const onSubmit = async () => {
       throw error;
     }
 
-    store.dispatch("user/fetchUser", { id: 1, email });
+    const details = await UserService.getDetails(user.id);
+
+    store.dispatch("user/fetchUser", {
+      id: 1,
+      email,
+      avatarUrl: details.avatarUrl,
+      shorthandId: details.shorthandId,
+      username: details.username
+    });
 
     Notify.create({
       message: t("signedIn"),

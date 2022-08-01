@@ -115,7 +115,7 @@
     :class="{
       'q-pa-md': chats.length === 0
     }"
-    :style="state.userListContainerStyle"
+    :style="userListContainerStyle"
   >
     <template v-if="chats.length !== 0">
       <div v-for="(chat, i) in chats" :key="chat.id">
@@ -146,29 +146,31 @@ import NewGroupDialog from "src/components/NewGroupDialog.vue";
 import { copyToClipboard } from "src/utils/helpers";
 import ChatService from "src/services/chats";
 import { useI18n } from "vue-i18n";
+import { supabase } from "src/supabase";
 
 defineEmits(["set-left-panel", "reload-conversations"]);
 
 const store = useStore();
 const router = useRouter();
-const { t } = useI18n({ useScope: "global" });
 const user = computed(() => store.getters["user/user"]);
 const chats = computed(() => store.getters["chats/chats"]);
+const { t } = useI18n({ useScope: "global" });
+
+const userListContainerStyle = computed(() => {
+  if (!state.notificationsEnablePanelActive) {
+    return {
+      height: "calc(100% - 130px)",
+      maxHeight: "calc(100% - 130px)"
+    };
+  } else {
+    return {
+      height: "calc(100% - 204px)",
+      maxHeight: "calc(100% - 204px)"
+    };
+  }
+});
 
 const state = reactive({
-  userListContainerStyle: computed(() => {
-    if (!state.notificationsEnablePanelActive) {
-      return {
-        height: "calc(100% - 130px)",
-        "max-height": "calc(100% - 130px)"
-      };
-    } else {
-      return {
-        height: "calc(100% - 204px)",
-        "max-height": "calc(100% - 204px)"
-      };
-    }
-  }),
   notificationsEnabled: false,
   notificationsEnablePanelActive: true,
   userSearchDialog: false,
@@ -218,7 +220,14 @@ const logOut = async () => {
       color: "dark",
       textColor: "orange"
     });
+
     await store.dispatch("user/logOut");
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      throw error;
+    }
+
     router.push({
       name: ROUTE_NAMES.LOGIN
     });

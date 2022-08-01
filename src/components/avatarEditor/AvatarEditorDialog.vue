@@ -43,7 +43,7 @@ import AvatarEditorScale from "src/components/avatarEditor/AvatarEditorScale.vue
 import { dataURLtoFile } from "src/utils/helpers";
 import { useStore } from "vuex";
 
-const props = defineProps({
+defineProps({
   modelValue: {
     type: Boolean
   },
@@ -51,6 +51,7 @@ const props = defineProps({
     type: String
   }
 });
+
 const emit = defineEmits(["update:modelValue", "save"]);
 const store = useStore();
 

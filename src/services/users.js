@@ -1,10 +1,5 @@
-import {
-  range,
-  sample,
-  readDocuments,
-  checkUsernamePattern,
-  generateGuid
-} from "src/utils/helpers";
+import { readDocuments, checkUsernamePattern, generateGuid } from "src/utils/helpers";
+import { supabase } from "src/supabase";
 
 class UserService {
   /*
@@ -41,6 +36,7 @@ class UserService {
   }
 
   async getDetails(uid) {
+    /*
     const user = await this.userCollection.doc(uid).get();
     const invites = await this.userCollection.doc(uid).collection("/invites").get();
 
@@ -52,6 +48,28 @@ class UserService {
     });
 
     return { invites: invitesMapped, ...user.data() };
+    */
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("shorthandId, avatarUrl, username")
+      .eq("id", uid)
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  }
+
+  async updateUserProfile(uid, username, shorthandId) {
+    const { error } = await supabase
+      .from("profiles")
+      .update({ username, shorthandId })
+      .eq("id", uid);
+    if (error) {
+      throw error;
+    }
   }
 
   async searchByUsername(existingUsers, searchQuery) {

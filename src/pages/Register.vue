@@ -88,7 +88,8 @@ import { supabase } from "src/supabase";
 import useVuelidate from "@vuelidate/core";
 import { required, email } from "@vuelidate/validators";
 import { ROUTE_NAMES } from "src/router/routeNames";
-import { collectErrors } from "src/utils/helpers";
+import { collectErrors, randInt, range } from "src/utils/helpers";
+import UserService from "src/services/users";
 
 const { t } = useI18n();
 
@@ -113,7 +114,7 @@ const onSubmit = async () => {
   try {
     state.loading = true;
 
-    const { error } = await supabase.auth.signUp({
+    const { user, error } = await supabase.auth.signUp({
       email: state.auth.email,
       password: state.auth.password
     });
@@ -128,6 +129,12 @@ const onSubmit = async () => {
       color: "dark",
       textColor: "orange"
     });
+
+    const shorthandId = range(6)
+      .map(() => randInt(0, 9).toString())
+      .join("");
+
+    await UserService.updateUserProfile(user.id, state.auth.username, shorthandId);
 
     state.auth.email = null;
     state.auth.password = null;
