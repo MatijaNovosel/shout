@@ -13,17 +13,9 @@
   <q-page v-show="!state.appLoading" class="flex flex-center">
     <div class="row main-container" :style="{ width: `${state.width - 300}px` }">
       <div class="col-3 full-height">
-        <transition
-          enter-active-class="animated slideInLeft"
-          leave-active-class="animated slideInRight"
-          appear
-          mode="out-in"
-          :duration="300"
-        >
-          <div :key="state.leftPaneComponentName" style="display: contents">
-            <component @set-left-panel="setLeftPanel" :is="leftPaneComponent" />
-          </div>
-        </transition>
+        <div :key="state.leftPaneComponentName" style="display: contents">
+          <component @set-left-panel="setLeftPanel" :is="leftPaneComponent" />
+        </div>
       </div>
       <div class="col-9 full-height right-panel">
         <router-view />
@@ -78,8 +70,8 @@ const setLeftPanel = (name) => {
 };
 
 const getConversations = async () => {
-  // const chats = await ChatService.getAll(store.getters["user/user"].id);
-  await store.dispatch("chats/setChats", []);
+  const chats = await ChatService.getAll(store.getters["user/user"].id);
+  await store.dispatch("chats/setChats", chats);
 };
 
 onMounted(async () => {

@@ -1,11 +1,11 @@
-import { readDocuments, checkUsernamePattern, generateGuid } from "src/utils/helpers";
+import { checkUsernamePattern, generateGuid } from "src/utils/helpers";
 import { supabase } from "src/supabase";
 
 class UserService {
   async getDetails(uid) {
     const { data, error } = await supabase
       .from("profiles")
-      .select("shorthandId, avatarUrl, username, status")
+      .select("shorthand_id, avatar_url, username, status")
       .eq("id", uid)
       .single();
 
@@ -21,7 +21,7 @@ class UserService {
   async updateUserProfile(uid, username, shorthandId) {
     const { error } = await supabase
       .from("profiles")
-      .update({ username, shorthandId })
+      .update({ username, shorthand_id: shorthandId })
       .eq("id", uid);
     if (error) {
       throw error;
@@ -35,9 +35,9 @@ class UserService {
 
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, shorthandId, username, avatarUrl")
+        .select("id, shorthand_id, username, avatar_url, status")
         .eq("username", username)
-        .eq("shorthandId", shorthandId);
+        .eq("shorthand_id", shorthandId);
 
       if (error) {
         throw error;

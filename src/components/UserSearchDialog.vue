@@ -49,7 +49,7 @@
                   {{ `${user.username}#${user.shorthandId}` }}
                 </q-item-label>
                 <q-item-label caption>
-                  {{ $t("status") }}
+                  {{ user.status }}
                 </q-item-label>
               </q-item-section>
             </q-item>
@@ -100,7 +100,12 @@ const close = () => {
 
 const findUser = async () => {
   state.searching = true;
-  state.filteredUsers = await UserService.searchByUsername(state.searchQuery);
+  state.filteredUsers = (await UserService.searchByUsername(state.searchQuery)).map((u) => ({
+    username: u.username,
+    avatarUrl: u.avatar_url,
+    shorthandId: u.shorthand_id,
+    status: u.status
+  }));
   setTimeout(() => {
     state.searching = false;
   }, 400);

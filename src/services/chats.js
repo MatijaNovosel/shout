@@ -2,7 +2,6 @@ import {
   generateGuid,
   blobToFile,
   uploadTaskPromise,
-  stripHtml,
   imageSize,
   videoSize,
   fileIsType
@@ -14,15 +13,27 @@ import {
   GENERALIZED_FILE_TYPES
 } from "src/utils/constants";
 import { format } from "date-fns";
+import { supabase } from "src/supabase";
 
 class ChatService {
-  /*
-  constructor() {
-    this.chatsCollection = firebase.firestore().collection("/chats");
-  }
-  */
-
   async getAll(userId) {
+    const { data, error } = await supabase
+      .from("conversations_view")
+      .select("id, avatar_url, name")
+      .eq("user_id", userId);
+
+    if (error) {
+      throw error;
+    }
+
+    return data.map((c) => ({
+      id: c.conversation_id,
+      avatarUrl: c.avatar_url,
+      name: c.name
+    }));
+
+    /*
+
     const chatsData = await this.chatsCollection.where("userIds", "array-contains", userId).get();
     const chats = [];
     const retVal = [];
@@ -85,6 +96,7 @@ class ChatService {
     }
 
     return retVal.sort((a, b) => b.lastMsg.sentAt - a.lastMsg.sentAt);
+    */
   }
 
   async getGroupChatMessages(uid) {

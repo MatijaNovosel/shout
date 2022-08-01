@@ -1,8 +1,8 @@
 CREATE OR REPLACE FUNCTION onSignUpCreateProfilesFunction()
 RETURNS TRIGGER AS $$
   BEGIN
-    INSERT INTO public.profiles (id, username, updatedAt, avatarUrl, shorthandId, lang)
-    VALUES(new.id, 'username', now(), '/plenkovic.jpg', 'shorthand', 'en');
+    INSERT INTO public.profiles (id, username, updatedAt, avatarUrl, shorthandId, "status", lang)
+    VALUES(new.id, 'username', now(), '/plenkovic.jpg', 'shorthand', 'status', 'en');
     RETURN NEW;
   END;
 $$

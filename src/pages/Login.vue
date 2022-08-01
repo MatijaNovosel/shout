@@ -115,10 +115,13 @@ const onSubmit = async () => {
     const details = await UserService.getDetails(user.id);
 
     store.dispatch("user/fetchUser", {
-      id: 1,
-      email,
+      id: user.id,
+      email: state.auth.email,
       invites: [],
-      ...details
+      shorthandId: details.shorthand_id,
+      avatarUrl: details.avatar_url,
+      username: details.username,
+      status: details.status
     });
 
     Notify.create({

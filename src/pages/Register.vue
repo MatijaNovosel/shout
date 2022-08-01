@@ -135,12 +135,6 @@ const onSubmit = async () => {
       .join("");
 
     await UserService.updateUserProfile(user.id, state.auth.username, shorthandId);
-
-    state.auth.email = null;
-    state.auth.password = null;
-    state.auth.username = null;
-
-    $v.value.$reset();
   } catch (e) {
     Notify.create({
       message: e.message,
@@ -150,6 +144,10 @@ const onSubmit = async () => {
     });
   } finally {
     state.loading = false;
+    state.auth.email = null;
+    state.auth.password = null;
+    state.auth.username = null;
+    $v.value.$reset();
   }
 };
 </script>
