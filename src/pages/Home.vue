@@ -50,23 +50,21 @@ const changeMainContainerWidth = () => {
 };
 
 const setLeftPanel = (name) => {
-  if (state.leftPaneComponentName === name) {
-    return;
-  }
+  if (state.leftPaneComponentName !== name) {
+    switch (name) {
+      case "conversations":
+        leftPaneComponent.value = Conversations;
+        break;
+      case "profile":
+        leftPaneComponent.value = Profile;
+        break;
+      case "settings":
+        leftPaneComponent.value = Settings;
+        break;
+    }
 
-  switch (name) {
-    case "conversations":
-      leftPaneComponent.value = Conversations;
-      break;
-    case "profile":
-      leftPaneComponent.value = Profile;
-      break;
-    case "settings":
-      leftPaneComponent.value = Settings;
-      break;
+    state.leftPaneComponentName = name;
   }
-
-  state.leftPaneComponentName = name;
 };
 
 const getConversations = async () => {
@@ -77,9 +75,7 @@ const getConversations = async () => {
 onMounted(async () => {
   await store.dispatch("app/setLoading", true);
   await getConversations();
-  setTimeout(async () => {
-    await store.dispatch("app/setLoading", false);
-  }, 750);
+  await store.dispatch("app/setLoading", false);
   locale.value = store.getters["user/user"].lang;
 });
 

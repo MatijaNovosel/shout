@@ -16,21 +16,40 @@ import { format } from "date-fns";
 import { supabase } from "src/supabase";
 
 class ChatService {
+  formatConversationName() {
+    //
+  }
+
   async getAll(userId) {
+    const conversations = [];
+
     const { data, error } = await supabase
-      .from("conversations_view")
-      .select("id, avatar_url, name")
+      .from("conversation_users")
+      .select("conversation_id")
       .eq("user_id", userId);
 
     if (error) {
       throw error;
     }
 
-    return data.map((c) => ({
-      id: c.conversation_id,
-      avatarUrl: c.avatar_url,
-      name: c.name
-    }));
+    for (let i = 0; i < data.length; i++) {
+      const convo = data[i];
+      const { data: users, error } = await supabase
+        .from("conversation_users_view")
+        .select("email, user_id")
+        .eq("conversation_id", convo.conversation_id);
+      if (error) {
+        throw error;
+      }
+      const u = users.filter((user) => user.user_id !== userId);
+      conversations.push({
+        id: convo.conversation_id,
+        name: u.map((x) => x.email).join(", "),
+        avatarUrl: "/plenkovic.jpg" // TODO: Fix this
+      });
+    }
+
+    return conversations;
 
     /*
 
