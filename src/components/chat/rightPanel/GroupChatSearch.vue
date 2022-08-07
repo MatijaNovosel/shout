@@ -54,7 +54,7 @@
 
 <script setup>
 import { reactive } from "vue";
-import { debounce } from "debounce";
+import { debounce } from "quasar";
 import { MSG_TYPE } from "src/utils/constants";
 import { format } from "date-fns";
 

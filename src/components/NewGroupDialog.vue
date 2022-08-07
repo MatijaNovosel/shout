@@ -105,7 +105,7 @@
 <script setup>
 import { reactive, computed } from "vue";
 import { useStore } from "vuex";
-import { debounce } from "debounce";
+import { debounce } from "quasar";
 import UserService from "src/services/users";
 import ChatService from "src/services/chats";
 
