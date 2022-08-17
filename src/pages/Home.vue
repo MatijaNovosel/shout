@@ -11,17 +11,19 @@
     </div>
   </q-page>
   <q-page v-show="!state.appLoading" class="flex flex-center">
-    <div class="row main-container" :style="{ width: `${state.width - 300}px` }">
-      <div class="col-3 full-height">
-        <div :key="state.leftPaneComponentName" style="display: contents">
-          <component @set-left-panel="setLeftPanel" :is="leftPaneComponent" />
-        </div>
+    <div class="row main-container">
+      <div class="full-height left-pane">
+        <component
+          @set-left-panel="setLeftPanel"
+          :is="leftPaneComponent"
+          :key="state.leftPaneComponentName"
+          class="full-height"
+        />
       </div>
-      <div class="col-9 full-height right-panel">
+      <div class="right-pane full-height">
         <router-view />
       </div>
     </div>
-    <q-resize-observer @resize="changeMainContainerWidth" />
   </q-page>
 </template>
 
@@ -39,15 +41,10 @@ const leftPaneComponent = shallowRef(Conversations);
 const { locale } = useI18n({ useScope: "global" });
 
 const state = reactive({
-  width: 0,
   appLoading: computed(() => store.getters["app/loading"]),
   loadedAt: new Date(),
   leftPaneComponentName: "conversations"
 });
-
-const changeMainContainerWidth = () => {
-  state.width = window.innerWidth - 100;
-};
 
 const setLeftPanel = (name) => {
   if (state.leftPaneComponentName !== name) {
@@ -114,11 +111,19 @@ firebase
 
 .main-container {
   height: calc(100vh - 38px);
+  width: calc(100% - 300px);
   background-color: #262d31;
 }
 
-.right-panel {
+.right-pane {
   border-left: 1px solid rgba(255, 255, 255, 0.11);
   background-color: #090e11;
+  width: 75%;
+}
+
+.left-pane {
+  width: 25%;
+  transform: translateX(0px);
+  transition-duration: 150ms;
 }
 </style>
