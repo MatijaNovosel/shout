@@ -32,19 +32,18 @@ class ChatService {
       throw error;
     }
 
-    for (let i = 0; i < data.length; i++) {
-      const convo = data[i];
+    for (const conversation of data) {
       const { data: users, error } = await supabase
         .from("conversation_users_view")
         .select("email, user_id")
-        .eq("conversation_id", convo.conversation_id);
+        .eq("conversation_id", conversation.conversation_id);
       if (error) {
         throw error;
       }
       const u = users.filter((user) => user.user_id !== userId);
       conversations.push({
-        id: convo.conversation_id,
-        name: u.map((x) => x.email).join(", "),
+        id: conversation.conversation_id,
+        name: u.map((user) => user.email).join(", "),
         avatarUrl: "/plenkovic.jpg" // TODO: Fix this
       });
     }

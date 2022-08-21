@@ -1,4 +1,4 @@
-import en from "./en-US";
+import en from "./en";
 import hr from "./hr-HR";
 
 export default {
