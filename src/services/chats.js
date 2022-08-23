@@ -32,19 +32,39 @@ class ChatService {
       throw error;
     }
 
-    for (const conversation of data) {
-      const { data: users, error } = await supabase
+    for (const conversationId of data.flatMap((c) => c.conversation_id)) {
+      const { data: details } = await supabase
+        .from("conversations")
+        .select("*")
+        .eq("id", conversationId)
+        .limit(1)
+        .single();
+
+      const { data: users } = await supabase
         .from("conversation_users_view")
         .select("email, user_id")
-        .eq("conversation_id", conversation.conversation_id);
-      if (error) {
-        throw error;
-      }
+        .eq("conversation_id", conversationId);
+
       const u = users.filter((user) => user.user_id !== userId);
+
+      const { data: message } = await supabase
+        .from("messages")
+        .select("*")
+        .eq("conversation_id", conversationId)
+        .order("sent_at", "desc")
+        .limit(1)
+        .single();
+
       conversations.push({
-        id: conversation.conversation_id,
+        id: conversationId,
         name: u.map((user) => user.email).join(", "),
-        avatarUrl: "/plenkovic.jpg" // TODO: Fix this
+        avatarUrl: details.avatar_url,
+        lastMsg: {
+          you: userId === message.user_id,
+          sentAt: message.sent_at,
+          txt: message.txt,
+          username: message.user_id
+        }
       });
     }
 
