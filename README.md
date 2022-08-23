@@ -1,5 +1,10 @@
 <h1 align=center>Chat app web</h1>
 <p align=center>Messaging service for the web, based on WhatsApp.</p>
+
+<h3 align=center>
+⚠️ WIP: Currently transferring the backend from Firebase to Supabase
+</h3>
+
 <p align=center>
   📱 <a href="https://github.com/MatijaNovosel/chat-app"> Mobile version </a>
 </p>
