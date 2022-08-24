@@ -23,7 +23,7 @@ class ChatService {
   async getAll(userId) {
     const conversations = [];
 
-    const { data, error } = await supabase
+    const { data: participatingConversations, error } = await supabase
       .from("conversation_users")
       .select("conversation_id")
       .eq("user_id", userId);
@@ -32,7 +32,7 @@ class ChatService {
       throw error;
     }
 
-    for (const conversationId of data.flatMap((c) => c.conversation_id)) {
+    for (const conversationId of participatingConversations.flatMap((c) => c.conversation_id)) {
       const { data: details } = await supabase
         .from("conversations")
         .select("*")
@@ -42,13 +42,11 @@ class ChatService {
 
       const { data: users } = await supabase
         .from("conversation_users_view")
-        .select("email, user_id")
+        .select("email, user_id, username, shorthand_id")
         .eq("conversation_id", conversationId);
 
-      const u = users.filter((user) => user.user_id !== userId);
-
       const { data: message } = await supabase
-        .from("messages")
+        .from("user_msg_view")
         .select("*")
         .eq("conversation_id", conversationId)
         .order("sent_at", "desc")
@@ -57,13 +55,17 @@ class ChatService {
 
       conversations.push({
         id: conversationId,
-        name: u.map((user) => user.email).join(", "),
+        name: users
+          .filter((user) => user.user_id !== userId)
+          .map((user) => user.username)
+          .join(", "),
         avatarUrl: details.avatar_url,
+        type: details.type,
         lastMsg: {
           you: userId === message.user_id,
           sentAt: message.sent_at,
           txt: message.txt,
-          username: message.user_id
+          username: message.username
         }
       });
     }

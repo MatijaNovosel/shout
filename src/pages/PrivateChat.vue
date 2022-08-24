@@ -144,7 +144,7 @@
 </template>
 
 <script setup>
-import { reactive, onMounted } from "vue";
+import { reactive, onMounted, ref, provide } from "vue";
 import { range, randInt } from "src/utils/helpers";
 import { loremIpsum, MSG_TYPE, PRIVATE_CHAT_RIGHT_PANEL } from "src/utils/constants";
 import MessagePanel from "src/components/chat/MessagePanel.vue";
@@ -156,6 +156,9 @@ const contactDetails = {
   name: "Name Surname",
   status: "Name Surname status"
 };
+
+const filePickerTrigger = ref(false);
+provide("filePickerTrigger", filePickerTrigger);
 
 const state = reactive({
   messages: [],
@@ -241,7 +244,8 @@ onMounted(() => {
       userId,
       txt: loremIpsum.substring(0, randInt(10, loremIpsum.length)),
       sent: userId === 1,
-      type: MSG_TYPE.TXT
+      type: MSG_TYPE.TXT,
+      sentAt: new Date()
     };
   });
   scrollToEndOfMsgContainer();

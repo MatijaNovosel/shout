@@ -96,9 +96,7 @@ const drop = (e) => {
 
 watch(
   () => filePickerTrigger.value,
-  () => {
-    filePicker.value.click();
-  }
+  () => filePicker.value.click()
 );
 </script>
 
