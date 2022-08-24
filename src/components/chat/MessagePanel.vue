@@ -123,7 +123,7 @@ const scrollToEndOfMsgContainer = () => {
 };
 
 const msgContainerScrollChanged = (e) => {
-  emit("should-show-scroll-to-bottom", e.verticalPercentage !== 0 && e.verticalPercentage <= 0.8);
+  emit("should-show-scroll-to-bottom", e.verticalPercentage <= 0.8);
 };
 
 const filesUploaded = (files) => {
