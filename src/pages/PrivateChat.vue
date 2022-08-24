@@ -7,7 +7,7 @@
         'col-8': state.rightPanelOpen
       }"
     >
-      <div class="column full-height chat-panel-bg justify-between">
+      <div class="column full-height chat-panel-bg justify-between no-wrap">
         <div class="chat-top row justify-between q-py-sm q-px-md">
           <div
             class="row text-white cursor-pointer"
@@ -68,51 +68,85 @@
           :messages="state.messages"
           :scroll-to-bottom-trigger="state.scrollToBottomTrigger"
         />
-        <div class="bottom-bar q-py-sm q-px-md">
-          <div class="bottom-bar-left">
-            <q-btn flat round color="white" icon="mdi-emoticon" />
-            <q-btn flat round color="white" icon="mdi-paperclip" />
+        <add-file-panel
+          @close="state.addingFile = false"
+          @trigger-file-picker="triggerFilePicker"
+          @send-files="sendFiles"
+          :files="state.files"
+          v-if="state.addingFile"
+        />
+        <div class="bottom-bar q-py-sm q-px-md column" v-show="!state.addingFile">
+          <div class="emoji-panel" v-if="state.emojiPanelOpen">
+            <emoji-picker @close="state.emojiPanelOpen = false" @emoji="insertEmoji" />
           </div>
-          <div class="bottom-bar-center">
-            <q-input
-              dark
-              dense
-              rounded
-              standout
-              placeholder="Type a message"
-              v-model="state.msgText"
-            />
-          </div>
-          <div class="bottom-bar-right">
-            <template v-if="state.msgText !== null && state.msgText !== ''">
-              <q-btn flat round color="white" icon="mdi-arrow-right" @click="sendTxtMsg" />
-            </template>
-            <template v-else>
+          <div class="row">
+            <div class="bottom-bar-left">
               <q-btn
                 flat
                 round
-                color="white"
-                icon="mdi-microphone"
-                @click="record"
-                v-if="!state.recording"
+                :color="state.emojiPanelOpen ? 'orange' : 'white'"
+                icon="mdi-emoticon"
+                @click="openEmojiPanel"
+              >
+                <q-tooltip top> {{ $t("emojiPicker") }} </q-tooltip>
+              </q-btn>
+            </div>
+            <div class="bottom-bar-center">
+              <q-input
+                dark
+                dense
+                rounded
+                standout
+                :placeholder="$t('typeAMessage')"
+                v-model="state.msgText"
               />
+            </div>
+            <div class="bottom-bar-right">
+              <template v-if="state.msgText !== null && state.msgText !== ''">
+                <q-btn flat round color="white" icon="mdi-arrow-right" @click="sendTxtMsg" />
+              </template>
               <template v-else>
                 <q-btn
                   flat
                   round
-                  color="red"
-                  icon="mdi-arrow-left-circle"
-                  @click="stopRecording(true)"
-                />
-                <q-btn
-                  flat
-                  round
-                  color="green"
-                  icon="mdi-check-circle-outline"
-                  @click="stopRecording(false)"
-                />
+                  color="white"
+                  icon="mdi-microphone"
+                  @click="record"
+                  v-if="!state.recording"
+                >
+                  <q-tooltip top>
+                    {{ $t("recordAudioMessage") }}
+                  </q-tooltip>
+                </q-btn>
+                <template v-else>
+                  <q-btn
+                    flat
+                    round
+                    color="red"
+                    icon="mdi-close-circle"
+                    @click="stopRecording(true)"
+                  >
+                    <q-tooltip top>
+                      {{ $t("cancelRecording") }}
+                    </q-tooltip>
+                  </q-btn>
+                  <span class="text-white">
+                    {{ elapsedRecordingSecondsFormatted }}
+                  </span>
+                  <q-btn
+                    flat
+                    round
+                    color="green"
+                    icon="mdi-check-circle-outline"
+                    @click="stopRecording(false)"
+                  >
+                    <q-tooltip top>
+                      {{ $t("stopRecording") }}
+                    </q-tooltip>
+                  </q-btn>
+                </template>
               </template>
-            </template>
+            </div>
           </div>
           <q-btn
             v-show="state.shouldShowScrollToBottom"
@@ -151,6 +185,8 @@ import MessagePanel from "src/components/chat/MessagePanel.vue";
 import ContactDetails from "src/components/chat/rightPanel/ContactDetails.vue";
 import PrivateChatSearch from "src/components/chat/rightPanel/PrivateChatSearch.vue";
 import { ROUTE_NAMES } from "src/router/routeNames";
+import EmojiPicker from "src/components/chat/EmojiPicker.vue";
+import AddFilePanel from "src/components/AddFilePanel.vue";
 
 const contactDetails = {
   name: "Name Surname",
@@ -162,7 +198,10 @@ provide("filePickerTrigger", filePickerTrigger);
 
 const state = reactive({
   messages: [],
+  files: [],
   recording: false,
+  emojiPanelOpen: false,
+  addingFile: false,
   recordingCancelled: false,
   rightPanelOpen: false,
   mediaRecorder: null,
@@ -237,6 +276,18 @@ const openRightPanel = (rightPanel) => {
   state.rightPanelOpen = true;
 };
 
+const openEmojiPanel = () => {
+  state.emojiPanelOpen = !state.emojiPanelOpen;
+};
+
+const sendFiles = () => {
+  //
+};
+
+const triggerFilePicker = () => {
+  filePickerTrigger.value = !filePickerTrigger.value;
+};
+
 onMounted(() => {
   state.messages = range(15).map((n) => {
     const userId = randInt(1, 2);
@@ -265,11 +316,6 @@ onMounted(() => {
   background-color: $bg-dark-3;
 }
 
-.chat-bottom {
-  background-color: $bg-dark-3;
-  height: 58px;
-}
-
 .scroll-to-bottom-fab {
   position: absolute;
   bottom: 85px;
@@ -278,8 +324,6 @@ onMounted(() => {
 
 .bottom-bar {
   background-color: $bg-dark-3;
-  height: 58px;
-  display: flex;
   width: 100%;
 }
 
