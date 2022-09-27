@@ -1,4 +1,4 @@
-<h1 align=center>Chat app web</h1>
+<h1 align=center>Fanfare</h1>
 <p align=center>Messaging service for the web, based on WhatsApp.</p>
 
 <h3 align=center>
