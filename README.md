@@ -6,7 +6,7 @@
 </h3>
 
 <p align=center>
-  📱 <a href="https://github.com/MatijaNovosel/chat-app"> Mobile version </a>
+  📱 <a href="https://github.com/MatijaNovosel/shout-mobile"> Mobile version </a>
 </p>
 
 ![image](https://user-images.githubusercontent.com/36193643/144072641-3a353892-48ab-4c95-9f27-cbbd3f7e4e4b.png)
