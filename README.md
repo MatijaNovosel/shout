@@ -23,9 +23,6 @@
 - Real time private and group chatting with the option of sending all sorts of multimedia
 - User customization
 
-# 💻 Database schema
-![Supbase Schema](https://user-images.githubusercontent.com/36193643/182314088-dde12f20-8181-4a3f-bac6-fa86d9032a6a.png)
-
 ## Install the dependencies
 ```bash
 npm install
