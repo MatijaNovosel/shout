@@ -46,3 +46,33 @@
 .contents {
   display: contents;
 }
+
+.rounded {
+  border-radius: 12px;
+}
+
+.rounded-t-r {
+  border-top-right-radius: 12px;
+}
+
+.rounded-r {
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+.rounded-b-r {
+  border-bottom-right-radius: 12px;
+}
+
+.rounded-b-l {
+  border-bottom-left-radius: 12px;
+}
+
+.rounded-t-l {
+  border-top-left-radius: 12px;
+}
+
+.rounded-l {
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+}

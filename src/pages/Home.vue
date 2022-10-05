@@ -11,8 +11,8 @@
     </div>
   </q-page>
   <q-page v-show="!state.appLoading" class="flex flex-center">
-    <div class="row main-container">
-      <div class="full-height left-pane">
+    <div class="row main-container rounded">
+      <div class="full-height left-pane rounded-b-l">
         <component
           @set-left-panel="setLeftPanel"
           :is="leftPaneComponent"

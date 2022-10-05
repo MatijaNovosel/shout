@@ -8,7 +8,7 @@
       }"
     >
       <div class="column full-height chat-panel-bg justify-between no-wrap">
-        <div class="chat-top row justify-between q-py-sm q-px-md">
+        <div class="chat-top row justify-between q-py-sm q-px-md rounded-t-r">
           <div
             class="row text-white cursor-pointer"
             @click="openRightPanel(PRIVATE_CHAT_RIGHT_PANEL.DETAILS)"
@@ -75,7 +75,7 @@
           :files="state.files"
           v-if="state.addingFile"
         />
-        <div class="bottom-bar q-py-sm q-px-md column" v-show="!state.addingFile">
+        <div class="bottom-bar q-py-sm q-px-md column rounded-b-r" v-show="!state.addingFile">
           <div class="emoji-panel" v-if="state.emojiPanelOpen">
             <emoji-picker @close="state.emojiPanelOpen = false" @emoji="insertEmoji" />
           </div>

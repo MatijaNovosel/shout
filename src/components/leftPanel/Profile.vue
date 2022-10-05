@@ -1,7 +1,7 @@
 <template>
   <div class="contents">
-    <div class="column items-center full-height bg" v-if="user">
-      <div class="self-start row items-center q-pa-md back-button-container full-width">
+    <div class="column items-center full-height bg rounded-l" v-if="user">
+      <div class="self-start row items-center q-pa-md back-button-container full-width rounded-t-l">
         <q-btn
           @click="$emit('set-left-panel', 'conversations')"
           color="grey"

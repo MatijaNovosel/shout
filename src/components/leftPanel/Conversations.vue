@@ -1,6 +1,6 @@
 <template>
   <div class="contents">
-    <div class="chat-top row justify-between q-py-sm q-px-md">
+    <div class="chat-top row justify-between q-py-sm q-px-md rounded-t-l">
       <div class="row items-center">
         <template v-if="user">
           <q-avatar class="cursor-pointer" @click="$emit('set-left-panel', 'profile')" size="40px">
@@ -112,7 +112,7 @@
     <q-list
       v-if="chats"
       dark
-      class="rounded-borders user-list-container"
+      class="user-list-container rounded-b-l"
       :class="{
         'q-pa-md': chats.length === 0
       }"

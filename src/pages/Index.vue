@@ -10,5 +10,7 @@
 <style scoped lang="scss">
 .index-bg {
   background-color: #262d31;
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
 }
 </style>
