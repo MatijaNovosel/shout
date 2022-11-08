@@ -44,9 +44,9 @@ module.exports = configure(function (ctx) {
         chain.plugin("eslint-webpack-plugin").use(ESLintPlugin, [{ extensions: ["js"] }]);
       },
       manifest: {
-        name: "Chat app web",
-        short_name: "Chat app web",
-        description: "A chat app for the web",
+        name: "Shout",
+        short_name: "Shout",
+        description: "Messaging service for the web, based on WhatsApp.",
         display: "standalone",
         orientation: "portrait",
         background_color: "#ffffff",
@@ -88,7 +88,7 @@ module.exports = configure(function (ctx) {
       bundler: "packager",
       packager: {},
       builder: {
-        appId: "chat-app-web"
+        appId: "shout"
       },
       chainWebpackMain(chain) {
         chain.plugin("eslint-webpack-plugin").use(ESLintPlugin, [{ extensions: ["js"] }]);

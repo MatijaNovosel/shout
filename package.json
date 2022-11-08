@@ -1,8 +1,8 @@
 {
-  "name": "chat-app-web",
+  "name": "shout",
   "version": "0.0.1",
-  "description": "A chat app for the web",
-  "productName": "Chat app web",
+  "description": "Messaging service for the web, based on WhatsApp.",
+  "productName": "Shout",
   "author": "Matija Novosel",
   "private": true,
   "scripts": {
