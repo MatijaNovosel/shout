@@ -14,7 +14,7 @@
         <q-option-group
           @update:model-value="languageChanged"
           v-model="state.selectedLang"
-          :options="state.languages"
+          :options="languages"
           color="orange"
         />
       </q-card-section>
@@ -42,19 +42,7 @@ const store = useStore();
 const { t, locale } = useI18n({ useScope: "global" });
 
 const state = reactive({
-  selectedLang: "hr",
-  languages: computed(() => {
-    return [
-      {
-        label: t("english"),
-        value: LANGUAGES.ENGLISH
-      },
-      {
-        label: t("croatian"),
-        value: LANGUAGES.CROATIAN
-      }
-    ];
-  })
+  selectedLang: "hr"
 });
 
 const close = () => {
@@ -81,6 +69,19 @@ const languageChanged = async () => {
     });
   }
 };
+
+const languages = computed(() => {
+  return [
+    {
+      label: t("english"),
+      value: LANGUAGES.ENGLISH
+    },
+    {
+      label: t("croatian"),
+      value: LANGUAGES.CROATIAN
+    }
+  ];
+});
 
 watch(
   () => props.modelValue,

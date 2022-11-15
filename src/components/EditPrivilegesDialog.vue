@@ -51,7 +51,6 @@ const store = useStore();
 const { t } = useI18n({ useScope: "global" });
 
 const state = reactive({
-  user: computed(() => store.getters["user/user"]),
   filteredUsers: [],
   searchQuery: null,
   searching: false,

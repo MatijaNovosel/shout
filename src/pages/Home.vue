@@ -1,6 +1,6 @@
 <template>
   <q-page
-    v-show="state.appLoading"
+    v-show="appLoading"
     class="bg-grey-10 window-height window-width row justify-center items-center"
   >
     <div class="row justify-center" style="width: 400px">
@@ -10,7 +10,7 @@
       <q-linear-progress color="orange" indeterminate />
     </div>
   </q-page>
-  <q-page v-show="!state.appLoading" class="flex flex-center">
+  <q-page v-show="!appLoading" class="flex flex-center">
     <div class="row main-container rounded">
       <div class="full-height left-pane rounded-b-l">
         <component
@@ -28,7 +28,7 @@
 </template>
 
 <script setup>
-import { reactive, computed, onMounted, shallowRef } from "vue";
+import { reactive, onMounted, shallowRef, computed } from "vue";
 import Conversations from "src/components/leftPanel/Conversations.vue";
 import Profile from "src/components/leftPanel/Profile.vue";
 import Settings from "src/components/leftPanel/Settings.vue";
@@ -41,7 +41,6 @@ const leftPaneComponent = shallowRef(Conversations);
 const { locale } = useI18n({ useScope: "global" });
 
 const state = reactive({
-  appLoading: computed(() => store.getters["app/loading"]),
   loadedAt: new Date(),
   leftPaneComponentName: "conversations"
 });
@@ -68,6 +67,8 @@ const getConversations = async () => {
   const chats = await ChatService.getAll(store.getters["user/user"].id);
   await store.dispatch("chats/setChats", chats);
 };
+
+const appLoading = computed(() => store.getters["app/loading"]);
 
 onMounted(async () => {
   await store.dispatch("app/setLoading", true);

@@ -37,7 +37,7 @@
 </template>
 
 <script setup>
-import { reactive, ref, onMounted, onUnmounted, computed } from "vue";
+import { reactive, ref, onMounted, onUnmounted } from "vue";
 import AvatarEditor from "src/components/avatarEditor/AvatarEditor.vue";
 import AvatarEditorScale from "src/components/avatarEditor/AvatarEditorScale.vue";
 import { dataURLtoFile } from "src/utils/helpers";
@@ -59,8 +59,7 @@ const state = reactive({
   avatarEditorScale: 1,
   scaleMin: 1,
   scaleMax: 3,
-  scaleStep: 0.02,
-  userAvatar: computed(() => store.getters["user/user"].avatarUrl)
+  scaleStep: 0.02
 });
 
 const avatarEditor = ref(null);

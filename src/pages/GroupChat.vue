@@ -33,7 +33,7 @@
               <template v-if="state.chatDetails">
                 <span> {{ state.chatDetails.name }} </span>
                 <span class="text-grey-6">
-                  {{ state.formatGroupSubtitle }}
+                  {{ formatGroupSubtitle }}
                 </span>
               </template>
             </div>
@@ -225,7 +225,7 @@
             icon="mdi-chevron-down"
             color="grey-9"
             class="scroll-to-bottom-fab"
-            :style="state.fabStyle"
+            :style="fabStyle"
           />
         </div>
       </div>
@@ -261,13 +261,8 @@
 <script setup>
 import { provide, reactive, onMounted, computed, ref, onUnmounted, watch } from "vue";
 import { downloadURI, secondsToElapsedTime } from "src/utils/helpers";
-import {
-  MSG_TYPE,
-  GROUP_CHAT_RIGHT_PANEL,
-  CHAT_TYPE,
-  GROUP_CHANGE_TYPE
-} from "src/utils/constants";
-import { format, isAfter } from "date-fns";
+import { MSG_TYPE, GROUP_CHAT_RIGHT_PANEL, CHAT_TYPE } from "src/utils/constants";
+import { format } from "date-fns";
 import { ROUTE_NAMES } from "src/router/routeNames";
 import MessagePanel from "src/components/chat/MessagePanel.vue";
 import GroupDetails from "src/components/chat/rightPanel/GroupDetails.vue";
@@ -317,28 +312,7 @@ const state = reactive({
   shouldShowScrollToBottom: false,
   scrollToBottomTrigger: false,
   rightPanelOpen: false,
-  activeRightPanel: GROUP_CHAT_RIGHT_PANEL.DETAILS,
-  fabStyle: computed(() => {
-    if (state.emojiPanelOpen === true) {
-      return {
-        bottom: "285px"
-      };
-    } else {
-      return {
-        bottom: "85px"
-      };
-    }
-  }),
-  formatGroupSubtitle: computed(() => {
-    if (state.chatDetails) {
-      let txt = state.chatDetails.users.map((u) => u.username).join(", ");
-      if (state.chatDetails.users.length > 3) {
-        txt += t("andOthers");
-      }
-      return txt;
-    }
-    return "";
-  })
+  activeRightPanel: GROUP_CHAT_RIGHT_PANEL.DETAILS
 });
 
 const stopRecording = (cancel) => {
@@ -735,6 +709,29 @@ const loadMessages = async (first) => {
       */
   }
 };
+
+const fabStyle = computed(() => {
+  if (state.emojiPanelOpen === true) {
+    return {
+      bottom: "285px"
+    };
+  } else {
+    return {
+      bottom: "85px"
+    };
+  }
+});
+
+const formatGroupSubtitle = computed(() => {
+  if (state.chatDetails) {
+    let txt = state.chatDetails.users.map((u) => u.username).join(", ");
+    if (state.chatDetails.users.length > 3) {
+      txt += t("andOthers");
+    }
+    return txt;
+  }
+  return "";
+});
 
 onMounted(async () => {
   await loadMessages(true);

@@ -120,7 +120,6 @@ const emit = defineEmits(["update:modelValue"]);
 const store = useStore();
 
 const state = reactive({
-  user: computed(() => store.getters["user/user"]),
   filteredUsers: [],
   searchQuery: null,
   searching: false,
@@ -152,10 +151,10 @@ const selectUser = (user) => {
 const createGroup = async () => {
   await ChatService.createGroup(
     {
-      id: state.user.id,
-      avatarUrl: state.user.avatarUrl,
-      username: state.user.username,
-      shorthandId: state.user.shorthandId
+      id: user.value.id,
+      avatarUrl: user.value.avatarUrl,
+      username: user.value.username,
+      shorthandId: user.value.shorthandId
     },
     state.selectedUsers
   );
@@ -164,6 +163,8 @@ const createGroup = async () => {
 const removeSelectedUser = (val) => {
   state.selectedUsers = state.selectedUsers.filter((u) => u.id !== val.id);
 };
+
+const user = computed(() => store.getters["user/user"]);
 </script>
 
 <style scoped lang="scss">

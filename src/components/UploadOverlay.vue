@@ -26,14 +26,7 @@ const filePickerTrigger = inject("filePickerTrigger");
 
 const state = reactive({
   filelist: [],
-  draggingOver: false,
-  allowedExtensions: computed(() => {
-    const extensions = [];
-    for (const extension in MIME_TYPES) {
-      extensions.push(extension);
-    }
-    return extensions;
-  })
+  draggingOver: false
 });
 
 const onChange = () => {
@@ -58,7 +51,7 @@ const drop = (e) => {
   if (
     ![...e.dataTransfer.files]
       .map((f) => getFileExtension(f.name).toLowerCase())
-      .every((ext) => state.allowedExtensions.includes(ext))
+      .every((ext) => allowedExtensions.value.includes(ext))
   ) {
     Notify.create({
       message: t("thatFileExtensionIsNotAllowed"),
@@ -93,6 +86,14 @@ const drop = (e) => {
   filePicker.value.files = e.dataTransfer.files;
   onChange();
 };
+
+const allowedExtensions = computed(() => {
+  const extensions = [];
+  for (const extension in MIME_TYPES) {
+    extensions.push(extension);
+  }
+  return extensions;
+});
 
 watch(
   () => filePickerTrigger.value,

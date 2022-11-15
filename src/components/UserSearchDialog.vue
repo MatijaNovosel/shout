@@ -72,7 +72,7 @@
 </template>
 
 <script setup>
-import { reactive, computed } from "vue";
+import { reactive } from "vue";
 import { useStore } from "vuex";
 import { debounce } from "quasar";
 import UserService from "src/services/users";
@@ -88,7 +88,6 @@ const emit = defineEmits(["update:modelValue", "user-selected"]);
 const store = useStore();
 
 const state = reactive({
-  user: computed(() => store.getters["user/user"]),
   filteredUsers: [],
   searchQuery: null,
   searching: false

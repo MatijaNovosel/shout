@@ -8,7 +8,7 @@
         opacity: 0.75
       }"
       class="msg-container row q-px-xl q-py-md"
-      :style="state.msgContainerStyle"
+      :style="msgContainerStyle"
       ref="msgContainer"
       @scroll="msgContainerScrollChanged"
       id="scroll-area"
@@ -100,20 +100,7 @@ const msgContainer = ref(null);
 
 const state = reactive({
   dialogImageSrc: null,
-  imagePreviewDialog: false,
-  msgContainerStyle: computed(() => {
-    if (props.emojiPanelOpen === true) {
-      return {
-        maxHeight: "calc(100% - 316px)",
-        height: "calc(100% - 316px)"
-      };
-    } else {
-      return {
-        maxHeight: "calc(100% - 116px)",
-        height: "calc(100% - 116px)"
-      };
-    }
-  })
+  imagePreviewDialog: false
 });
 
 const scrollToEndOfMsgContainer = () => {
@@ -158,6 +145,20 @@ const scrollToMessage = (msgId) => {
   const el = document.getElementById(msgId);
   el.scrollIntoView();
 };
+
+const msgContainerStyle = computed(() => {
+  if (props.emojiPanelOpen === true) {
+    return {
+      maxHeight: "calc(100% - 316px)",
+      height: "calc(100% - 316px)"
+    };
+  } else {
+    return {
+      maxHeight: "calc(100% - 116px)",
+      height: "calc(100% - 116px)"
+    };
+  }
+});
 
 watch(
   () => props.scrollToBottomTrigger,

@@ -36,9 +36,9 @@
         v-for="(category, i) in state.categories"
         :key="i"
       >
-        <template v-if="state.emojisComputed[category]">
+        <template v-if="emojisComputed[category]">
           <span
-            v-for="(emoji, i) in Object.entries(state.emojisComputed[category])"
+            v-for="(emoji, i) in Object.entries(emojisComputed[category])"
             :key="i"
             class="cursor-pointer emoji"
             @click="insert(emoji[1])"
@@ -72,25 +72,7 @@ const emit = defineEmits(["emoji", "close"]);
 const state = reactive({
   tab: "People",
   emojiSearchText: null,
-  categories: ["People", "Nature", "Objects", "Places", "Symbols"],
-  emojisComputed: computed(() => {
-    if (state.emojiSearchText !== null && state.emojiSearchText !== "") {
-      const obj = {};
-      for (const category in emojis) {
-        obj[category] = {};
-        for (const emoji in emojis[category]) {
-          if (new RegExp(`.*${escapeRegExp(state.emojiSearchText)}.*`).test(emoji)) {
-            obj[category][emoji] = emojis[category][emoji];
-          }
-        }
-        if (Object.keys(obj[category]).length === 0) {
-          delete obj[category];
-        }
-      }
-      return obj;
-    }
-    return emojis;
-  })
+  categories: ["People", "Nature", "Objects", "Places", "Symbols"]
 });
 
 const insert = (emoji) => {
@@ -119,6 +101,25 @@ const formatTabIcon = (category) => {
       return "mdi-circle";
   }
 };
+
+const emojisComputed = computed(() => {
+  if (state.emojiSearchText !== null && state.emojiSearchText !== "") {
+    const obj = {};
+    for (const category in emojis) {
+      obj[category] = {};
+      for (const emoji in emojis[category]) {
+        if (new RegExp(`.*${escapeRegExp(state.emojiSearchText)}.*`).test(emoji)) {
+          obj[category][emoji] = emojis[category][emoji];
+        }
+      }
+      if (Object.keys(obj[category]).length === 0) {
+        delete obj[category];
+      }
+    }
+    return obj;
+  }
+  return emojis;
+});
 
 onMounted(() => {
   document.addEventListener("keyup", escape);
